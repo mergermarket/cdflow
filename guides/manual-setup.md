@@ -105,11 +105,11 @@ Complete this step by committing your change and pushing it to Github:
 
 This step is highly dependent on the service you are developing. This will set up a simple HTTP service based on the [official node docker image](https://hub.docker.com/_/node/) listing on port `8000` (the default expected by the infrastructure definition).
 
-### `package.json`
+### package.json
 
 To create a basic `package.json` in your project, run `npm init` accepting the defaults.
 
-### `server.js`
+### server.js
 
 Create `server.js` in the root of the repository containing the following:
 
@@ -118,7 +118,7 @@ Create `server.js` in the root of the repository containing the following:
       res.end('Hello, World!')
     }).listen(8000)
 
-### `Dockerfile`
+### Dockerfile
 
 Create `Dockerfile` in the root of the repository containing the following:
 
@@ -129,7 +129,7 @@ Create `Dockerfile` in the root of the repository containing the following:
 	
 	COPY package.json /usr/src/app/
 	RUN npm install
-	ONBUILD COPY . /usr/src/app
+	COPY . /usr/src/app
 	
 	CMD [ "npm", "start" ]
 
