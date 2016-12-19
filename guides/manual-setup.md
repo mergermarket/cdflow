@@ -155,9 +155,9 @@ To test the process of creating a release, run:
 
 If everything works as intended, you should see the output from a docker build ending lines similar to:
 
-	infra/scripts/release: image IMAGE_URL:dev successfully built
-	infra/scripts/release: no version supplied, push skipped
-	infra/scripts/release: done.
+    infra/scripts/release: image IMAGE_URL:dev successfully built
+    infra/scripts/release: no version supplied, push skipped
+    infra/scripts/release: done.
 
 The remaining steps should normally be initiated from a shared build server (e.g. Jenkins), after the code is pushed to Github. However, this guide will walk through running them locally to demonstrate how they work. Before you continue you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into (e.g. `mmgdev` and `mmgprod`).
 
@@ -175,17 +175,17 @@ To deploy your service, run the command:
 
 This will run `terraform plan` followed by `terraform apply` via [Terragrunt](https://github.com/gruntwork-io/terragrunt). In the output look out for lines like:
 
-	[terragrunt] 2017/01/01 00:00:00 Running command: terraform plan \
-		-var component=your-component -var aws_region=eu-west-1 -var env=aslive \
-		-var image=IMAGE_URL:1 -var team=your-team -var version="1" \
-		-var-file infra/platform-config/mmg/dev/eu-west-1.json infra
+    [terragrunt] 2017/01/01 00:00:00 Running command: terraform plan \
+      -var component=your-component -var aws_region=eu-west-1 -var env=aslive \
+      -var image=IMAGE_URL:1 -var team=your-team -var version="1" \
+      -var-file infra/platform-config/mmg/dev/eu-west-1.json infra
 
 ..and:
 
-	[terragrunt] 2017/01/01 00:00:00 Running command: terraform apply \
-		-var component=your-component -var aws_region=eu-west-1 -var env=aslive \
-		-var image=IMAGE_URL:1 -var team=your-team -var version="1" \
-		-var-file infra/platform-config/mmg/dev/eu-west-1.json infra
+    [terragrunt] 2017/01/01 00:00:00 Running command: terraform apply \
+      -var component=your-component -var aws_region=eu-west-1 -var env=aslive \
+      -var image=IMAGE_URL:1 -var team=your-team -var version="1" \
+      -var-file infra/platform-config/mmg/dev/eu-west-1.json infra
 
 Most of the remaining output is that of Terraform as it creates the infrastructure for your service in the `aslive` environment, including a service running your code in the [EC2 Container Service (ECS)](https://aws.amazon.com/ecs/) service. The output should also include the `name` attribute within the `module.ecs-service.aws_route53_record.dns_record` section, which is the name of your service according to the `domain-name` you chose above, as well as the naming conventions - the resulting URL will be something like:
 
