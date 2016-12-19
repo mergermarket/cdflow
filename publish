@@ -2,6 +2,5 @@
 
 set -e
 
-git subtree pull --prefix infra/docs/ origin gh-pages
 git subtree push --prefix infra/docs/ origin gh-pages
 
