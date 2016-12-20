@@ -78,7 +78,7 @@ deploy.ci.c6-adversemedia.TEST has been stored
 }
 ```
 
-## Platform - settin Credstash up for a team
+## Platform - setting Credstash up for a team
 
 In order for a team / project to be able to use Credstash, you need to create a KMS key for them as well as run `credstash -t %TABLE_NAME% setup` to pre-create Dynamo DB table.
 
