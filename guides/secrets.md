@@ -1,4 +1,4 @@
-# Managing secrets in your repository
+# Managing secrets
 
 It is never a good idea (nor is justified) to store any form of sensitive credentials (passwords, keys) in plain-text form, especially commited to git.
 

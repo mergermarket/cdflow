@@ -8,3 +8,7 @@ This repository contains scripts provided by the [Mergermarket Platform Team](ma
 
 The best place to start is currently the [manual setup guide](guides/manual-setup) (we will publish a [quick-start guide](guides/quick-start) in due course).
 
+## Further guides
+
+* [Configuring your service](guides/configuration)
+* [Managing secrets](guides/secrets)

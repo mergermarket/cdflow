@@ -236,6 +236,6 @@ Most of the remaining output is that of Terraform as it creates the infrastructu
 https://aslive-your-service-name.dev.mmgapi.net
 ```
 
+## Next steps
 
-
-
+* [Configuring your service](configuration)
