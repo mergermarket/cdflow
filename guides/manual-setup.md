@@ -16,14 +16,14 @@ This pulls Mergermarket infra scripts into the `infra/` folder into your reposit
 
 From the root of your freshly cloned service, run:
 
-```Shell
+```shell
 git pull --allow-unrelated-histories --no-edit \
   git@github.com:mergermarket/infra.git master
 ```
 
 If you prefer to clone via HTTPS, use this command instead:
 
-```Shell    
+```shell    
 git pull --allow-unrelated-histories --no-edit \
   https://github.com/mergermarket/infra.git master
 ```
@@ -34,7 +34,7 @@ The above commands pull the Git history of the _infra_ project into your reposit
 
 Complete this step by pushing changes to Github:
 
-```Shell
+```shell
 git push
 ```
 
@@ -42,14 +42,14 @@ git push
 
 To pull in future updates, simply run:
 
-```Shell
+```shell
 git pull --no-edit \
   git@github.com:mergermarket/infra.git master
 ```
 
 Or, if you prefer to clone over HTTPS:
 
-```Shell
+```shell
 git pull --no-edit \
   https://github.com/mergermarket/infra.git master
 ```
@@ -58,14 +58,14 @@ git pull --no-edit \
 
 The above are generic scripts for releasing, creating/updating infrastructure, and deploying your service onto that infrastructure, designed not to be specific to Mergermarket. However, this depends on certain AWS infrastructure already existing (e.g. AWS accounts, VPCs, ECS clusters, etc). This depends on the organisation that you are deploying your service. Within Mergermarket this is provided by pulling the [mmg-platform-config](https://github.com/mergermarket/mmg-platform-config) repository into your repository:
 
-```Shell
+```shell
 git pull --allow-unrelated-histories --no-edit \
   git@github.com:mergermarket/mmg-platform-config.git master
 ```
 
 Or, if you prefer to clone over HTTPS:
 
-```Shell
+```shell
 git pull --allow-unrelated-histories --no-edit \
   https://github.com/mergermarket/mmg-platform-config.git master
 ```
@@ -78,7 +78,7 @@ This will pull in the `infra/platform-config/` folder containing As above, this 
 
 Complete this step by pushing changes to Github:
 
-```Shell
+```shell
 git push
 ```
 
@@ -86,14 +86,14 @@ git push
 
 To pull in future updates:
 
-```Shell
+```shell
 git pull --no-edit \
   git@github.com:mergermarket/mmg-platform-config.git master
 ```
 
 Or, if you prefer to clone over HTTPS:
 
-```Shell
+```shell
 git pull --no-edit \
   https://github.com/mergermarket/mmg-platform-config.git master
 ```
@@ -102,7 +102,7 @@ git pull --no-edit \
 
 The scripts require a metadata file called `service.json` in the root of your project:
 
-```JSON
+```json
 {
   "TEAM": "your-team-name",
   "ACCOUNT_PREFIX": "mmg",
@@ -118,7 +118,7 @@ The scripts require a metadata file called `service.json` in the root of your pr
 
 Complete this step by committing your change and pushing it to Github:
 
-```Shell
+```shell
 git add service.json
 git commit -m 'Service metadata'
 git push
@@ -136,7 +136,7 @@ To create a basic `package.json` in your project, run `npm init` accepting the d
 
 Create `server.js` in the root of the repository containing the following:
 
-```JavaScript
+```javascript
 require('http').createServer((req, res) => {
   res.writeHead(200, { 'Content-Type' : 'text/plain' })
   res.end('Hello, World!')
@@ -147,7 +147,7 @@ require('http').createServer((req, res) => {
 
 Create `Dockerfile` in the root of the repository containing the following:
 
-```Dockerfile
+```dockerfile
 FROM node:7-alpine
 	
 RUN mkdir -p /usr/src/app
@@ -164,7 +164,7 @@ CMD [ "npm", "start" ]
 
 Complete this step by committing your changes and pushing them to Github:
 
-```Shell
+```shell
 git add package.json server.js Dockerfile
 git commit -m 'Basic service'
 git push
@@ -180,7 +180,7 @@ By default the `ecs-service` module will create an [Application Load Balancer](h
 
 To test the process of creating a release, run:
 
-```Shell
+```shell
 infra/scripts/release
 ```
 
@@ -196,7 +196,7 @@ The remaining steps should normally be initiated from a shared build server (e.g
 
 In order to build a version other than `"dev"` and to push it to the [EC2 Container Registry (ECR)](https://aws.amazon.com/ecr/), you must specify a version number:
 
-```Shell
+```shell
 infra/scripts/release 1
 ```
 
@@ -206,7 +206,7 @@ If everything worked as intended, this should result in your new docker image be
 
 To deploy your service, run the command:
 
-```Shell
+```shell
 infra/scripts/deploy aslive 1
 ```
 
