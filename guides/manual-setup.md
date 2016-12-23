@@ -1,4 +1,10 @@
-# Mergermarket infra scripts - manual setup
+---
+title: Manual setup
+menu: guides
+weight: 2
+---
+
+# Manual setup
 
 This guide walks you through setting up a new service based on the [Mergermarket infra scripts](https://mergermarket.github.io/infra/). The guide is slightly longer winded than the [Quick-start guide](./quick-start) and is intended for the first time you set up a service in order to fully understand all the steps.
 

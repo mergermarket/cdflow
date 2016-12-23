@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -e
+
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+
+bundle install
+bundle exec jekyll serve -w --force_polling

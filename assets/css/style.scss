@@ -1,0 +1,37 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+header {
+  nav {
+
+    h1 {
+      font-size: 1.1em;
+      margin: 0.3em 0;
+    }
+    
+    ul {
+    
+      margin: 1em 0;
+      padding: 0 0 0 40px;
+      list-style-type: disc;
+      border: none;
+      background: transparent;
+
+      li {
+        text-align: left;
+        border: none;
+        list-style-position: outside;
+        float: none;
+        height: auto;
+    
+        a {
+          display: inline;
+        }
+      }
+    
+    }
+
+  }
+}

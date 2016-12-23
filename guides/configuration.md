@@ -1,3 +1,9 @@
+---
+title: Configuration
+menu: guides
+weight: 3
+---
+
 # Configuration
 
 This guide describes how to add environment specific configuration to your service repository that will be provided to your container(s) within an environment as environment variables. Since this configuration is stored with the code in your service repository, changes require that your code is redeployed - i.e. it is not suitable for configuration that needs to be dynamically updated without a redeploy. Also, since configuration is stored in the repository in plain text, it is not suitable for storing secrets or credentials - if you need that see the [managing secrets](secrets/) guide.
