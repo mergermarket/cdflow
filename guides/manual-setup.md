@@ -180,7 +180,7 @@ git push
 
 The Terraform code that defines your infrastructure is at the top level in the `infra/` folder. By convention the main entry-point it the `infra/main.tf` file. Most of this is boilerplate that provides sensible defaults for your infrastructure, but one thing you may need to change is the value of the `dns-domain` parameter to the `ecs-service` module (near the bottom of the file).
 
-By default the `ecs-service` module will create an [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) for your service in each environment, along with a DNS name in Route53 for your service. The valuye of `dns-domain` must correspond to a domain that is configured in the platform config that you've pulled in, so that the DNS name can be created in the appropriate Route53 hosted zone, and so that an SSL certificate can be associated with the load balancer.
+By default the `ecs-service` module will create an [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) for your service in each environment, along with a DNS name in Route53 for your service. The value of `dns-domain` must correspond to a domain that is configured in the platform config that you've pulled in, so that the DNS name can be created in the appropriate Route53 hosted zone, and so that an SSL certificate can be associated with the load balancer.
 
 ## 7. Release your service
 
