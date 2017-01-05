@@ -117,7 +117,7 @@ The scripts require a metadata file called `service.json` in the root of your pr
 ```
 
 * `TEAM` is the only required key, and names the team that is responsible for running this service.
-* `ACCOUNT_PREFIX` (as well as `REGION`) determines which files to select in the `infra/platform-config/` folder - it default sto `"mmg"`. The scripts separate infrastructure between production and non-production environments into separate AWS accounts. These accounts are named with the supplied prefix, combined with either the `"dev"` or `"prod"` postfix - e.g. if you `ACCOUNT_PREFIX` is `"mmg"`, then your service will be deployed in the `"mmgdev"` and `"mmgprod"` accounts, selecting platform config from the `infra/platform-config/mmg/dev/` and `infra/platform-config/mmg/prod/` folders.
+* `ACCOUNT_PREFIX` (as well as `REGION`) determines which files to select in the `infra/platform-config/` folder - it defaults to `"mmg"`. The scripts separate infrastructure between production and non-production environments into separate AWS accounts. These accounts are named with the supplied prefix, combined with either the `"dev"` or `"prod"` postfix - e.g. if you `ACCOUNT_PREFIX` is `"mmg"`, then your service will be deployed in the `"mmgdev"` and `"mmgprod"` accounts, selecting platform config from the `infra/platform-config/mmg/dev/` and `infra/platform-config/mmg/prod/` folders.
 * `REGION` (default `"eu-west-1"`) specifies the region the service should be deployed in - the infra scripts currently support deploying each service into a single region. The region (with a `.json` extension) is the filename of the file under `infra/platfrom-config` (e.g. `infra/platform-config/mmg/dev/eu-west-1.json`).
 
 ### Commit and push changes
