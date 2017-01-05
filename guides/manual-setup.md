@@ -163,7 +163,7 @@ COPY package.json /usr/src/app/
 RUN npm install
 COPY . /usr/src/app
 	
-CMD [ "npm", "start" ]
+CMD [ "node", "server.js" ]
 ```
 
 ### Commit and push changes
