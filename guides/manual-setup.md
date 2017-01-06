@@ -200,10 +200,10 @@ infra/scripts/release: done.
 
 The remaining steps should normally be initiated from a shared build server (e.g. Jenkins), after the code is pushed to Github. However, this guide will walk through running them locally to demonstrate how they work. Before you continue you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into (e.g. `mmgdev` and `mmgprod`).
 
-In order to build a version other than `"dev"` and to push it to the [EC2 Container Registry (ECR)](https://aws.amazon.com/ecr/), you must specify a version number:
+In order to build a version other than `"dev"` and to push it to the [EC2 Container Registry (ECR)](https://aws.amazon.com/ecr/), you must specify a version number (your email address also needs to be in the environment):
 
 ```shell
-infra/scripts/release 1
+EMAIL=<your.email@address.com> infra/scripts/release 1
 ```
 
 If everything worked as intended, this should result in your new docker image being pushed.
