@@ -210,10 +210,10 @@ If everything worked as intended, this should result in your new docker image be
 
 ## 8. Deploy your service
 
-To deploy your service, run the command:
+To deploy your service, run the command (again, your email needs to be present - feel free to `export` it somewhere):
 
 ```shell
-infra/scripts/deploy aslive 1
+EMAIL=<your.email@address.com> infra/scripts/deploy aslive 1
 ```
 
 This will run `terraform plan` followed by `terraform apply` via [Terragrunt](https://github.com/gruntwork-io/terragrunt). In the output look out for lines like:
