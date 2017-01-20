@@ -8,6 +8,8 @@ weight: 2
 
 This guide walks you through setting up a new service based on the [Mergermarket infra scripts](https://mergermarket.github.io/infra/). The guide is slightly longer winded than the [Quick-start guide](./quick-start) and is intended for the first time you set up a service in order to fully understand all the steps.
 
+*TL;DR if you just want to get a service up and running see the [Quick-start guide](./quick-start)*.
+
 ## 1. Create a github repository for your service
 
 Create a repository in Github and clone it on your computer. If you are developing a service for Mergermarket, do this at [github.com/organizations/mergermarket/repositories/new](https://github.com/organizations/mergermarket/repositories/new).
