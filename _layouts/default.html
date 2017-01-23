@@ -14,7 +14,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>{{ site.title | default: site.github.repository_name }}</h1>
+        <h1><a href="/infra/">{{ site.title | default: site.github.repository_name }}</a></h1>
         <p>{{ site.description | default: site.github.project_tagline }}</p>
 
         
@@ -36,6 +36,9 @@
         {% endif %}
         
         <nav>
+          <p>
+            <a href="/infra/">Infra docs home</a>
+          </p>
           
           <h1>Guides</h1>
 

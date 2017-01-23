@@ -10,11 +10,20 @@ header {
       font-size: 1.1em;
       margin: 0.3em 0;
     }
+
+    a {
+      color: #39c;
+    }
+
+    a:hover {
+      color: #069;
+    }
+
     
     ul {
     
       margin: 1em 0;
-      padding: 0 0 0 40px;
+      padding: 0;
       list-style-type: disc;
       border: none;
       background: transparent;
@@ -28,6 +37,7 @@ header {
     
         a {
           display: inline;
+          font-size: inherit;
         }
       }
     
