@@ -8,6 +8,51 @@ weight: 3
 
 This guide describes how to add environment specific configuration to your service repository that will be provided to your container(s) within an environment as environment variables. Since this configuration is stored with the code in your service repository, changes require that your code is redeployed - i.e. it is not suitable for configuration that needs to be dynamically updated without a redeploy. Also, since configuration is stored in the repository in plain text, it is not suitable for storing secrets or credentials - if you need that see the [managing secrets](secrets/) guide.
 
+## TL;DR
+
+Place your config in `config/ENV.json`:
+
+```json
+{
+  "container_env": {
+    "MY_CONFIG_VAR": "my-config-value"
+  }
+}
+```
+
+In addition to this, there are two places where we need to pass this through in order to expose it to your container:
+
+### `infra/main.tf`:
+
+```terraform
+data "template_file" "container_definitions" {
+    ...
+    vars {
+       ...
+       # Add a line like the following (there should be a commented example):
+       MY_CONFIG_VAR   = "${var.container_env["MY_CONFIG_VAR"]}"
+       ...
+    }
+}
+```
+
+### `infra/container_definitions.json`:
+
+```terraform
+[
+  {
+    ...
+    "environment": [
+      ...
+      { "name": "MY_CONFIG_VAR", "value": "${MY_CONFIG_VAR}" }
+    ],
+    ...
+  }
+]   
+```
+
+Read on for a more long-winded description of this configuration.
+
 ## Adding environment specific config to Terraform
 
 If there is a file called `config/ENVIRONMENT_NAME.json` (e.g. `config/aslive.json`) committed to your repository, then it will be used as a Terraform `-var-file` for input variables.
