@@ -22,7 +22,7 @@ Place your config in `config/ENV.json`:
 
 In addition to this, there are two places where we need to pass this through in order to expose it to your container:
 
-### `infra/main.tf`:
+### `infra/main.tf`
 
 ```terraform
 data "template_file" "container_definitions" {
@@ -36,7 +36,7 @@ data "template_file" "container_definitions" {
 }
 ```
 
-### `infra/container_definitions.json`:
+### `infra/container_definitions.json`
 
 ```terraform
 [
