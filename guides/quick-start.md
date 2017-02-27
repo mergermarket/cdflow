@@ -44,17 +44,21 @@ The Jenkins pipeline is configured to trigger every time a change is pushed to G
 
 By default the `infra/` folder will contain what's needed for a basic ECS service. This section describes common customisations to this. This is the default [infra](https://github.com/mergermarket/infra) default, but can be customised/changed by a given boilerplate - if this is the case, then refer to the documentation for that boilerplate for how to perform customisations instead.
 
+### `TYPE` in `service.json`
+
+For ECS services set this to `docker` (this should be provided by the boilerplate). Additional service types will be made available in the future.
+
 ### `TEAM` in `service.json`
 
-This is used to tag the infrastructure for your service, to make it easy to find in monitoring, logging, billing, etc. It should be set to the same as what you provided when you created the initial service (we have automation planned for this).
+This is used to tag the infrastructure for your service, to make it easy to find in monitoring, logging, billing, etc.
 
-### `ACCOUNT_PREFIX` in `service.json` (optional)
+### `ACCOUNT_PREFIX` in `service.json`
 
-Mergermarket runs multiple AWS accounts. Accounts are created in pairs, one containing non-production infrastructure with the "dev" postfix (e.g. "mmgdev") and one containing production infrastructure with the "prod" postfix (e.g. "mmgprod"). The other part of the name (i.e. "mmg" in this example) is the _account prefix_ (with default "mmg"). Whatever account you use, there should be a corresponding subfolder inside `infra/platform-config/`.
+Mergermarket runs multiple AWS accounts. Accounts are created in pairs, one containing non-production infrastructure with the "dev" postfix (e.g. "mmgdev") and one containing production infrastructure with the "prod" postfix (e.g. "mmgprod"). The other part of the name (i.e. "mmg" in this example) is the _account prefix_. Whatever account you use, there should be a corresponding subfolder inside `infra/platform-config/`.
 
-### `REGION` in `service.json` (optional)
+### `REGION` in `service.json`
 
-This determines the AWS region your service will run in (default `eu-west-1`). Before picking a region, you should make sure the platform has infrastructure available there, configured in `infra/platform-config/ACCOUNT_PREFIX/REGION`.
+This determines the AWS region your service will run in. Before picking a region, you should make sure the platform has infrastructure available there, configured in `infra/platform-config/ACCOUNT_PREFIX/REGION`.
 
 ### Terraform customisation
 
