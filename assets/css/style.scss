@@ -6,7 +6,7 @@
 header {
   nav {
 
-    h1 {
+    h2 {
       font-size: 1.1em;
       margin: 0.3em 0;
     }
@@ -21,10 +21,10 @@ header {
 
     
     ul {
-    
+      height: auto;
       margin: 1em 0;
       padding: 0;
-      list-style-type: disc;
+      list-style-type: none;
       border: none;
       background: transparent;
 
