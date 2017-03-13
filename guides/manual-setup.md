@@ -6,37 +6,39 @@ weight: 2
 
 # Manual setup
 
-This guide walks you through setting up a new service based on the [Mergermarket infra scripts](https://mergermarket.github.io/infra/). The guide is slightly longer winded than the [Quick-start guide](./quick-start) and is intended for the first time you set up a service in order to fully understand all the steps.
+This guide walks you through deploying a new service using [Mergermarket cdflow](https://mergermarket.github.io/cdflow/). The guide is more in-depth than the [Quick-start guide](./quick-start) and is intended for the first time you set up a service. It should give everyone an understanding of all the steps necessary to deploy a service.
 
-*TL;DR if you just want to get a service up and running see the [Quick-start guide](./quick-start)*.
+_**TL;DR** if you just want to get a service up and running see the [Quick-start guide](./quick-start)_.
 
 ## 1. Create a github repository for your service
 
 Create a repository in Github and clone it on your computer. If you are developing a service for Mergermarket, do this at [github.com/organizations/mergermarket/repositories/new](https://github.com/organizations/mergermarket/repositories/new).
 
-## 2. Including _infra_ in your repository
+## 2. Including _cdflow_ in your repository
 
-This pulls Mergermarket infra scripts into the `infra/` folder into your repository. This mechanism means you do not have external dependencies when you come to release or deploy your service, and puts you in control of when you take updates. This folder contains:
-
-* Scripts for releasing and deploying your code.
-* A [Terraform](https://www.terraform.io/) module that will be used to create the infrastructure for your service in each environment.
-* Boilerplate Terraform code for your service that will use the above module. You will customise this for your service.
+Pull [Mergermarket cdflow](https://github.com/mergermarket/cdflow) into your repository. This mechanism for including `cdflow` means you do not have external dependencies when you come to release or deploy your service, and puts you in control of when you take updates. 
 
 From the root of your freshly cloned service, run:
 
 ```shell
 git pull --allow-unrelated-histories --no-edit \
-  git@github.com:mergermarket/infra.git master
+  git@github.com:mergermarket/cdflow.git master
 ```
 
 If you prefer to clone via HTTPS, use this command instead:
 
 ```shell    
 git pull --allow-unrelated-histories --no-edit \
-  https://github.com/mergermarket/infra.git master
+  https://github.com/mergermarket/cdflow.git master
 ```
 
 The above commands pull the Git history of the _infra_ project into your repository. This allows future updates to be pulled into your repository and be merged with any customisations you have made with the `infra/` folder - i.e. it is by design (the `--squash` option shiould be avoided).
+
+This repository contains, a `config/` folder that contains an example environment config file (`live.json.example`). And an `infra/` folder that has:
+
+* Scripts for releasing and deploying your code.
+* A [Terraform](https://www.terraform.io/) module that will be used to create the infrastructure for your service in each environment.
+* Boilerplate Terraform code for your service that will use the above module. You will customise this for your service.
 
 ### Push changes
 
@@ -119,7 +121,7 @@ The scripts require a metadata file called `service.json` in the root of your pr
 ```
 
 * `TEAM` is the only required key, and names the team that is responsible for running this service.
-* `ACCOUNT_PREFIX` (as well as `REGION`) determines which files to select in the `infra/platform-config/` folder - it defaults to `"mmg"`. The scripts separate infrastructure between production and non-production environments into separate AWS accounts. These accounts are named with the supplied prefix, combined with either the `"dev"` or `"prod"` postfix - e.g. if you `ACCOUNT_PREFIX` is `"mmg"`, then your service will be deployed in the `"mmgdev"` and `"mmgprod"` accounts, selecting platform config from the `infra/platform-config/mmg/dev/` and `infra/platform-config/mmg/prod/` folders.
+* `ACCOUNT_PREFIX` (as well as `REGION`) determines which files to select in the `infra/platform-config/` folder - it defaults to `"mmg"`. The scripts separate infrastructure between production and non-production environments into separate AWS accounts. These accounts are named with the supplied prefix, combined with either the `"dev"` or `"prod"` postfix - e.g. if you`ACCOUNT_PREFIX` is `"mmg"`, then your service will be deployed in the `"mmgdev"` and `"mmgprod"` accounts, selecting platform config from the `infra/platform-config/mmg/dev/` and `infra/platform-config/mmg/prod/` folders.
 * `REGION` (default `"eu-west-1"`) specifies the region the service should be deployed in - the infra scripts currently support deploying each service into a single region. The region (with a `.json` extension) is the filename of the file under `infra/platfrom-config` (e.g. `infra/platform-config/mmg/dev/eu-west-1.json`).
 
 ### Commit and push changes
@@ -189,23 +191,17 @@ By default the `ecs-service` module will create an [Application Load Balancer](h
 To test the process of creating a release, run:
 
 ```shell
-infra/scripts/release
+infra/scripts/cdflow release
 ```
 
-If everything works as intended, you should see the output from a docker build ending lines similar to:
-
-```
-infra/scripts/release: image IMAGE_URL:dev successfully built
-infra/scripts/release: no version supplied, push skipped
-infra/scripts/release: done.
-```
+If everything works as intended, you should see the output from a docker build.
 
 The remaining steps should normally be initiated from a shared build server (e.g. Jenkins), after the code is pushed to Github. However, this guide will walk through running them locally to demonstrate how they work. Before you continue you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into (e.g. `mmgdev` and `mmgprod`).
 
 In order to build a version other than `"dev"` and to push it to the [EC2 Container Registry (ECR)](https://aws.amazon.com/ecr/), you must specify a version number (your email address also needs to be in the environment):
 
 ```shell
-EMAIL=<your.email@address.com> infra/scripts/release 1
+EMAIL=<your.email@address.com> infra/scripts/cdflow release 1
 ```
 
 If everything worked as intended, this should result in your new docker image being pushed.
@@ -215,7 +211,7 @@ If everything worked as intended, this should result in your new docker image be
 To deploy your service, run the command (again, your email needs to be present - feel free to `export` it somewhere):
 
 ```shell
-EMAIL=<your.email@address.com> infra/scripts/deploy aslive 1
+EMAIL=<your.email@address.com> infra/scripts/cdflow deploy aslive 1
 ```
 
 This will run `terraform plan` followed by `terraform apply` via [Terragrunt](https://github.com/gruntwork-io/terragrunt). In the output look out for lines like:
@@ -247,3 +243,6 @@ https://aslive-your-service-name.dev.mmgapi.net
 ## Next steps
 
 * [Configuring your service](configuration)
+* [Managing secrets](guides/secrets)
+* [Adding routes to an existing ALB](guides/adding-routes-to-an-existing-alb)
+* [Redirecting HTTP traffic to HTTPS](guides/http-to-https-redirect)

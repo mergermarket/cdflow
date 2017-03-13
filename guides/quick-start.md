@@ -4,15 +4,15 @@ menu: guides
 weight: 1
 ---
 
-# Mergermarket infra quick start
+# cdflow quick start
 
-This guide will cover how to set up a new service based on the Mergermarket infra scripts quickly if you are working at Mergermarket - it uses a service to create a repo in the [mergermarket Github organisation](https://github.com/mergermarket/) and job in Mergermarket's Jenkins instnace, so won't work outside of Mergermarket. The steps are the same as those described in the [Manual Setup guide](./manual-setup).
+This guide will cover how to quickly set up a new service using cdflow _**if**_ you are working with Mergermarket - it uses a service to create a repo in the [mergermarket Github organisation](https://github.com/mergermarket/) and job in Mergermarket's Jenkins instance, so won't work outside of Mergermarket. The steps are the same as those described in the [Manual Setup guide](./manual-setup). 
 
 ## Pre-requisites
 
 In order to create a service, you will need:
 
-* A team folder in Jenkins and a corresponding team group in Github. If this is a new team, or if you need further guidance ask *@platform* in [#platform-team channel in mergermarket slack](https://mergermarket.slack.com/messages/platform-team/).
+* A team folder in Jenkins and a corresponding team group in Github. If this is a new team, or if you need further guidance ask *@platform* in [#platform-team](https://mergermarket.slack.com/messages/platform-team/) channel on the  Mergermarket slack. 
 * A boilerplate project to start with - try searching the [mergermarket Github organisation](https://github.com/mergermarket/) for repositories with "boilerplate" in the name (check the README too).
 
 ## Create initial service
@@ -24,13 +24,13 @@ From the root of your workspace (i.e. where you check projects out to) run the f
         --boilerplate <boilerplate-repo> \
         --team <your-team>
 
-Note: if you are uncomfortable with downloading and running this script in a single step, it's also fine to download it and inspect it before running it.
+_**Note:** if you are uncomfortable with downloading and running this script in a single step, it's also fine to download it and inspect it before running it._
 
 Replace each of the parameter values as described:
 
-* *\<name-of-your-service>* - should be lower-case with words separated by hyphens (i.e. "kebab-case"). The Mergermarket convention is to end services that are used by staff with "-admin", to end services used by subscribers with "-subscriber" and to end backend services with "-service".
-* *\<boilerplate-repo>* - the full git url starting "git@github.com:" or "https://github.com/" -  the protocol you chose here will be used to pull from the boilerplate, as well as to pull in platform config and to configure the remote that will be used for the service repo itself.
-* *\<your-team>* - the name of the team exactly as it appears in Jenkins (check the URL in case there is an alias configured) and in the Github team.
+* `<name-of-your-service>` - should be lower-case with words separated by hyphens (i.e. "kebab-case"). The Mergermarket convention is to end services that are used by staff with "-admin", to end services used by subscribers with "-subscriber" and to end backend services with "-service".
+* `<boilerplate-repo>` - the full git url starting "git@github.com:" or "https://github.com/" -  the protocol chosen here will be used to pull the boilerplate and platform config from Github. As well as configure the remote that will be used for the service repo itself.
+* `<your-team>` - the **exact** name of the team as it appears in Jenkins (check the URL in case there is an alias configured) and in the Github team.
 
 If the script completes successfully, you should now have the following:
 
@@ -38,27 +38,31 @@ If the script completes successfully, you should now have the following:
 * Platform configuration added to your project under `infra/platform-config` (see `infra/platform-config/README.md` for instructions on how to update this in the future).
 * A Jenkins pipeline in your team's jenkins folder.
 
-The Jenkins pipeline is configured to trigger every time a change is pushed to Github. However this only happens are the initial run, so the first time you will have to trigger it manually. You will most likely need to perform some customisation first though...
+You will most likely need to perform some customisation of the Jenkins pipline specific to your service. The Jenkins pipeline is configured to trigger every time a change is pushed to Github. However, this only happens **after** the first run, so you will have to trigger it manually the first time. 
 
 ## Customisation
 
-By default the `infra/` folder will contain what's needed for a basic ECS service. This section describes common customisations to this. This is the default [infra](https://github.com/mergermarket/infra) default, but can be customised/changed by a given boilerplate - if this is the case, then refer to the documentation for that boilerplate for how to perform customisations instead.
+By default the `infra/` folder will contain what's needed for a basic ECS service. This section describes common customisations to this. The mechanism for doing this is in a `service.json` file which should be placed at the root of the project for your service.
 
-### `TYPE` in `service.json`
+At a minimum, the `service.json` will need:
+
+### `TYPE`
 
 For ECS services set this to `docker` (this should be provided by the boilerplate). Additional service types will be made available in the future.
 
-### `TEAM` in `service.json`
+### `TEAM`
 
 This is used to tag the infrastructure for your service, to make it easy to find in monitoring, logging, billing, etc.
 
-### `ACCOUNT_PREFIX` in `service.json`
+### `ACCOUNT_PREFIX`
 
 Mergermarket runs multiple AWS accounts. Accounts are created in pairs, one containing non-production infrastructure with the "dev" postfix (e.g. "mmgdev") and one containing production infrastructure with the "prod" postfix (e.g. "mmgprod"). The other part of the name (i.e. "mmg" in this example) is the _account prefix_. Whatever account you use, there should be a corresponding subfolder inside `infra/platform-config/`.
 
-### `REGION` in `service.json`
+### `REGION`
 
 This determines the AWS region your service will run in. Before picking a region, you should make sure the platform has infrastructure available there, configured in `infra/platform-config/ACCOUNT_PREFIX/REGION`.
+
+Please see the [service.json reference](/reference/service-json) for more detail.
 
 ### Terraform customisation
 
@@ -85,4 +89,7 @@ Subscriber facing micro-services may not need their own Application Load Balance
 
 * Find out more about the process of setting up a project in the [manual setup guide](manual-setup).
 * [Service configuration guide](configuration).
+* [Managing secrets](guides/secrets)
+* [Adding routes to an existing ALB](guides/adding-routes-to-an-existing-alb)
+* [Redirecting HTTP traffic to HTTPS](guides/http-to-https-redirect)
 
