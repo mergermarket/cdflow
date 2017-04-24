@@ -3,7 +3,18 @@
 
 @import "{{ site.theme }}";
 
+body {
+    padding: 50px 120px;
+}
+
+section {
+  width: 80%;
+}
+
 header {
+  width: 20%;
+  position: relative;
+
   nav {
 
     h1 {
@@ -27,6 +38,8 @@ header {
       list-style-type: disc;
       border: none;
       background: transparent;
+      height: auto;
+      position: inherit;
 
       li {
         text-align: left;
@@ -45,4 +58,19 @@ header {
     }
 
   }
+}
+
+footer {
+  width: auto;
+  bottom: 0;
+}
+
+.wrapper {
+  width: auto;
+}
+
+.wrapper::after {
+    content:"";
+    display:block;
+    clear:both;
 }
