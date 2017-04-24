@@ -3,16 +3,14 @@
 
 @import "{{ site.theme }}";
 
-body {
-    padding: 50px 120px;
-}
-
 section {
   width: 80%;
+  min-width: 170px;
 }
 
 header {
   width: 20%;
+  min-width: 170px;
   position: relative;
 
   nav {
