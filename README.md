@@ -1,8 +1,6 @@
-# Mergermarket cdflow
+# CDFlow
 
-These scripts are provided to help deploy your service. The latest version of the documentation can be found at [mergermarket.github.io/cdflow](https://mergermarket.github.io/cdflow/).
-
-This repository contains scripts provided by the [Mergermarket Platform Team](mailto:platform@mergermarket.com) for building and deploying services.
+CDFlow is a suite of tools to help you continously deliver your software.
 
 ## Getting started
 

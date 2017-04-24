@@ -3,10 +3,19 @@
 
 @import "{{ site.theme }}";
 
+section {
+  width: 80%;
+  min-width: 170px;
+}
+
 header {
+  width: 20%;
+  min-width: 170px;
+  position: relative;
+
   nav {
 
-    h2 {
+    h1 {
       font-size: 1.1em;
       margin: 0.3em 0;
     }
@@ -21,12 +30,14 @@ header {
 
     
     ul {
-      height: auto;
+    
       margin: 1em 0;
       padding: 0;
-      list-style-type: none;
+      list-style-type: disc;
       border: none;
       background: transparent;
+      height: auto;
+      position: inherit;
 
       li {
         text-align: left;
@@ -45,4 +56,19 @@ header {
     }
 
   }
+}
+
+footer {
+  width: auto;
+  bottom: 0;
+}
+
+.wrapper {
+  width: auto;
+}
+
+.wrapper::after {
+    content:"";
+    display:block;
+    clear:both;
 }
