@@ -44,17 +44,42 @@ header {
         list-style-position: outside;
         float: none;
         height: auto;
-        width: 100%;
     
         a {
           display: inline;
           font-size: inherit;
         }
       }
-    
+    }
+  }
+}
+
+@media only screen and (max-width : 960px) {
+    section {
+      width: 100%;
+      min-width: 170px;
     }
 
-  }
+    header {
+      width: 100%;
+      min-width: 170px;
+    }
+
+    header nav ul li {
+      float: left;
+      padding-right: 6px;
+    }
+
+    header nav ul {
+      width: 100%;
+      list-style-type: none;
+    }
+
+    header nav ul::after {
+      content:"";
+      display:block;
+      clear:both;
+    }
 }
 
 footer {
@@ -67,7 +92,7 @@ footer {
 }
 
 .wrapper::after {
-    content:"";
-    display:block;
-    clear:both;
+  content:"";
+  display:block;
+  clear:both;
 }
