@@ -1,6 +1,0 @@
-#!/bin/bash
-
-set -e
-
-git subtree push --prefix infra/docs/ origin gh-pages
-
