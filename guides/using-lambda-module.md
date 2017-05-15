@@ -59,6 +59,21 @@ And also specify the `"RUNTIME"`. Docs on which runtime can be run using Lambda 
   "RUNTIME": "python3.6"
 }
 ```
+## Environment variables
+
+Just like the ECS service modules you can pass through environment variables to the Lambda function by 
+specifiying them in whatever config file is appropriate for the environment. For example if you want to add
+environment variables for `ci` you would add a json file (example below) to the config folder e.g. `config/ci.json`.
+
+```json
+
+{
+  "lambda_env": {
+    "environment_name": "ci-testing"
+  }
+}
+```
+
 ## Running
 ### Release
 Once you run:
