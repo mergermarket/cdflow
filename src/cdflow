@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -euo pipefail
+
+function get_image_id {
+    if [ ! -z "$CDFLOW_DEBUG" ]
+    then
+        echo "cdflow-commands.local"
+    else
+        echo "mergermarket/cdflow-commands:latest"
+    fi
+}
+
+function get_environment_flags {
+    local environment_flags=""
+    if [ ! -z "${AWS_ACCESS_KEY_ID}" ]; then
+        environment_flags="${environment_flags} -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+    fi
+    if [ ! -z "${AWS_SECRET_ACCESS_KEY}" ]; then
+        environment_flags="${environment_flags} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
+    fi
+    if [ ! -z "${AWS_SESSION_TOKEN}" ]; then
+        environment_flags="${environment_flags} -e AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}"
+    fi
+    if [ ! -z "${FASTLY_API_KEY}" ]; then
+        environment_flags="${environment_flags} -e FASTLY_API_KEY=${FASTLY_API_KEY}"
+    fi
+    if [ ! -z "${JOB_NAME}" ]; then
+        environment_flags="${environment_flags} -e JOB_NAME=${JOB_NAME}"
+    fi
+    if [ ! -z "${EMAIL}" ]; then
+        environment_flags="${environment_flags} -e EMAIL=${EMAIL}"
+    elif [ "$(git config user.email)" != "" ]; then
+        environment_flags="${environment_flags} -e EMAIL=$(git config user.email)"
+    fi
+    echo "${environment_flags}"
+}
+
+## Run the script with the top-level repo dir mapped to the same within the
+## container.
+#root="${CDFLOW_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
+#
+#docker run --rm -v /tmp/infra-cache:/tmp/cache \
+#    -w "$root" -v "$root:$root" \
+#    -v /var/run/docker.sock:/var/run/docker.sock \
+#    -v ~/.aws:/root/.aws \
+#    "$(tty -s && echo -it || echo -i)" \
+#    $env_args $image_id "$@"
