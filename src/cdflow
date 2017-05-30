@@ -36,10 +36,14 @@ function get_environment_flags {
     echo "${environment_flags}"
 }
 
-## Run the script with the top-level repo dir mapped to the same within the
-## container.
-#root="${CDFLOW_PROJECT_ROOT:-$(git rev-parse --show-toplevel)}"
-#
+function get_project_root {
+    if [ ! -z "${CDFLOW_PROJECT_ROOT}" ]
+    then
+        echo "${CDFLOW_PROJECT_ROOT}"
+    else
+        echo "$(git rev-parse --show-toplevel)"
+    fi
+}
 #docker run --rm -v /tmp/infra-cache:/tmp/cache \
 #    -w "$root" -v "$root:$root" \
 #    -v /var/run/docker.sock:/var/run/docker.sock \
