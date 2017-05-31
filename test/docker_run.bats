@@ -14,6 +14,5 @@ function setup {
     local environment_flags=" -e AWS_THING=foo"
     local image_id="cdflow-commands.local"
     docker_run "${project_root}" "${environment_flags}" "${image_id}"
-    cat "${BATS_RESULTS}" > debug
     [[ "$(cat ${BATS_RESULTS})" == "${expected}" ]]
 }

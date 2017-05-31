@@ -56,3 +56,11 @@ function docker_run {
         "$(tty -s && echo -it || echo -i)" \
         "${environment_flags}" "${image_id}"
 }
+
+#get_component_name
+#get_release
+#find_bucket
+#download_release
+#unpack_release
+#read_commands_image_version
+#run_docker
