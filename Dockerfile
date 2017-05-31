@@ -1,13 +1,15 @@
 FROM centos:7
 
-RUN yum install -y git curl
-RUN cd /tmp/ && \
-    curl -OL https://github.com/sstephenson/bats/archive/master.tar.gz && \
-    tar xzf master.tar.gz && \
-    cd bats-master && \
-    ./install.sh /usr/local/
+RUN yum install -y epel-release 
+RUN yum install -y git python-pip
+RUN pip install -U pip
 
-COPY . /bats
-WORKDIR /bats
+RUN pip install pytest hypothesis mock
 
-ENTRYPOINT ["bats"]
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+ENV PYTHONPATH /cdflow/
+WORKDIR /cdflow/
+
+COPY . .

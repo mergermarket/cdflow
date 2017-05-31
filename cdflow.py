@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+
+from os import environ, path
+import sys
+
+import docker
+
+"""
+Release:
+    Find immutable reference to latest version?
+    Run docker with latest cdflow-commands
+
+*:
+    Get component name
+    Get version
+    Find bucket
+    Download release
+    Unpack release
+    Read cdflow-commands image version
+    Run docker
+"""
+
+CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
+
+
+def get_image_sha(docker_client, image_id):
+    image = docker_client.images.pull(image_id)
+    return image.attrs['RepoDigests'][0]
+
+
+def docker_run(docker_client, image_id, project_root, environment_variables):
+    docker_client.containers.run(
+        image_id,
+        environment=environment_variables,
+        remove=True,
+        volumes={
+            project_root: {
+                'bind': project_root,
+                'mode': 'rw',
+            },
+            '/var/run/docker.sock': {
+                'bind': '/var/run/docker.sock',
+                'mode': 'ro',
+            }
+        },
+        working_dir=project_root,
+    )
+
+
+def main(argv):
+    docker_client = docker.from_env()
+    image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
+    environment_variables = {
+        'AWS_ACCESS_KEY_ID': environ.get('AWS_ACCESS_KEY_ID'),
+        'AWS_SECRET_ACCESS_KEY': environ.get('AWS_SECRET_ACCESS_KEY'),
+        'AWS_SESSION_TOKEN': environ.get('AWS_SESSION_TOKEN'),
+        'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
+        'CDFLOW_IMAGE_DIGEST': environ.get('CDFLOW_IMAGE_DIGEST'),
+    }
+    docker_run(
+        docker_client,
+        CDFLOW_IMAGE_ID,
+        path.abspath(path.curdir),
+        environment_variables
+    )
+
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
