@@ -23,6 +23,7 @@ class TestIntegration(unittest.TestCase):
         )
         docker.from_env.return_value.containers.run.assert_called_once_with(
             'mergermarket/cdflow-commands:latest',
+            command=['release', '42'],
             environment={
                 'AWS_ACCESS_KEY_ID': ANY,
                 'AWS_SECRET_ACCESS_KEY': ANY,

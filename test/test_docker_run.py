@@ -22,18 +22,25 @@ class TestDockerRun(unittest.TestCase):
         }),
         'image_id': image_id(),
         'project_root': filepath(),
+        'command': lists(text(alphabet=printable)),
     }))
-    def test_run_args(self, run_arguments):
+    def test_run_args(self, fixtures):
         docker_client = MagicMock(spec=DockerClient)
-        image_id = run_arguments['image_id']
-        project_root = run_arguments['project_root']
-        environment_variables = run_arguments['environment_variables']
+        image_id = fixtures['image_id']
+        command = fixtures['command']
+        project_root = fixtures['project_root']
+        environment_variables = fixtures['environment_variables']
         docker_run(
-            docker_client, image_id, project_root, environment_variables
+            docker_client,
+            image_id,
+            command,
+            project_root,
+            environment_variables
         )
 
         docker_client.containers.run.assert_called_once_with(
             image_id,
+            command=command,
             environment=environment_variables,
             remove=True,
             volumes={

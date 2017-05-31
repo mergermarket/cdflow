@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
 from os import environ, path
 import sys
+import logging
 
 import docker
 
@@ -22,15 +22,21 @@ Release:
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 
+logger = logging.getLogger(__name__)
+
 
 def get_image_sha(docker_client, image_id):
+    logger.info('Pulling image', image_id)
     image = docker_client.images.pull(image_id)
     return image.attrs['RepoDigests'][0]
 
 
-def docker_run(docker_client, image_id, project_root, environment_variables):
+def docker_run(
+    docker_client, image_id, command, project_root, environment_variables
+):
     docker_client.containers.run(
         image_id,
+        command=command,
         environment=environment_variables,
         remove=True,
         volumes={
@@ -60,6 +66,7 @@ def main(argv):
     docker_run(
         docker_client,
         CDFLOW_IMAGE_ID,
+        argv,
         path.abspath(path.curdir),
         environment_variables
     )
