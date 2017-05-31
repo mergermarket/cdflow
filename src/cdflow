@@ -44,9 +44,15 @@ function get_project_root {
         echo "$(git rev-parse --show-toplevel)"
     fi
 }
-#docker run --rm -v /tmp/infra-cache:/tmp/cache \
-#    -w "$root" -v "$root:$root" \
-#    -v /var/run/docker.sock:/var/run/docker.sock \
-#    -v ~/.aws:/root/.aws \
-#    "$(tty -s && echo -it || echo -i)" \
-#    $env_args $image_id "$@"
+
+function docker_run {
+    local project_root="${1}"
+    local environment_flags="${2}"
+    local image_id="${3}"
+    docker run --rm \
+        -w "${project_root}" \
+        -v "${project_root}:${project_root}" \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        "$(tty -s && echo -it || echo -i)" \
+        "${environment_flags}" "${image_id}"
+}

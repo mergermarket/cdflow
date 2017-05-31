@@ -1,0 +1,1 @@
+run --rm -w /tmp/foo/ -v /tmp/foo/:/tmp/foo/ -v /var/run/docker.sock:/var/run/docker.sock -it  -e AWS_THING=foo cdflow-commands.local
