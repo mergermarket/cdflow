@@ -12,21 +12,6 @@ from zipfile import ZipFile
 import boto3
 import docker
 
-"""
-Release:
-    Find immutable reference to latest version?
-    Run docker with latest cdflow-commands
-
-*:
-    Get component name
-    Get version
-    Find bucket
-    Download release
-    Unpack release
-    Read cdflow-commands image version
-    Run docker
-"""
-
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 TAG_NAME = 'cdflow-releases'
 

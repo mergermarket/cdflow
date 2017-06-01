@@ -97,6 +97,8 @@ class TestIntegration(unittest.TestCase):
 
             exit_status = main(argv)
 
+            assert exit_status == 0
+
             docker_client.containers.run.assert_called_once_with(
                 image_digest,
                 command=argv,
