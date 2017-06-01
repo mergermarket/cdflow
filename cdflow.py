@@ -24,11 +24,9 @@ Release:
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 
-logger = logging.getLogger(__name__)
-
 
 def get_image_sha(docker_client, image_id):
-    logger.info('Pulling image', image_id)
+    logging.info('Pulling image', image_id)
     image = docker_client.images.pull(image_id)
     return image.attrs['RepoDigests'][0]
 
@@ -36,23 +34,29 @@ def get_image_sha(docker_client, image_id):
 def docker_run(
     docker_client, image_id, command, project_root, environment_variables
 ):
-    return docker_client.containers.run(
-        image_id,
-        command=command,
-        environment=environment_variables,
-        remove=True,
-        volumes={
-            project_root: {
-                'bind': project_root,
-                'mode': 'rw',
+    exit_status = 0
+    try:
+        output = docker_client.containers.run(
+            image_id,
+            command=command,
+            environment=environment_variables,
+            remove=True,
+            volumes={
+                project_root: {
+                    'bind': project_root,
+                    'mode': 'rw',
+                },
+                '/var/run/docker.sock': {
+                    'bind': '/var/run/docker.sock',
+                    'mode': 'ro',
+                }
             },
-            '/var/run/docker.sock': {
-                'bind': '/var/run/docker.sock',
-                'mode': 'ro',
-            }
-        },
-        working_dir=project_root,
-    )
+            working_dir=project_root,
+        )
+    except docker.errors.ContainerError as error:
+        exit_status = 1
+        output = error.stderr
+    return exit_status, output
 
 
 def main(argv):
@@ -65,11 +69,13 @@ def main(argv):
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
         'CDFLOW_IMAGE_DIGEST': environ.get('CDFLOW_IMAGE_DIGEST'),
     }
-    print(docker_run(
+    exit_status, output = docker_run(
         docker_client, CDFLOW_IMAGE_ID, argv,
         path.abspath(path.curdir), environment_variables
-    ))
+    )
+    print(output)
+    return exit_status
 
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    sys.exit(main(sys.argv[1:]))

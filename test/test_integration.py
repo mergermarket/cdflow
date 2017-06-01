@@ -15,7 +15,9 @@ class TestIntegration(unittest.TestCase):
         argv = ['release', '42']
         with patch('cdflow.docker') as docker, patch('cdflow.path') as path:
             path.abspath.return_value = project_root
-            main(argv)
+            exit_status = main(argv)
+
+        assert exit_status == 0
 
         docker.from_env.assert_called_once()
         docker.from_env.return_value.images.pull.assert_called_once_with(
