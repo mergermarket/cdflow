@@ -1,7 +1,9 @@
 import unittest
 
 from hypothesis import given
-from mock import patch, ANY
+from mock import patch, ANY, MagicMock
+
+from docker.models.images import Image
 
 from strategies import filepath
 
@@ -14,6 +16,12 @@ class TestIntegration(unittest.TestCase):
     def test_release(self, project_root):
         argv = ['release', '42']
         with patch('cdflow.docker') as docker, patch('cdflow.path') as path:
+            image = MagicMock(spec=Image)
+            docker.from_env.return_value.images.pull.return_value = image
+            image.attrs = {
+                'RepoDigests': ['hash']
+            }
+
             path.abspath.return_value = project_root
             exit_status = main(argv)
 
@@ -31,7 +39,7 @@ class TestIntegration(unittest.TestCase):
                 'AWS_SECRET_ACCESS_KEY': ANY,
                 'AWS_SESSION_TOKEN': ANY,
                 'FASTLY_API_KEY': ANY,
-                'CDFLOW_IMAGE_DIGEST': ANY,
+                'CDFLOW_IMAGE_DIGEST': 'hash',
             },
             remove=True,
             volumes={

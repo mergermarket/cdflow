@@ -67,7 +67,7 @@ def main(argv):
         'AWS_SECRET_ACCESS_KEY': environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_SESSION_TOKEN': environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
-        'CDFLOW_IMAGE_DIGEST': environ.get('CDFLOW_IMAGE_DIGEST'),
+        'CDFLOW_IMAGE_DIGEST': image_digest,
     }
     exit_status, output = docker_run(
         docker_client, CDFLOW_IMAGE_ID, argv,
