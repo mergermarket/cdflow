@@ -24,6 +24,40 @@ Release:
 """
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
+TAG_NAME = 'cdflow-releases'
+
+
+class CDFlowWrapperException(Exception):
+    pass
+
+
+class MultipleBucketError(CDFlowWrapperException):
+    pass
+
+
+class MissingBucketError(CDFlowWrapperException):
+    pass
+
+
+def find_bucket(s3_resource):
+    buckets = [b for b in s3_resource.buckets.all()]
+    tagged_buckets = [b for b in buckets if is_tagged(b, TAG_NAME)]
+    if len(tagged_buckets) > 1:
+        raise MultipleBucketError
+    if len(tagged_buckets) < 1:
+        raise MissingBucketError
+    return tagged_buckets[0]
+
+
+def is_tagged(bucket, tag_name):
+    for tag in bucket.Tagging().tag_set:
+        if tag['Key'] == TAG_NAME:
+            return True
+    return False
+
+
+def get_version(argv):
+    return argv[1]
 
 
 def get_component_name(argv):
