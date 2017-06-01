@@ -2,10 +2,14 @@
 from __future__ import print_function
 
 from os import environ, path
+from io import BytesIO
+import json
 import sys
 import logging
 from subprocess import check_output
+from zipfile import ZipFile
 
+import boto3
 import docker
 
 """
@@ -39,6 +43,29 @@ class MissingBucketError(CDFlowWrapperException):
     pass
 
 
+def get_release_metadata(s3_resource, component_name, version):
+    s3_bucket = find_bucket(s3_resource)
+    zip_archive = get_release_bundle(s3_bucket, component_name, version)
+    return extract_release_metadata(zip_archive)
+
+
+def extract_release_metadata(zip_archive):
+    release_file_path = 'release/release.json'
+    metadata_file = zip_archive.open(release_file_path)
+    raw_metadata = metadata_file.read()
+    metadata = json.loads(raw_metadata)
+    zip_archive.close()
+    return metadata
+
+
+def get_release_bundle(s3_bucket, component_name, version):
+    key = '{}/release-{}.zip'.format(component_name, version)
+    with BytesIO() as fileobj:
+        s3_bucket.download_fileobj(key, fileobj)
+        release_zip_archive = ZipFile(fileobj)
+    return release_zip_archive
+
+
 def find_bucket(s3_resource):
     buckets = [b for b in s3_resource.buckets.all()]
     tagged_buckets = [b for b in buckets if is_tagged(b, TAG_NAME)]
@@ -57,7 +84,11 @@ def is_tagged(bucket, tag_name):
 
 
 def get_version(argv):
-    return argv[1]
+    command = argv[0]
+    if command == 'deploy':
+        return argv[2]
+    elif command == 'release':
+        return argv[1]
 
 
 def get_component_name(argv):
@@ -119,17 +150,29 @@ def docker_run(
 
 
 def main(argv):
+    command = argv[0]
     docker_client = docker.from_env()
-    image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
     environment_variables = {
         'AWS_ACCESS_KEY_ID': environ.get('AWS_ACCESS_KEY_ID'),
         'AWS_SECRET_ACCESS_KEY': environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_SESSION_TOKEN': environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
-        'CDFLOW_IMAGE_DIGEST': image_digest,
     }
+    image_id = None
+    if command == 'release':
+        image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
+        environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
+        image_id = CDFLOW_IMAGE_ID
+    elif command == 'deploy':
+        component_name = get_component_name(argv)
+        version = get_version(argv)
+        release_metadata = get_release_metadata(
+            boto3.resource('s3'), component_name, version
+        )
+        image_id = release_metadata['cdflow_image_digest']
+
     exit_status, output = docker_run(
-        docker_client, CDFLOW_IMAGE_ID, argv,
+        docker_client, image_id, argv,
         path.abspath(path.curdir), environment_variables
     )
     print(output)

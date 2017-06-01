@@ -1,17 +1,22 @@
 import unittest
 
 from string import ascii_letters, digits
+import json
 
 from hypothesis import given
-from hypothesis.strategies import text
-from mock import patch, MagicMock, Mock
+from hypothesis.strategies import text, fixed_dictionaries
+from mock import patch, MagicMock, Mock, ANY
 
 import boto3
 
 from cdflow import (
-    get_component_name, get_version, find_bucket,
-    TAG_NAME, MultipleBucketError, MissingBucketError
+    get_component_name, get_version, find_bucket, get_release_bundle,
+    extract_release_metadata, TAG_NAME, MultipleBucketError, MissingBucketError
 )
+
+
+VALID_ALPHABET = ascii_letters + digits + '-._'
+
 
 class TestGetComponentName(unittest.TestCase):
 
@@ -19,7 +24,7 @@ class TestGetComponentName(unittest.TestCase):
         self.argv = ['deploy', '42']
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_get_component_name_passed_in(self, component_name):
         argv = ['deploy', '42', '-c', component_name]
@@ -28,7 +33,7 @@ class TestGetComponentName(unittest.TestCase):
         assert component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_get_component_name_passed_in_with_long_flag(self, component_name):
         argv = ['deploy', '42', '--component', component_name]
@@ -37,7 +42,7 @@ class TestGetComponentName(unittest.TestCase):
         assert component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_component_not_passed_as_argument(self, component_name):
         with patch('cdflow.check_output') as check_output:
@@ -49,7 +54,7 @@ class TestGetComponentName(unittest.TestCase):
             assert extraced_component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_component_not_passed_as_argument_without_extension(
         self, component_name
@@ -63,7 +68,7 @@ class TestGetComponentName(unittest.TestCase):
             assert extraced_component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_component_not_passed_as_argument_with_backslash(
         self, component_name
@@ -77,7 +82,7 @@ class TestGetComponentName(unittest.TestCase):
             assert extraced_component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_component_not_passed_as_argument_with_https_origin(
         self, component_name
@@ -92,7 +97,7 @@ class TestGetComponentName(unittest.TestCase):
             assert extraced_component_name == component_name
 
     @given(text(
-        alphabet=ascii_letters + digits + '-._', min_size=1, max_size=100
+        alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
     def test_component_not_passed_as_argument_with_https_without_extension(
         self, component_name
@@ -108,9 +113,16 @@ class TestGetComponentName(unittest.TestCase):
 
 class TestGetVersion(unittest.TestCase):
 
-    @given(text(alphabet=ascii_letters + digits + '-._', min_size=1))
-    def test_get_version(self, version):
-        argv = ['deploy', version]
+    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    def test_get_version_during_deploy(self, version):
+        argv = ['deploy', 'test', version]
+        found_version = get_version(argv)
+
+        assert found_version == version
+
+    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    def test_get_version_during_release(self, version):
+        argv = ['release', version]
         found_version = get_version(argv)
 
         assert found_version == version
@@ -156,3 +168,40 @@ class TestFindBucket(unittest.TestCase):
         s3_resource.buckets.all.return_value = buckets
 
         self.assertRaises(MissingBucketError, find_bucket, s3_resource)
+
+
+class TestFetchRelease(unittest.TestCase):
+
+    @given(fixed_dictionaries({
+        'component_name': text(alphabet=VALID_ALPHABET, min_size=1),
+        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+    }))
+    def test_get_release_bundle(self, fixtures):
+        s3_bucket = Mock()
+
+        component_name = fixtures['component_name']
+        version = fixtures['version']
+        with patch('cdflow.ZipFile') as ZipFile:
+            zip_archive = Mock()
+            ZipFile.return_value = zip_archive
+            release_bundle = get_release_bundle(
+                s3_bucket, component_name, version
+            )
+
+        s3_bucket.download_fileobj.assert_called_once_with(
+            '{}/release-{}.zip'.format(component_name, version), ANY
+        )
+
+        assert release_bundle is zip_archive
+
+    def test_get_metadata_from_release_bundle(self):
+        expected_metadata = {
+            'cdflow_image_digest': 'sha:12345asdfg'
+        }
+        zip_archive = Mock()
+        zip_ext_file = Mock()
+        zip_ext_file.read.return_value = json.dumps(expected_metadata)
+        zip_archive.open.return_value = zip_ext_file
+        metadata = extract_release_metadata(zip_archive)
+
+        assert metadata == expected_metadata

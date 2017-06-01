@@ -1,13 +1,16 @@
 import unittest
+import io
+from zipfile import ZipFile
 
 from hypothesis import given
-from mock import patch, ANY, MagicMock
+from mock import patch, ANY, MagicMock, Mock
 
+from docker.client import DockerClient
 from docker.models.images import Image
 
 from strategies import filepath
 
-from cdflow import main
+from cdflow import main, TAG_NAME
 
 
 class TestIntegration(unittest.TestCase):
@@ -54,3 +57,54 @@ class TestIntegration(unittest.TestCase):
             },
             working_dir=project_root
         )
+
+    @given(filepath())
+    def test_deploy(self, project_root):
+        argv = ['deploy', 'aslive', '42']
+
+        with patch('cdflow.boto3') as boto, \
+                patch('cdflow.docker') as docker, \
+                patch('cdflow.path') as path, \
+                patch('cdflow.BytesIO') as BytesIO:
+
+            s3_resource = Mock()
+            s3_bucket = Mock()
+            s3_bucket.Tagging.return_value.tag_set = [
+                {'Key': TAG_NAME, 'Value': 'true' }
+            ]
+
+            image_digest = 'sha:12345asdfg'
+            release_archive = io.BytesIO()
+            release_archive_zip = ZipFile(release_archive, 'w')
+            release_archive_zip.writestr(
+                'release/release.json',
+                '{{"cdflow_image_digest": "{}"}}'.format(image_digest)
+            )
+            release_archive_zip.close()
+            release_archive.seek(0)
+
+            BytesIO.return_value.__enter__.return_value = release_archive
+
+            s3_resource.buckets.all.return_value = [
+                s3_bucket
+            ]
+            boto.resource.return_value = s3_resource
+
+            docker_client = MagicMock(spec=DockerClient)
+            docker.from_env.return_value = docker_client
+
+            path.abspath.return_value = project_root
+
+            exit_status = main(argv)
+
+            docker_client.containers.run.assert_called_once_with(
+                image_digest,
+                command=argv,
+                environment=ANY,
+                remove=True,
+                volumes={
+                    project_root: ANY,
+                    '/var/run/docker.sock': ANY
+                },
+                working_dir=project_root,
+            )
