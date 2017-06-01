@@ -4,6 +4,7 @@ from __future__ import print_function
 from os import environ, path
 import sys
 import logging
+from subprocess import check_output
 
 import docker
 
@@ -23,6 +24,30 @@ Release:
 """
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
+
+
+def get_component_name(argv):
+    component_flag_index = None
+    for flag in ('-c', '--component'):
+        try:
+            component_flag_index = argv.index('-c')
+        except ValueError:
+            pass
+    if component_flag_index > -1:
+        return argv[component_flag_index + 1]
+    else:
+         return _get_component_name_from_git_remote()
+
+
+def _get_component_name_from_git_remote():
+    try:
+        remote = check_output(['git', 'config', 'remote.origin.url'])
+    except CalledProcessError:
+        raise NoGitRemoteError()
+    name = remote.decode('utf-8').strip('\t\n /').split('/')[-1]
+    if name.endswith('.git'):
+        return name[:-4]
+    return name
 
 
 def get_image_sha(docker_client, image_id):
