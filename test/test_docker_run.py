@@ -26,17 +26,20 @@ class TestDockerRun(unittest.TestCase):
     }))
     def test_run_args(self, fixtures):
         docker_client = MagicMock(spec=DockerClient)
+        docker_client.containers.run.return_value = 'docker output'
         image_id = fixtures['image_id']
         command = fixtures['command']
         project_root = fixtures['project_root']
         environment_variables = fixtures['environment_variables']
-        docker_run(
+        output = docker_run(
             docker_client,
             image_id,
             command,
             project_root,
             environment_variables
         )
+
+        assert output == docker_client.containers.run.return_value
 
         docker_client.containers.run.assert_called_once_with(
             image_id,

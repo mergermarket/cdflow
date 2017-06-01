@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import print_function
+
 from os import environ, path
 import sys
 import logging
@@ -34,7 +36,7 @@ def get_image_sha(docker_client, image_id):
 def docker_run(
     docker_client, image_id, command, project_root, environment_variables
 ):
-    docker_client.containers.run(
+    return docker_client.containers.run(
         image_id,
         command=command,
         environment=environment_variables,
@@ -63,13 +65,10 @@ def main(argv):
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
         'CDFLOW_IMAGE_DIGEST': environ.get('CDFLOW_IMAGE_DIGEST'),
     }
-    docker_run(
-        docker_client,
-        CDFLOW_IMAGE_ID,
-        argv,
-        path.abspath(path.curdir),
-        environment_variables
-    )
+    print(docker_run(
+        docker_client, CDFLOW_IMAGE_ID, argv,
+        path.abspath(path.curdir), environment_variables
+    ))
 
 
 if __name__ == '__main__':
