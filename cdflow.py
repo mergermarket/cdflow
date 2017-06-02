@@ -11,6 +11,8 @@ from zipfile import ZipFile
 
 import boto3
 import docker
+from docker.errors import ContainerError
+
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 TAG_NAME = 'cdflow-releases'
@@ -138,14 +140,13 @@ def docker_run(
             },
             working_dir=project_root,
         )
-    except docker.errors.ContainerError as error:
+    except ContainerError as error:
         exit_status = 1
         output = error.stderr
     return exit_status, output
 
 
 def main(argv):
-    command = argv[0]
     docker_client = docker.from_env()
     environment_variables = {
         'AWS_ACCESS_KEY_ID': environ.get('AWS_ACCESS_KEY_ID'),
@@ -153,11 +154,15 @@ def main(argv):
         'AWS_SESSION_TOKEN': environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
     }
-    image_id = None
+    image_id = CDFLOW_IMAGE_ID
+    command = None
+    try:
+        command = argv[0]
+    except IndexError:
+        pass
     if command == 'release':
         image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
         environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
-        image_id = CDFLOW_IMAGE_ID
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)

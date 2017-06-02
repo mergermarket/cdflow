@@ -1,16 +1,19 @@
 import unittest
 import io
 from zipfile import ZipFile
+from string import printable
 
 from hypothesis import given
+from hypothesis.strategies import lists, text
 from mock import patch, ANY, MagicMock, Mock
 
 from docker.client import DockerClient
+from docker.errors import ContainerError
 from docker.models.images import Image
 
 from strategies import filepath
 
-from cdflow import main, TAG_NAME
+from cdflow import main, TAG_NAME, CDFLOW_IMAGE_ID
 
 
 class TestIntegration(unittest.TestCase):
@@ -110,3 +113,28 @@ class TestIntegration(unittest.TestCase):
                 },
                 working_dir=project_root,
             )
+
+    @given(lists(elements=text(alphabet=printable)))
+    def test_invalid_arguments_passed_to_container_to_handle(self, argv):
+        with patch('cdflow.docker') as docker, patch('cdflow.path') as path:
+            error = ContainerError(
+                container=CDFLOW_IMAGE_ID,
+                exit_status=1,
+                command=argv,
+                image=CDFLOW_IMAGE_ID,
+                stderr='help text'
+            )
+            docker.from_env.return_value.containers.run.side_effect = error
+            path.abspath.return_value = '/'
+            exit_status = main(argv)
+
+        assert exit_status == 1
+
+        docker.from_env.return_value.containers.run.assert_called_once_with(
+            CDFLOW_IMAGE_ID,
+            command=argv,
+            environment=ANY,
+            remove=True,
+            volumes=ANY,
+            working_dir=ANY
+        )
