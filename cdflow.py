@@ -201,7 +201,7 @@ def main(argv):
         path.abspath(path.curdir), environment_variables
     )
 
-    if command == 'release':
+    if command == 'release' and exit_status == 0:
         component_name = get_component_name(argv)
         version = get_version(argv)
         s3_bucket = find_bucket(boto3.resource('s3'))
