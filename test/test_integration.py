@@ -85,6 +85,51 @@ class TestIntegration(unittest.TestCase):
             'dummy-component/release-42.zip',
         )
 
+    def test_release_fail_does_not_call_upload(self):
+        argv = ['release', 'something']
+
+        with patch('cdflow.boto3') as boto, \
+                patch('cdflow.check_output') as check_output, \
+                patch('cdflow.docker') as docker, \
+                patch('cdflow.path') as path:
+
+            image = MagicMock(spec=Image)
+            docker.from_env.return_value.images.pull.return_value = image
+            image.attrs = {
+                'RepoDigests': ['hash']
+            }
+
+            path.abspath.return_value = '/'
+
+            s3_resource = Mock()
+            s3_bucket = Mock()
+            s3_bucket.Tagging.return_value.tag_set = [
+                {'Key': TAG_NAME, 'Value': 'true'}
+            ]
+
+            s3_resource.buckets.all.return_value = [
+                s3_bucket
+            ]
+            boto.resource.return_value = s3_resource
+
+            check_output.return_value = \
+                'git@github.com:organisation/dummy-component.git'
+
+            error = ContainerError(
+                container=CDFLOW_IMAGE_ID,
+                exit_status=1,
+                command=argv,
+                image=CDFLOW_IMAGE_ID,
+                stderr='something went wrong'
+            )
+            docker.from_env.return_value.containers.run.side_effect = error
+
+            exit_status = main(argv)
+
+        assert exit_status == 1
+
+        s3_bucket.upload_file.assert_not_called()
+
     @given(filepath())
     def test_deploy(self, project_root):
         argv = ['deploy', 'aslive', '42']
