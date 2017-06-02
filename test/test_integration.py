@@ -13,7 +13,39 @@ from docker.models.images import Image
 
 from strategies import filepath
 
-from cdflow import main, TAG_NAME, CDFLOW_IMAGE_ID
+from cdflow import main, assume_role, TAG_NAME, CDFLOW_IMAGE_ID
+
+
+class TestAssumeRole(unittest.TestCase):
+
+    @patch('cdflow.Session')
+    def test_assume_role_in_account(self, Session):
+        root_session = Mock(region_name='eu-north-1')
+        sts_client = Mock()
+        sts_client.assume_role.return_value = {
+            'Credentials': {
+                'AccessKeyId': 'foo',
+                'SecretAccessKey': 'bar',
+                'SessionToken': 'baz',
+            }
+        }
+        root_session.client.return_value = sts_client
+
+        account_id = '123456789'
+        session_name = 'foo@bar.com'
+
+        session = assume_role(root_session, account_id, session_name)
+
+        assert session == Session.return_value
+
+        sts_client.assume_role.assert_called_once_with(
+            RoleArn='arn:aws:iam::{}:role/admin'.format(account_id),
+            RoleSessionName=session_name,
+        )
+
+        Session.assert_called_once_with(
+            'foo', 'bar', 'baz', root_session.region_name
+        )
 
 
 class TestIntegration(unittest.TestCase):
@@ -21,7 +53,7 @@ class TestIntegration(unittest.TestCase):
     @given(filepath())
     def test_release(self, project_root):
         argv = ['release', '42']
-        with patch('cdflow.boto3') as boto, \
+        with patch('cdflow.Session') as Session, \
                 patch('cdflow.check_output') as check_output, \
                 patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os:
@@ -34,6 +66,15 @@ class TestIntegration(unittest.TestCase):
 
             os.path.abspath.return_value = project_root
 
+            Session.return_value.client.return_value.assume_role.\
+                return_value = {
+                    'Credentials': {
+                        'AccessKeyId': 'foo',
+                        'SecretAccessKey': 'bar',
+                        'SessionToken': 'baz',
+                    }
+                }
+
             s3_resource = Mock()
             s3_bucket = Mock()
             s3_bucket.Tagging.return_value.tag_set = [
@@ -43,7 +84,7 @@ class TestIntegration(unittest.TestCase):
             s3_resource.buckets.all.return_value = [
                 s3_bucket
             ]
-            boto.resource.return_value = s3_resource
+            Session.return_value.resource.return_value = s3_resource
 
             check_output.return_value = \
                 'git@github.com:organisation/dummy-component.git'
@@ -90,7 +131,7 @@ class TestIntegration(unittest.TestCase):
     def test_release_fail_does_not_call_upload(self):
         argv = ['release', 'something']
 
-        with patch('cdflow.boto3') as boto, \
+        with patch('cdflow.Session') as Session, \
                 patch('cdflow.check_output') as check_output, \
                 patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os:
@@ -103,6 +144,15 @@ class TestIntegration(unittest.TestCase):
 
             os.path.abspath.return_value = '/'
 
+            Session.return_value.client.return_value.assume_role.\
+                return_value = {
+                    'Credentials': {
+                        'AccessKeyId': 'foo',
+                        'SecretAccessKey': 'bar',
+                        'SessionToken': 'baz',
+                    }
+                }
+
             s3_resource = Mock()
             s3_bucket = Mock()
             s3_bucket.Tagging.return_value.tag_set = [
@@ -112,7 +162,7 @@ class TestIntegration(unittest.TestCase):
             s3_resource.buckets.all.return_value = [
                 s3_bucket
             ]
-            boto.resource.return_value = s3_resource
+            Session.return_value.resource.return_value = s3_resource
 
             check_output.return_value = \
                 'git@github.com:organisation/dummy-component.git'
@@ -136,7 +186,7 @@ class TestIntegration(unittest.TestCase):
     def test_deploy(self, project_root):
         argv = ['deploy', 'aslive', '42']
 
-        with patch('cdflow.boto3') as boto, \
+        with patch('cdflow.Session') as Session, \
                 patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os, \
                 patch('cdflow.BytesIO') as BytesIO:
@@ -159,10 +209,19 @@ class TestIntegration(unittest.TestCase):
 
             BytesIO.return_value.__enter__.return_value = release_archive
 
+            Session.return_value.client.return_value.assume_role.\
+                return_value = {
+                    'Credentials': {
+                        'AccessKeyId': 'foo',
+                        'SecretAccessKey': 'bar',
+                        'SessionToken': 'baz',
+                    }
+                }
+
             s3_resource.buckets.all.return_value = [
                 s3_bucket
             ]
-            boto.resource.return_value = s3_resource
+            Session.return_value.resource.return_value = s3_resource
 
             docker_client = MagicMock(spec=DockerClient)
             docker.from_env.return_value = docker_client
