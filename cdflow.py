@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
-from os import environ, path
+import os
 from io import BytesIO
 import json
 import sys
@@ -167,6 +167,17 @@ def upload_release(s3_bucket, component_name, version):
     s3_bucket.upload_file('release-{}.zip'.format(version), key)
 
 
+def get_environment():
+    return {
+        'AWS_ACCESS_KEY_ID': os.environ.get('AWS_ACCESS_KEY_ID'),
+        'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
+        'AWS_SESSION_TOKEN': os.environ.get('AWS_SESSION_TOKEN'),
+        'FASTLY_API_KEY': os.environ.get('FASTLY_API_KEY'),
+        'JOB_NAME': os.environ.get('JOB_NAME'),
+        'EMAIL': os.environ.get('EMAIL'),
+    }
+
+
 def _command(argv):
     try:
         return argv[0]
@@ -176,12 +187,7 @@ def _command(argv):
 
 def main(argv):
     docker_client = docker.from_env()
-    environment_variables = {
-        'AWS_ACCESS_KEY_ID': environ.get('AWS_ACCESS_KEY_ID'),
-        'AWS_SECRET_ACCESS_KEY': environ.get('AWS_SECRET_ACCESS_KEY'),
-        'AWS_SESSION_TOKEN': environ.get('AWS_SESSION_TOKEN'),
-        'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
-    }
+    environment_variables = get_environment()
     image_id = CDFLOW_IMAGE_ID
     command = _command(argv)
 
@@ -198,7 +204,7 @@ def main(argv):
 
     exit_status, output = docker_run(
         docker_client, image_id, argv,
-        path.abspath(path.curdir), environment_variables
+        os.path.abspath(os.path.curdir), environment_variables
     )
 
     if command == 'release' and exit_status == 0:

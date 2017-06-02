@@ -24,7 +24,7 @@ class TestIntegration(unittest.TestCase):
         with patch('cdflow.boto3') as boto, \
                 patch('cdflow.check_output') as check_output, \
                 patch('cdflow.docker') as docker, \
-                patch('cdflow.path') as path:
+                patch('cdflow.os') as os:
 
             image = MagicMock(spec=Image)
             docker.from_env.return_value.images.pull.return_value = image
@@ -32,7 +32,7 @@ class TestIntegration(unittest.TestCase):
                 'RepoDigests': ['hash']
             }
 
-            path.abspath.return_value = project_root
+            os.path.abspath.return_value = project_root
 
             s3_resource = Mock()
             s3_bucket = Mock()
@@ -64,6 +64,8 @@ class TestIntegration(unittest.TestCase):
                 'AWS_SECRET_ACCESS_KEY': ANY,
                 'AWS_SESSION_TOKEN': ANY,
                 'FASTLY_API_KEY': ANY,
+                'JOB_NAME': ANY,
+                'EMAIL': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
             },
             remove=True,
@@ -91,7 +93,7 @@ class TestIntegration(unittest.TestCase):
         with patch('cdflow.boto3') as boto, \
                 patch('cdflow.check_output') as check_output, \
                 patch('cdflow.docker') as docker, \
-                patch('cdflow.path') as path:
+                patch('cdflow.os') as os:
 
             image = MagicMock(spec=Image)
             docker.from_env.return_value.images.pull.return_value = image
@@ -99,7 +101,7 @@ class TestIntegration(unittest.TestCase):
                 'RepoDigests': ['hash']
             }
 
-            path.abspath.return_value = '/'
+            os.path.abspath.return_value = '/'
 
             s3_resource = Mock()
             s3_bucket = Mock()
@@ -136,7 +138,7 @@ class TestIntegration(unittest.TestCase):
 
         with patch('cdflow.boto3') as boto, \
                 patch('cdflow.docker') as docker, \
-                patch('cdflow.path') as path, \
+                patch('cdflow.os') as os, \
                 patch('cdflow.BytesIO') as BytesIO:
 
             s3_resource = Mock()
@@ -165,7 +167,7 @@ class TestIntegration(unittest.TestCase):
             docker_client = MagicMock(spec=DockerClient)
             docker.from_env.return_value = docker_client
 
-            path.abspath.return_value = project_root
+            os.path.abspath.return_value = project_root
 
             exit_status = main(argv)
 
@@ -185,7 +187,7 @@ class TestIntegration(unittest.TestCase):
 
     @given(lists(elements=text(alphabet=printable)))
     def test_invalid_arguments_passed_to_container_to_handle(self, argv):
-        with patch('cdflow.docker') as docker, patch('cdflow.path') as path:
+        with patch('cdflow.docker') as docker, patch('cdflow.os') as os:
             error = ContainerError(
                 container=CDFLOW_IMAGE_ID,
                 exit_status=1,
@@ -194,7 +196,7 @@ class TestIntegration(unittest.TestCase):
                 stderr='help text'
             )
             docker.from_env.return_value.containers.run.side_effect = error
-            path.abspath.return_value = '/'
+            os.path.abspath.return_value = '/'
             exit_status = main(argv)
 
         assert exit_status == 1
