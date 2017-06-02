@@ -9,12 +9,13 @@ import logging
 from subprocess import check_output, CalledProcessError
 from zipfile import ZipFile
 
-import boto3
 import botocore
+from boto3.session import Session
 import docker
 from docker.errors import ContainerError
 
 
+DEV_ACCOUNT_ID = '***REMOVED***'
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 TAG_NAME = 'cdflow-releases'
 
@@ -185,6 +186,20 @@ def _command(argv):
         pass
 
 
+def assume_role(root_session, account_id, session_name):
+    sts = root_session.client('sts')
+    response = sts.assume_role(
+        RoleArn='arn:aws:iam::{}:role/admin'.format(account_id),
+        RoleSessionName=session_name,
+    )
+    return Session(
+        response['Credentials']['AccessKeyId'],
+        response['Credentials']['SecretAccessKey'],
+        response['Credentials']['SessionToken'],
+        root_session.region_name,
+    )
+
+
 def main(argv):
     docker_client = docker.from_env()
     environment_variables = get_environment()
@@ -197,8 +212,11 @@ def main(argv):
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)
+        session = assume_role(
+            Session(), DEV_ACCOUNT_ID, environment_variables['JOB_NAME']
+        )
         release_metadata = get_release_metadata(
-            boto3.resource('s3'), component_name, version
+            session.resource('s3'), component_name, version
         )
         image_id = release_metadata['cdflow_image_digest']
 
@@ -210,7 +228,10 @@ def main(argv):
     if command == 'release' and exit_status == 0:
         component_name = get_component_name(argv)
         version = get_version(argv)
-        s3_bucket = find_bucket(boto3.resource('s3'))
+        session = assume_role(
+            Session(), DEV_ACCOUNT_ID, environment_variables['JOB_NAME']
+        )
+        s3_bucket = find_bucket(session.resource('s3'))
         upload_release(s3_bucket, component_name, version)
 
     print(output, file=sys.stderr if exit_status else sys.stdout)
