@@ -207,7 +207,7 @@ def main(argv):
         s3_bucket = find_bucket(boto3.resource('s3'))
         upload_release(s3_bucket, component_name, version)
 
-    print(output)
+    print(output, file=sys.stderr if exit_status else sys.stdout)
     return exit_status
 
 
