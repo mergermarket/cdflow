@@ -51,7 +51,7 @@ def extract_release_metadata(zip_archive):
 
 
 def get_release_bundle(s3_bucket, component_name, version):
-    key = '{}/release-{}.zip'.format(component_name, version)
+    key = _get_release_storage_key(component_name, version)
     with BytesIO() as fileobj:
         s3_bucket.download_fileobj(key, fileobj)
         release_zip_archive = ZipFile(fileobj)
@@ -124,6 +124,10 @@ def _get_component_name_from_git_remote():
     return name
 
 
+def _get_release_storage_key(component_name, version):
+    return '{}/release-{}.zip'.format(component_name, version)
+
+
 def get_image_sha(docker_client, image_id):
     logging.info('Pulling image', image_id)
     image = docker_client.images.pull(image_id)
@@ -158,6 +162,18 @@ def docker_run(
     return exit_status, output
 
 
+def upload_release(s3_bucket, component_name, version):
+    key = _get_release_storage_key(component_name, version)
+    s3_bucket.upload_file('release-{}.zip'.format(version), key)
+
+
+def _command(argv):
+    try:
+        return argv[0]
+    except IndexError:
+        pass
+
+
 def main(argv):
     docker_client = docker.from_env()
     environment_variables = {
@@ -167,11 +183,8 @@ def main(argv):
         'FASTLY_API_KEY': environ.get('FASTLY_API_KEY'),
     }
     image_id = CDFLOW_IMAGE_ID
-    command = None
-    try:
-        command = argv[0]
-    except IndexError:
-        pass
+    command = _command(argv)
+
     if command == 'release':
         image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
         environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
@@ -187,6 +200,13 @@ def main(argv):
         docker_client, image_id, argv,
         path.abspath(path.curdir), environment_variables
     )
+
+    if command == 'release':
+        component_name = get_component_name(argv)
+        version = get_version(argv)
+        s3_bucket = find_bucket(boto3.resource('s3'))
+        upload_release(s3_bucket, component_name, version)
+
     print(output)
     return exit_status
 

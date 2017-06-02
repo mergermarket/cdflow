@@ -21,7 +21,11 @@ class TestIntegration(unittest.TestCase):
     @given(filepath())
     def test_release(self, project_root):
         argv = ['release', '42']
-        with patch('cdflow.docker') as docker, patch('cdflow.path') as path:
+        with patch('cdflow.boto3') as boto, \
+                patch('cdflow.check_output') as check_output, \
+                patch('cdflow.docker') as docker, \
+                patch('cdflow.path') as path:
+
             image = MagicMock(spec=Image)
             docker.from_env.return_value.images.pull.return_value = image
             image.attrs = {
@@ -29,6 +33,21 @@ class TestIntegration(unittest.TestCase):
             }
 
             path.abspath.return_value = project_root
+
+            s3_resource = Mock()
+            s3_bucket = Mock()
+            s3_bucket.Tagging.return_value.tag_set = [
+                {'Key': TAG_NAME, 'Value': 'true'}
+            ]
+
+            s3_resource.buckets.all.return_value = [
+                s3_bucket
+            ]
+            boto.resource.return_value = s3_resource
+
+            check_output.return_value = \
+                'git@github.com:organisation/dummy-component.git'
+
             exit_status = main(argv)
 
         assert exit_status == 0
@@ -59,6 +78,11 @@ class TestIntegration(unittest.TestCase):
                 },
             },
             working_dir=project_root
+        )
+
+        s3_bucket.upload_file.assert_called_once_with(
+            'release-42.zip',
+            'dummy-component/release-42.zip',
         )
 
     @given(filepath())

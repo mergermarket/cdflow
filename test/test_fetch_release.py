@@ -1,6 +1,5 @@
 import unittest
 
-from string import ascii_letters, digits
 import json
 
 from hypothesis import given
@@ -9,13 +8,12 @@ from mock import patch, Mock, ANY, PropertyMock
 
 from botocore.exceptions import ClientError
 
+from strategies import VALID_ALPHABET
+
 from cdflow import (
     get_component_name, get_version, find_bucket, get_release_bundle,
     extract_release_metadata, TAG_NAME, MultipleBucketError, MissingBucketError
 )
-
-
-VALID_ALPHABET = ascii_letters + digits + '-._'
 
 
 class TestGetComponentName(unittest.TestCase):

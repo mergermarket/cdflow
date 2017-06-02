@@ -4,6 +4,9 @@ from string import printable, ascii_letters, digits
 from hypothesis.strategies import composite, lists, text
 
 
+VALID_ALPHABET = ascii_letters + digits + '-._'
+
+
 @composite
 def filepath(draw):
     parts = draw(lists(
