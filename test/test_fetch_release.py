@@ -5,7 +5,9 @@ import json
 
 from hypothesis import given
 from hypothesis.strategies import text, fixed_dictionaries
-from mock import patch, Mock, ANY
+from mock import patch, Mock, ANY, PropertyMock
+
+from botocore.exceptions import ClientError
 
 from cdflow import (
     get_component_name, get_version, find_bucket, get_release_bundle,
@@ -125,6 +127,12 @@ class TestGetVersion(unittest.TestCase):
 
         assert found_version == version
 
+    def test_missing_version_returns_nothing(self):
+        argv = ['release']
+        found_version = get_version(argv)
+
+        assert found_version is None
+
 
 class TestFindBucket(unittest.TestCase):
 
@@ -132,7 +140,16 @@ class TestFindBucket(unittest.TestCase):
         bucket = Mock()
         tags = Mock()
         bucket.Tagging.return_value = tags
-        tags.tag_set = tag_set
+        if tag_set:
+            tags.tag_set = tag_set
+        else:
+            type(tags).tag_set = PropertyMock(side_effect=ClientError(
+                {'Error': {
+                    'Code': 'NoSuchTagSet',
+                    'Message': 'The TagSet does not exist'
+                }},
+                'GetBucketTagging'
+            ))
         return bucket
 
     def test_find_bucket_based_on_tag(self):

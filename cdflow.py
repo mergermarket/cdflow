@@ -10,6 +10,7 @@ from subprocess import check_output, CalledProcessError
 from zipfile import ZipFile
 
 import boto3
+import botocore
 import docker
 from docker.errors import ContainerError
 
@@ -68,18 +69,29 @@ def find_bucket(s3_resource):
 
 
 def is_tagged(bucket, tag_name):
-    for tag in bucket.Tagging().tag_set:
+    for tag in get_bucket_tags(bucket):
         if tag['Key'] == TAG_NAME:
             return True
     return False
 
 
+def get_bucket_tags(bucket):
+    try:
+        return bucket.Tagging().tag_set
+    except botocore.exceptions.ClientError:
+        return []
+
+
 def get_version(argv):
     command = argv[0]
     if command == 'deploy':
-        return argv[2]
+        version_index = 2
     elif command == 'release':
-        return argv[1]
+        version_index = 1
+    try:
+        return argv[version_index]
+    except IndexError:
+        pass
 
 
 def get_component_name(argv):
