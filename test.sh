@@ -13,4 +13,4 @@ docker run --rm -it --name "${image_id}" "${image_id}" \
     "${@}"
 
 docker run --rm -it --name "${image_id}" "${image_id}" \
-    flake8 --max-complexity=4
+    flake8 --max-complexity=5

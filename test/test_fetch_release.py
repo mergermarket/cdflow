@@ -5,9 +5,7 @@ import json
 
 from hypothesis import given
 from hypothesis.strategies import text, fixed_dictionaries
-from mock import patch, MagicMock, Mock, ANY
-
-import boto3
+from mock import patch, Mock, ANY
 
 from cdflow import (
     get_component_name, get_version, find_bucket, get_release_bundle,
@@ -139,10 +137,10 @@ class TestFindBucket(unittest.TestCase):
 
     def test_find_bucket_based_on_tag(self):
         s3_resource = Mock()
-        bucket = self._create_bucket(
-            [{u'Value': 'team-rocket', u'Key': 'Project'},
-            {u'Value': 'true', u'Key': TAG_NAME},],
-        )
+        bucket = self._create_bucket([
+            {u'Value': 'team-rocket', u'Key': 'Project'},
+            {u'Value': 'true', u'Key': TAG_NAME},
+        ])
         buckets = [self._create_bucket(t) for t in ([], [], [], [])]
         buckets.insert(2, bucket)
         s3_resource.buckets.all.return_value = buckets

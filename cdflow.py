@@ -6,7 +6,7 @@ from io import BytesIO
 import json
 import sys
 import logging
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
 from zipfile import ZipFile
 
 import boto3
@@ -25,6 +25,10 @@ class MultipleBucketError(CDFlowWrapperException):
 
 
 class MissingBucketError(CDFlowWrapperException):
+    pass
+
+
+class GitRemoteError(CDFlowWrapperException):
     pass
 
 
@@ -77,6 +81,14 @@ def get_version(argv):
 
 
 def get_component_name(argv):
+    component_name = _get_component_name_from_cli_args(argv)
+    if component_name:
+        return component_name
+    else:
+        return _get_component_name_from_git_remote()
+
+
+def _get_component_name_from_cli_args(argv):
     component_flag_index = None
     for flag in ('-c', '--component'):
         try:
@@ -85,15 +97,13 @@ def get_component_name(argv):
             pass
     if component_flag_index > -1:
         return argv[component_flag_index + 1]
-    else:
-         return _get_component_name_from_git_remote()
 
 
 def _get_component_name_from_git_remote():
     try:
         remote = check_output(['git', 'config', 'remote.origin.url'])
     except CalledProcessError:
-        raise NoGitRemoteError()
+        raise GitRemoteError
     name = remote.decode('utf-8').strip('\t\n /').split('/')[-1]
     if name.endswith('.git'):
         return name[:-4]

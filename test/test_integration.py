@@ -70,7 +70,7 @@ class TestIntegration(unittest.TestCase):
             s3_resource = Mock()
             s3_bucket = Mock()
             s3_bucket.Tagging.return_value.tag_set = [
-                {'Key': TAG_NAME, 'Value': 'true' }
+                {'Key': TAG_NAME, 'Value': 'true'}
             ]
 
             image_digest = 'sha:12345asdfg'

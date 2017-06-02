@@ -1,9 +1,9 @@
-import unittest 
-from string import printable, ascii_letters, digits
+import unittest
+from string import printable
 
 from mock import MagicMock
 from hypothesis import given
-from hypothesis.strategies import composite, lists, text, fixed_dictionaries
+from hypothesis.strategies import lists, text, fixed_dictionaries
 from docker.client import DockerClient
 from docker.errors import ContainerError
 

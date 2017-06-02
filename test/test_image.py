@@ -21,16 +21,16 @@ class TestImage(unittest.TestCase):
         image_sha = '{}@sha256:{}'.format(
             image_id, sha256(image_id.encode('utf-8')).hexdigest()
         )
+
         def get_image(image_id):
             image = MagicMock(spec=Image)
             image.attrs = {
                 'RepoDigests': [image_sha]
             }
             return image
-            
+
         docker_client.images.pull = get_image
 
         fetched_image_sha = get_image_sha(docker_client, image_id)
 
         assert fetched_image_sha == image_sha
-        
