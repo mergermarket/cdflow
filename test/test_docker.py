@@ -2,15 +2,36 @@ import unittest
 from hashlib import sha256
 from string import printable
 
-from mock import MagicMock
+from mock import MagicMock, patch
 from hypothesis import given
-from hypothesis.strategies import lists, text, fixed_dictionaries
+from hypothesis.strategies import lists, text, fixed_dictionaries, dictionaries
 from docker.client import DockerClient
 from docker.errors import ContainerError
 from docker.models.images import Image
 
-from cdflow import docker_run, get_image_sha
-from strategies import image_id, filepath
+from cdflow import docker_run, get_image_sha, get_environment
+from strategies import image_id, filepath, VALID_ALPHABET
+
+
+class TestEnvironment(unittest.TestCase):
+
+    @given(dictionaries(
+        keys=text(alphabet=VALID_ALPHABET),
+        values=text(alphabet=VALID_ALPHABET),
+        min_size=1,
+    ))
+    def test_environment_contains_required_variables(self, environment):
+        with patch('cdflow.os') as os:
+            os.environ = environment
+
+            container_environment = get_environment()
+
+        assert 'AWS_ACCESS_KEY_ID' in container_environment
+        assert 'AWS_SECRET_ACCESS_KEY' in container_environment
+        assert 'AWS_SESSION_TOKEN' in container_environment
+        assert 'FASTLY_API_KEY' in container_environment
+        assert 'JOB_NAME' in container_environment
+        assert 'EMAIL' in container_environment
 
 
 class TestImage(unittest.TestCase):
