@@ -14,7 +14,7 @@ from docker.models.images import Image
 
 from strategies import filepath
 
-from cdflow import main, assume_role, TAG_NAME, CDFLOW_IMAGE_ID
+from cdflow import main, TAG_NAME, CDFLOW_IMAGE_ID
 
 
 class TestIntegration(unittest.TestCase):

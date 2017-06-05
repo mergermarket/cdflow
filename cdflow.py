@@ -170,7 +170,7 @@ def _print_logs(container):
     for message in container.logs(
         stream=True, follow=True, stdout=True, stderr=True
     ):
-        print(message)
+        print(message, end='')
 
 
 def _kill_container(container):
