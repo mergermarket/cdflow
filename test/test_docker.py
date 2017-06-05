@@ -6,11 +6,11 @@ from mock import MagicMock, patch
 from hypothesis import given
 from hypothesis.strategies import lists, text, fixed_dictionaries, dictionaries
 from docker.client import DockerClient
-from docker.errors import ContainerError
+from docker.errors import APIError, ContainerError
 from docker.models.images import Image
 from docker.models.containers import Container
 
-from cdflow import docker_run, get_image_sha, get_environment
+from cdflow import docker_run, get_image_sha, get_environment, _kill_container
 from strategies import image_id, filepath, VALID_ALPHABET
 
 
@@ -179,3 +179,45 @@ class TestDockerRun(unittest.TestCase):
             assert print_.call_args_list[0][0][0] == messages[0]
             assert print_.call_args_list[1][0][0] == messages[1]
             assert print_.call_args_list[2][0][0] == messages[2]
+
+    @given(fixed_dictionaries({
+        'image_id': image_id(),
+        'command': lists(text(alphabet=printable)),
+        'project_root': filepath(),
+        'environment_variables': dictionaries(
+            keys=text(alphabet=VALID_ALPHABET),
+            values=text(alphabet=VALID_ALPHABET),
+            min_size=1,
+        ),
+    }))
+    def test_container_is_killed_at_script_exit(self, fixtures):
+        docker_client = MagicMock(spec=DockerClient)
+        container = MagicMock(spec=Container)
+
+        docker_client.containers.run.return_value = container
+
+        with patch('cdflow.atexit') as atexit:
+            docker_run(
+                docker_client, fixtures['image_id'], fixtures['command'],
+                fixtures['project_root'], fixtures['environment_variables']
+            )
+
+            atexit.register.assert_called_once_with(_kill_container, container)
+
+    def test_kill_container(self):
+        container = MagicMock(spec=Container)
+
+        _kill_container(container)
+
+        container.kill.assert_called_once_with()
+
+    def test_kill_already_stopped_container(self):
+        container = MagicMock(spec=Container)
+        container.kill.side_effect = APIError('message')
+
+        try:
+            _kill_container(container)
+        except APIError:
+            self.fail('Should not surface error')
+
+        container.kill.assert_called_once_with()
