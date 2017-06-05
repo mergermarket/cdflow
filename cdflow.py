@@ -16,7 +16,6 @@ import docker
 from docker.errors import APIError, ContainerError
 
 
-DEV_ACCOUNT_ID = '***REMOVED***'
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 TAG_NAME = 'cdflow-releases'
 
@@ -218,11 +217,18 @@ def assume_role(root_session, account_id, session_name):
     )
 
 
+def get_account_id(config_file_path='dev.json'):
+    with open(config_file_path) as config_file:
+        platform_config = json.loads(config_file.read())
+        return platform_config['platform_config']['account_id']
+
+
 def main(argv):
     docker_client = docker.from_env()
     environment_variables = get_environment()
     image_id = CDFLOW_IMAGE_ID
     command = _command(argv)
+    account_id = get_account_id()
 
     if command == 'release':
         image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
@@ -231,7 +237,7 @@ def main(argv):
         component_name = get_component_name(argv)
         version = get_version(argv)
         session = assume_role(
-            Session(), DEV_ACCOUNT_ID, environment_variables['JOB_NAME']
+            Session(), account_id, environment_variables['JOB_NAME']
         )
         release_metadata = get_release_metadata(
             session.resource('s3'), component_name, version
@@ -247,7 +253,7 @@ def main(argv):
         component_name = get_component_name(argv)
         version = get_version(argv)
         session = assume_role(
-            Session(), DEV_ACCOUNT_ID, environment_variables['JOB_NAME']
+            Session(), account_id, environment_variables['JOB_NAME']
         )
         s3_bucket = find_bucket(session.resource('s3'))
         upload_release(s3_bucket, component_name, version)
