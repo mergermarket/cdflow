@@ -160,16 +160,22 @@ class TestDockerRun(unittest.TestCase):
 
         container = MagicMock(spec=Container)
         logs = MagicMock()
-        logs.iter.return_value = iter(['Running', 'the', 'command'])
+        messages = ['Running', 'the', 'command']
+        logs.__iter__.return_value = iter(messages)
         container.logs.return_value = logs
 
         docker_client.containers.run.return_value = container
 
-        docker_run(
-            docker_client, fixtures['image_id'], fixtures['command'],
-            fixtures['project_root'], fixtures['environment_variables']
-        )
+        with patch('cdflow.print') as print_:
+            docker_run(
+                docker_client, fixtures['image_id'], fixtures['command'],
+                fixtures['project_root'], fixtures['environment_variables']
+            )
 
-        container.logs.assert_called_once_with(
-            stream=True, follow=True, stdout=True, stderr=True
-        )
+            container.logs.assert_called_once_with(
+                stream=True, follow=True, stdout=True, stderr=True
+            )
+
+            assert print_.call_args_list[0][0][0] == messages[0]
+            assert print_.call_args_list[1][0][0] == messages[1]
+            assert print_.call_args_list[2][0][0] == messages[2]

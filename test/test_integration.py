@@ -123,6 +123,14 @@ class TestIntegration(unittest.TestCase):
             working_dir=project_root
         )
 
+        docker.from_env.return_value.containers.run.return_value.logs.\
+            assert_called_once_with(
+                stream=True,
+                follow=True,
+                stdout=True,
+                stderr=True,
+            )
+
         s3_bucket.upload_file.assert_called_once_with(
             'release-42.zip',
             'dummy-component/release-42.zip',
@@ -243,6 +251,14 @@ class TestIntegration(unittest.TestCase):
                 },
                 working_dir=project_root,
             )
+
+            docker.from_env.return_value.containers.run.return_value.logs.\
+                assert_called_once_with(
+                    stream=True,
+                    follow=True,
+                    stdout=True,
+                    stderr=True,
+                )
 
     @given(lists(elements=text(alphabet=printable)))
     def test_invalid_arguments_passed_to_container_to_handle(self, argv):
