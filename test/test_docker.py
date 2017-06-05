@@ -8,6 +8,7 @@ from hypothesis.strategies import lists, text, fixed_dictionaries, dictionaries
 from docker.client import DockerClient
 from docker.errors import ContainerError
 from docker.models.images import Image
+from docker.models.containers import Container
 
 from cdflow import docker_run, get_image_sha, get_environment
 from strategies import image_id, filepath, VALID_ALPHABET
@@ -74,7 +75,6 @@ class TestDockerRun(unittest.TestCase):
     }))
     def test_run_args(self, fixtures):
         docker_client = MagicMock(spec=DockerClient)
-        docker_client.containers.run.return_value = 'docker output'
         image_id = fixtures['image_id']
         command = fixtures['command']
         project_root = fixtures['project_root']
@@ -88,13 +88,13 @@ class TestDockerRun(unittest.TestCase):
         )
 
         assert exit_status == 0
-        assert output == docker_client.containers.run.return_value
+        assert output == 'Done'
 
         docker_client.containers.run.assert_called_once_with(
             image_id,
             command=command,
             environment=environment_variables,
-            remove=True,
+            detach=True,
             volumes={
                 project_root: {
                     'bind': project_root,
@@ -144,3 +144,32 @@ class TestDockerRun(unittest.TestCase):
 
         assert exit_status == 1
         assert output == 'file not found'
+
+    @given(fixed_dictionaries({
+        'image_id': image_id(),
+        'command': lists(text(alphabet=printable)),
+        'project_root': filepath(),
+        'environment_variables': dictionaries(
+            keys=text(alphabet=VALID_ALPHABET),
+            values=text(alphabet=VALID_ALPHABET),
+            min_size=1,
+        ),
+    }))
+    def test_follow_container_logs(self, fixtures):
+        docker_client = MagicMock(spec=DockerClient)
+
+        container = MagicMock(spec=Container)
+        logs = MagicMock()
+        logs.iter.return_value = iter(['Running', 'the', 'command'])
+        container.logs.return_value = logs
+
+        docker_client.containers.run.return_value = container
+
+        docker_run(
+            docker_client, fixtures['image_id'], fixtures['command'],
+            fixtures['project_root'], fixtures['environment_variables']
+        )
+
+        container.logs.assert_called_once_with(
+            stream=True, follow=True, stdout=True, stderr=True
+        )
