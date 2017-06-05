@@ -2,13 +2,13 @@ import json
 import unittest
 from string import digits
 
-from mock import patch, MagicMock
+from mock import patch, MagicMock, Mock
 from hypothesis import given
 from hypothesis.strategies import fixed_dictionaries, text
 
 from strategies import filepath
 
-from cdflow import get_account_id
+from cdflow import get_account_id, assume_role
 
 
 class TestAssumeRole(unittest.TestCase):

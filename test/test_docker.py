@@ -176,6 +176,7 @@ class TestDockerRun(unittest.TestCase):
                 stream=True, follow=True, stdout=True, stderr=True
             )
 
+            assert print_.call_args_list[0][1]['end'] == ''
             assert print_.call_args_list[0][0][0] == messages[0]
             assert print_.call_args_list[1][0][0] == messages[1]
             assert print_.call_args_list[2][0][0] == messages[2]
