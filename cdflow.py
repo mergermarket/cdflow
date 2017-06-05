@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import print_function
 
+import atexit
 import os
 from io import BytesIO
 import json
@@ -12,7 +13,7 @@ from zipfile import ZipFile
 import botocore
 from boto3.session import Session
 import docker
-from docker.errors import ContainerError
+from docker.errors import APIError, ContainerError
 
 
 DEV_ACCOUNT_ID = '***REMOVED***'
@@ -140,7 +141,6 @@ def docker_run(
 ):
     exit_status = 0
     output = 'Done'
-    container = None
     try:
         container = docker_client.containers.run(
             image_id,
@@ -159,11 +159,11 @@ def docker_run(
             },
             working_dir=project_root,
         )
+        atexit.register(_kill_container, container)
+        _print_logs(container)
     except ContainerError as error:
         exit_status = 1
         output = error.stderr
-    if container:
-        _print_logs(container)
     return exit_status, output
 
 
@@ -172,6 +172,13 @@ def _print_logs(container):
         stream=True, follow=True, stdout=True, stderr=True
     ):
         print(message)
+
+
+def _kill_container(container):
+    try:
+        container.kill()
+    except APIError:
+        pass
 
 
 def upload_release(s3_bucket, component_name, version):
