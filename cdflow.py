@@ -139,12 +139,14 @@ def docker_run(
     docker_client, image_id, command, project_root, environment_variables
 ):
     exit_status = 0
+    output = 'Done'
+    container = None
     try:
-        output = docker_client.containers.run(
+        container = docker_client.containers.run(
             image_id,
             command=command,
             environment=environment_variables,
-            remove=True,
+            detach=True,
             volumes={
                 project_root: {
                     'bind': project_root,
@@ -160,7 +162,16 @@ def docker_run(
     except ContainerError as error:
         exit_status = 1
         output = error.stderr
+    if container:
+        _print_logs(container)
     return exit_status, output
+
+
+def _print_logs(container):
+    for message in container.logs(
+        stream=True, follow=True, stdout=True, stderr=True
+    ):
+        print(message)
 
 
 def upload_release(s3_bucket, component_name, version):
