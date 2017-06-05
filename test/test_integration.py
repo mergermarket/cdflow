@@ -109,7 +109,7 @@ class TestIntegration(unittest.TestCase):
                 'EMAIL': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
             },
-            remove=True,
+            detach=True,
             volumes={
                 project_root: {
                     'bind': project_root,
@@ -236,7 +236,7 @@ class TestIntegration(unittest.TestCase):
                 image_digest,
                 command=argv,
                 environment=ANY,
-                remove=True,
+                detach=True,
                 volumes={
                     project_root: ANY,
                     '/var/run/docker.sock': ANY
@@ -264,7 +264,7 @@ class TestIntegration(unittest.TestCase):
             CDFLOW_IMAGE_ID,
             command=argv,
             environment=ANY,
-            remove=True,
+            detach=True,
             volumes=ANY,
             working_dir=ANY
         )
