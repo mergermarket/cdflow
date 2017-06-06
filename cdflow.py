@@ -4,20 +4,21 @@ from __future__ import print_function
 import atexit
 import os
 from io import BytesIO
-import json
 import sys
 import logging
 from subprocess import check_output, CalledProcessError
-from zipfile import ZipFile
 
 import botocore
 from boto3.session import Session
 import docker
 from docker.errors import APIError, ContainerError
+import yaml
 
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 TAG_NAME = 'cdflow-releases'
+ACCOUNT_MAPPING_TAG_NAME = 'account_mapping'
+MANIFEST_PATH = 'cdflow.yml'
 
 
 class CDFlowWrapperException(Exception):
@@ -37,31 +38,21 @@ class GitRemoteError(CDFlowWrapperException):
 
 
 def get_release_metadata(s3_resource, component_name, version):
-    s3_bucket = find_bucket(s3_resource)
-    zip_archive = get_release_bundle(s3_bucket, component_name, version)
-    return extract_release_metadata(zip_archive)
+    s3_bucket = find_bucket(s3_resource, TAG_NAME)
+    return fetch_release_metadata(
+        s3_resource, s3_bucket.name, component_name, version
+    )
 
 
-def extract_release_metadata(zip_archive):
-    release_file_path = 'release/release.json'
-    metadata_file = zip_archive.open(release_file_path)
-    raw_metadata = metadata_file.read()
-    metadata = json.loads(raw_metadata)
-    zip_archive.close()
-    return metadata
-
-
-def get_release_bundle(s3_bucket, component_name, version):
+def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
     key = _get_release_storage_key(component_name, version)
-    with BytesIO() as fileobj:
-        s3_bucket.download_fileobj(key, fileobj)
-        release_zip_archive = ZipFile(fileobj)
-    return release_zip_archive
+    release_object = s3_resource.Object(bucket_name, key)
+    return release_object.metadata
 
 
-def find_bucket(s3_resource):
+def find_bucket(s3_resource, tag_name):
     buckets = [b for b in s3_resource.buckets.all()]
-    tagged_buckets = [b for b in buckets if is_tagged(b, TAG_NAME)]
+    tagged_buckets = [b for b in buckets if is_tagged(b, tag_name)]
     if len(tagged_buckets) > 1:
         raise MultipleBucketError
     if len(tagged_buckets) < 1:
@@ -71,7 +62,7 @@ def find_bucket(s3_resource):
 
 def is_tagged(bucket, tag_name):
     for tag in get_bucket_tags(bucket):
-        if tag['Key'] == TAG_NAME:
+        if tag['Key'] == tag_name:
             return True
     return False
 
@@ -211,10 +202,18 @@ def assume_role(root_session, account_id, session_name):
     )
 
 
-def get_account_id(config_file_path='dev.json'):
-    with open(config_file_path) as config_file:
-        platform_config = json.loads(config_file.read())
-        return platform_config['platform_config']['account_id']
+def get_account_prefix():
+    with open(MANIFEST_PATH) as config_file:
+        config = yaml.load(config_file.read())
+        return config['account_prefix']
+
+
+def get_account_id(s3_bucket):
+    account_prefix = get_account_prefix()
+    with BytesIO() as f:
+        s3_bucket.download_fileobj('{}dev'.format(account_prefix), f)
+        f.seek(0)
+        return f.read()
 
 
 def main(argv):
@@ -222,7 +221,6 @@ def main(argv):
     environment_variables = get_environment()
     image_id = CDFLOW_IMAGE_ID
     command = _command(argv)
-    account_id = get_account_id()
 
     if command == 'release':
         image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
@@ -230,8 +228,14 @@ def main(argv):
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)
+        root_session = Session()
+        s3_bucket = find_bucket(
+            root_session.resource('s3'), ACCOUNT_MAPPING_TAG_NAME
+        )
+        account_id = get_account_id(s3_bucket)
         session = assume_role(
-            Session(), account_id, environment_variables['ROLE_SESSION_NAME']
+            root_session, account_id,
+            environment_variables['ROLE_SESSION_NAME']
         )
         release_metadata = get_release_metadata(
             session.resource('s3'), component_name, version
