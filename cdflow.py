@@ -191,8 +191,7 @@ def get_environment():
         'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_SESSION_TOKEN': os.environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': os.environ.get('FASTLY_API_KEY'),
-        'JOB_NAME': os.environ.get('JOB_NAME'),
-        'EMAIL': os.environ.get('EMAIL'),
+        'ROLE_SESSION_NAME': os.environ.get('ROLE_SESSION_NAME'),
     }
 
 
@@ -237,7 +236,7 @@ def main(argv):
         component_name = get_component_name(argv)
         version = get_version(argv)
         session = assume_role(
-            Session(), account_id, environment_variables['JOB_NAME']
+            Session(), account_id, environment_variables['ROLE_SESSION_NAME']
         )
         release_metadata = get_release_metadata(
             session.resource('s3'), component_name, version
@@ -253,7 +252,7 @@ def main(argv):
         component_name = get_component_name(argv)
         version = get_version(argv)
         session = assume_role(
-            Session(), account_id, environment_variables['JOB_NAME']
+            Session(), account_id, environment_variables['ROLE_SESSION_NAME']
         )
         s3_bucket = find_bucket(session.resource('s3'))
         upload_release(s3_bucket, component_name, version)

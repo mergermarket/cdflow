@@ -31,8 +31,7 @@ class TestEnvironment(unittest.TestCase):
         assert 'AWS_SECRET_ACCESS_KEY' in container_environment
         assert 'AWS_SESSION_TOKEN' in container_environment
         assert 'FASTLY_API_KEY' in container_environment
-        assert 'JOB_NAME' in container_environment
-        assert 'EMAIL' in container_environment
+        assert 'ROLE_SESSION_NAME' in container_environment
 
 
 class TestImage(unittest.TestCase):
