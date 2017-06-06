@@ -180,11 +180,6 @@ def _kill_container(container):
         pass
 
 
-def upload_release(s3_bucket, component_name, version):
-    key = _get_release_storage_key(component_name, version)
-    s3_bucket.upload_file('release-{}.zip'.format(version), key)
-
-
 def get_environment():
     return {
         'AWS_ACCESS_KEY_ID': os.environ.get('AWS_ACCESS_KEY_ID'),
@@ -247,15 +242,6 @@ def main(argv):
         docker_client, image_id, argv,
         os.path.abspath(os.path.curdir), environment_variables
     )
-
-    if command == 'release' and exit_status == 0:
-        component_name = get_component_name(argv)
-        version = get_version(argv)
-        session = assume_role(
-            Session(), account_id, environment_variables['ROLE_SESSION_NAME']
-        )
-        s3_bucket = find_bucket(session.resource('s3'))
-        upload_release(s3_bucket, component_name, version)
 
     print(output, file=sys.stderr if exit_status else sys.stdout)
     return exit_status
