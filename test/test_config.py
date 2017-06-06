@@ -1,12 +1,11 @@
-import json
 import unittest
 from string import digits
 
 from mock import patch, MagicMock, Mock
 from hypothesis import given
-from hypothesis.strategies import fixed_dictionaries, text
+from hypothesis.strategies import text
 
-from strategies import filepath
+import yaml
 
 from cdflow import get_account_id, assume_role
 
@@ -45,36 +44,27 @@ class TestAssumeRole(unittest.TestCase):
 
 class TestGetConfig(unittest.TestCase):
 
-    @given(fixed_dictionaries({
-        'account_id': text(alphabet=digits),
-        'filepath': filepath(),
-    }))
-    def test_get_account_id(self, fixtures):
-        account_id = fixtures['account_id']
-        filepath = fixtures['filepath']
-        with patch('cdflow.open') as open_:
+    @given(text(alphabet=digits))
+    def test_get_account_id(self, account_id):
+        with patch('cdflow.open') as open_, \
+                patch('cdflow.BytesIO') as BytesIO:
+
             config_file = MagicMock(spec=file)
-            config_file.read.return_value = json.dumps({
-                "platform_config": {"account_id": account_id}
+            config_file.read.return_value = yaml.dump({
+                'account_prefix': 'foo',
             })
             open_.return_value.__enter__.return_value = config_file
 
-            assert account_id == get_account_id(filepath)
+            s3_bucket = Mock()
 
-            open_.assert_called_once_with(filepath)
+            mock_file = Mock()
+            mock_file.read.return_value = account_id
 
-    @given(fixed_dictionaries({
-        'account_id': text(alphabet=digits),
-    }))
-    def test_get_account_id_with_default_path(self, fixtures):
-        account_id = fixtures['account_id']
-        with patch('cdflow.open') as open_:
-            config_file = MagicMock(spec=file)
-            config_file.read.return_value = json.dumps({
-                "platform_config": {"account_id": account_id}
-            })
-            open_.return_value.__enter__.return_value = config_file
+            BytesIO.return_value.__enter__.return_value = mock_file
 
-            assert account_id == get_account_id()
-
-            open_.assert_called_once_with('dev.json')
+            assert account_id == get_account_id(s3_bucket)
+            mock_file.seek.assert_called_once_with(0)
+            s3_bucket.download_fileobj.assert_called_once_with(
+                'foodev',
+                mock_file,
+            )

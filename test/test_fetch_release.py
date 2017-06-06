@@ -1,18 +1,16 @@
 import unittest
 
-import json
-
-from hypothesis import given
+from hypothesis import assume, given
 from hypothesis.strategies import text, fixed_dictionaries
-from mock import patch, Mock, ANY, PropertyMock
+from mock import patch, Mock, PropertyMock
 
 from botocore.exceptions import ClientError
 
 from strategies import VALID_ALPHABET
 
 from cdflow import (
-    get_component_name, get_version, find_bucket, get_release_bundle,
-    extract_release_metadata, TAG_NAME, MultipleBucketError, MissingBucketError
+    get_component_name, get_version, find_bucket, fetch_release_metadata,
+    MultipleBucketError, MissingBucketError, TAG_NAME
 )
 
 
@@ -150,71 +148,75 @@ class TestFindBucket(unittest.TestCase):
             ))
         return bucket
 
-    def test_find_bucket_based_on_tag(self):
+    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    def test_find_bucket_based_on_tag(self, tag_name):
+        assume(tag_name != TAG_NAME)
         s3_resource = Mock()
         bucket = self._create_bucket([
             {u'Value': 'team-rocket', u'Key': 'Project'},
-            {u'Value': 'true', u'Key': TAG_NAME},
+            {u'Value': 'true', u'Key': tag_name},
         ])
         buckets = [self._create_bucket(t) for t in ([], [], [], [])]
         buckets.insert(2, bucket)
         s3_resource.buckets.all.return_value = buckets
-        found_bucket = find_bucket(s3_resource)
+        found_bucket = find_bucket(s3_resource, tag_name)
 
         assert found_bucket == bucket
 
-    def test_multiple_buckets_causes_an_exception(self):
+    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    def test_multiple_buckets_causes_an_exception(self, tag_name):
+        assume(tag_name != TAG_NAME)
         s3_resource = Mock()
         tag_sets = (
-            [{u'Value': 'true', u'Key': TAG_NAME}],
-            [{u'Value': 'true', u'Key': TAG_NAME}],
+            [{u'Value': 'true', u'Key': tag_name}],
+            [{u'Value': 'true', u'Key': tag_name}],
             [], [], [], []
         )
         buckets = [self._create_bucket(t) for t in tag_sets]
         s3_resource.buckets.all.return_value = buckets
 
-        self.assertRaises(MultipleBucketError, find_bucket, s3_resource)
+        self.assertRaises(
+            MultipleBucketError, find_bucket, s3_resource, tag_name
+        )
 
-    def test_missing_bucket_causes_an_exception(self):
+    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    def test_missing_bucket_causes_an_exception(self, tag_name):
+        assume(tag_name != TAG_NAME)
         s3_resource = Mock()
         buckets = [self._create_bucket(t) for t in ([], [], [], [])]
         s3_resource.buckets.all.return_value = buckets
 
-        self.assertRaises(MissingBucketError, find_bucket, s3_resource)
+        self.assertRaises(
+            MissingBucketError, find_bucket, s3_resource, tag_name
+        )
 
 
-class TestFetchRelease(unittest.TestCase):
+class TestFetchReleaseMetadata(unittest.TestCase):
 
     @given(fixed_dictionaries({
         'component_name': text(alphabet=VALID_ALPHABET, min_size=1),
         'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'bucket_name': text(alphabet=VALID_ALPHABET, min_size=1),
     }))
-    def test_get_release_bundle(self, fixtures):
-        s3_bucket = Mock()
-
+    def test_get_metadata_from_release_key(self, fixtures):
         component_name = fixtures['component_name']
         version = fixtures['version']
-        with patch('cdflow.ZipFile') as ZipFile:
-            zip_archive = Mock()
-            ZipFile.return_value = zip_archive
-            release_bundle = get_release_bundle(
-                s3_bucket, component_name, version
-            )
-
-        s3_bucket.download_fileobj.assert_called_once_with(
-            '{}/release-{}.zip'.format(component_name, version), ANY
-        )
-
-        assert release_bundle is zip_archive
-
-    def test_get_metadata_from_release_bundle(self):
+        bucket_name = fixtures['bucket_name']
         expected_metadata = {
             'cdflow_image_digest': 'sha:12345asdfg'
         }
-        zip_archive = Mock()
-        zip_ext_file = Mock()
-        zip_ext_file.read.return_value = json.dumps(expected_metadata)
-        zip_archive.open.return_value = zip_ext_file
-        metadata = extract_release_metadata(zip_archive)
+
+        s3_resource = Mock()
+        key = Mock()
+        key.metadata = expected_metadata
+        s3_resource.Object.return_value = key
+
+        metadata = fetch_release_metadata(
+            s3_resource, bucket_name, component_name, version
+        )
 
         assert metadata == expected_metadata
+
+        s3_resource.Object.assert_called_once_with(
+            bucket_name, '{}/release-{}.zip'.format(component_name, version)
+        )
