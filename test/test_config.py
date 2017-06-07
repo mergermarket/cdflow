@@ -1,13 +1,15 @@
 import unittest
-from string import digits
+from string import digits, printable
 
 from mock import patch, MagicMock, Mock
-from hypothesis import given
-from hypothesis.strategies import text
+from hypothesis import given, assume
+from hypothesis.strategies import dictionaries, fixed_dictionaries, text
 
 import yaml
 
-from cdflow import get_account_id, assume_role
+from strategies import image_id
+
+from cdflow import get_account_id, get_image_id, assume_role, CDFLOW_IMAGE_ID
 
 
 class TestAssumeRole(unittest.TestCase):
@@ -42,7 +44,7 @@ class TestAssumeRole(unittest.TestCase):
         )
 
 
-class TestGetConfig(unittest.TestCase):
+class TestGetAccountId(unittest.TestCase):
 
     @given(text(alphabet=digits))
     def test_get_account_id(self, account_id):
@@ -68,3 +70,30 @@ class TestGetConfig(unittest.TestCase):
                 'foodev',
                 mock_file,
             )
+
+
+class TestGetReleaseCommandsImage(unittest.TestCase):
+
+    @given(dictionaries(
+        keys=text(alphabet=printable), values=text(alphabet=printable)
+    ))
+    def test_get_default_image_id(self, environment):
+        assume('CDFLOW_IMAGE_ID' not in environment)
+
+        image_id = get_image_id(environment)
+
+        assert image_id == CDFLOW_IMAGE_ID
+
+    @given(fixed_dictionaries({
+        'environment': dictionaries(
+            keys=text(alphabet=printable), values=text(alphabet=printable)
+        ),
+        'image_id': image_id(),
+    }))
+    def test_get_image_id_from_environment(self, fixtures):
+        environment = fixtures['environment']
+        environment['CDFLOW_IMAGE_ID'] = fixtures['image_id']
+
+        image_id = get_image_id(environment)
+
+        assert image_id == fixtures['image_id']

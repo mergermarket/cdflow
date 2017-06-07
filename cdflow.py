@@ -216,6 +216,12 @@ def get_account_id(s3_bucket):
         return f.read()
 
 
+def get_image_id(environment):
+    if 'CDFLOW_IMAGE_ID' in environment:
+        return environment['CDFLOW_IMAGE_ID']
+    return CDFLOW_IMAGE_ID
+
+
 def find_image_id_from_release(component_name, version, role_session_name):
     root_session = Session()
     s3_bucket = find_bucket(
@@ -232,11 +238,11 @@ def find_image_id_from_release(component_name, version, role_session_name):
 def main(argv):
     docker_client = docker.from_env()
     environment_variables = get_environment()
-    image_id = CDFLOW_IMAGE_ID
+    image_id = get_image_id(os.environ)
     command = _command(argv)
 
     if command == 'release':
-        image_digest = get_image_sha(docker_client, CDFLOW_IMAGE_ID)
+        image_digest = get_image_sha(docker_client, image_id)
         environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
     elif command == 'deploy':
         component_name = get_component_name(argv)
