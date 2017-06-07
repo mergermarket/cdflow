@@ -17,7 +17,10 @@ def filepath(draw):
 
 @composite
 def image_id(draw):
-    organisation = draw(text(alphabet=printable))
-    image_name = draw(text(alphabet=printable))
+    organisation = draw(text(alphabet=printable, min_size=1))
+    image_name = draw(text(alphabet=printable, min_size=1))
     tag = draw(text(alphabet=printable))
-    return "{}/{}:{}".format(organisation, image_name, tag)
+    args = [organisation, image_name]
+    if tag:
+        args[-1] = ':{}'.format(tag)
+    return '{}/{}'.format(*args)

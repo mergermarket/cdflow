@@ -3,7 +3,7 @@ import json
 from string import printable
 
 from hypothesis import given
-from hypothesis.strategies import lists, text
+from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
 from mock import patch, ANY, MagicMock, Mock
 
 from docker.client import DockerClient
@@ -11,7 +11,7 @@ from docker.errors import ContainerError
 from docker.models.images import Image
 import yaml
 
-from strategies import filepath
+from strategies import filepath, image_id
 
 from cdflow import (
     main, ACCOUNT_MAPPING_TAG_NAME, RELEASES_TAG_NAME, CDFLOW_IMAGE_ID
@@ -74,6 +74,66 @@ class TestIntegration(unittest.TestCase):
                 stdout=True,
                 stderr=True,
             )
+
+    @given(fixed_dictionaries({
+        'project_root': filepath(),
+        'environment': dictionaries(
+            keys=text(alphabet=printable, min_size=1),
+            values=text(alphabet=printable, min_size=1),
+        ),
+        'image_id': image_id(),
+    }))
+    def test_release_with_pinned_command_image(self, fixtures):
+        argv = ['release', '42']
+        project_root = fixtures['project_root']
+        environment = fixtures['environment']
+        pinned_image_id = fixtures['image_id']
+        environment['CDFLOW_IMAGE_ID'] = pinned_image_id
+
+        with patch('cdflow.docker') as docker, \
+                patch('cdflow.os') as os:
+
+            image = MagicMock(spec=Image)
+            docker.from_env.return_value.images.pull.return_value = image
+            image.attrs = {
+                'RepoDigests': ['hash']
+            }
+
+            os.path.abspath.return_value = project_root
+
+            os.environ = environment
+
+            exit_status = main(argv)
+
+        assert exit_status == 0
+
+        docker.from_env.return_value.images.pull.assert_called_once_with(
+            pinned_image_id
+        )
+        docker.from_env.return_value.containers.run.assert_called_once_with(
+            pinned_image_id,
+            command=['release', '42'],
+            environment={
+                'AWS_ACCESS_KEY_ID': ANY,
+                'AWS_SECRET_ACCESS_KEY': ANY,
+                'AWS_SESSION_TOKEN': ANY,
+                'FASTLY_API_KEY': ANY,
+                'ROLE_SESSION_NAME': ANY,
+                'CDFLOW_IMAGE_DIGEST': 'hash',
+            },
+            detach=True,
+            volumes={
+                project_root: {
+                    'bind': project_root,
+                    'mode': 'rw',
+                },
+                '/var/run/docker.sock': {
+                    'bind': '/var/run/docker.sock',
+                    'mode': 'ro',
+                },
+            },
+            working_dir=project_root
+        )
 
     @given(filepath())
     def test_deploy(self, project_root):
