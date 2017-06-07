@@ -13,7 +13,9 @@ import yaml
 
 from strategies import filepath
 
-from cdflow import main, ACCOUNT_MAPPING_TAG_NAME, TAG_NAME, CDFLOW_IMAGE_ID
+from cdflow import (
+    main, ACCOUNT_MAPPING_TAG_NAME, RELEASES_TAG_NAME, CDFLOW_IMAGE_ID
+)
 
 
 class TestIntegration(unittest.TestCase):
@@ -89,7 +91,7 @@ class TestIntegration(unittest.TestCase):
             ]
             releases_bucket = Mock()
             releases_bucket.Tagging.return_value.tag_set = [
-                {'Key': TAG_NAME, 'Value': 'true'}
+                {'Key': RELEASES_TAG_NAME, 'Value': 'true'}
             ]
 
             image_digest = 'sha:12345asdfg'

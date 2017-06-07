@@ -16,7 +16,7 @@ import yaml
 
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
-TAG_NAME = 'cdflow-releases'
+RELEASES_TAG_NAME = 'cdflow-releases'
 ACCOUNT_MAPPING_TAG_NAME = 'account_mapping'
 MANIFEST_PATH = 'cdflow.yml'
 
@@ -38,7 +38,7 @@ class GitRemoteError(CDFlowWrapperException):
 
 
 def get_release_metadata(s3_resource, component_name, version):
-    s3_bucket = find_bucket(s3_resource, TAG_NAME)
+    s3_bucket = find_bucket(s3_resource, RELEASES_TAG_NAME)
     return fetch_release_metadata(
         s3_resource, s3_bucket.name, component_name, version
     )
@@ -216,6 +216,19 @@ def get_account_id(s3_bucket):
         return f.read()
 
 
+def find_image_id_from_release(component_name, version, role_session_name):
+    root_session = Session()
+    s3_bucket = find_bucket(
+        root_session.resource('s3'), ACCOUNT_MAPPING_TAG_NAME
+    )
+    account_id = get_account_id(s3_bucket)
+    session = assume_role(root_session, account_id, role_session_name)
+    release_metadata = get_release_metadata(
+        session.resource('s3'), component_name, version
+    )
+    return release_metadata['cdflow_image_digest']
+
+
 def main(argv):
     docker_client = docker.from_env()
     environment_variables = get_environment()
@@ -228,19 +241,9 @@ def main(argv):
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)
-        root_session = Session()
-        s3_bucket = find_bucket(
-            root_session.resource('s3'), ACCOUNT_MAPPING_TAG_NAME
+        image_id = find_image_id_from_release(
+            component_name, version, environment_variables['ROLE_SESSION_NAME']
         )
-        account_id = get_account_id(s3_bucket)
-        session = assume_role(
-            root_session, account_id,
-            environment_variables['ROLE_SESSION_NAME']
-        )
-        release_metadata = get_release_metadata(
-            session.resource('s3'), component_name, version
-        )
-        image_id = release_metadata['cdflow_image_digest']
 
     exit_status, output = docker_run(
         docker_client, image_id, argv,
