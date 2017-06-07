@@ -10,7 +10,7 @@ from strategies import VALID_ALPHABET
 
 from cdflow import (
     get_component_name, get_version, find_bucket, fetch_release_metadata,
-    MultipleBucketError, MissingBucketError, TAG_NAME
+    MultipleBucketError, MissingBucketError, RELEASES_TAG_NAME
 )
 
 
@@ -150,7 +150,7 @@ class TestFindBucket(unittest.TestCase):
 
     @given(text(alphabet=VALID_ALPHABET, min_size=1))
     def test_find_bucket_based_on_tag(self, tag_name):
-        assume(tag_name != TAG_NAME)
+        assume(tag_name != RELEASES_TAG_NAME)
         s3_resource = Mock()
         bucket = self._create_bucket([
             {u'Value': 'team-rocket', u'Key': 'Project'},
@@ -165,7 +165,7 @@ class TestFindBucket(unittest.TestCase):
 
     @given(text(alphabet=VALID_ALPHABET, min_size=1))
     def test_multiple_buckets_causes_an_exception(self, tag_name):
-        assume(tag_name != TAG_NAME)
+        assume(tag_name != RELEASES_TAG_NAME)
         s3_resource = Mock()
         tag_sets = (
             [{u'Value': 'true', u'Key': tag_name}],
@@ -181,7 +181,7 @@ class TestFindBucket(unittest.TestCase):
 
     @given(text(alphabet=VALID_ALPHABET, min_size=1))
     def test_missing_bucket_causes_an_exception(self, tag_name):
-        assume(tag_name != TAG_NAME)
+        assume(tag_name != RELEASES_TAG_NAME)
         s3_resource = Mock()
         buckets = [self._create_bucket(t) for t in ([], [], [], [])]
         s3_resource.buckets.all.return_value = buckets
