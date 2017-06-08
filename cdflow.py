@@ -11,7 +11,8 @@ from subprocess import check_output, CalledProcessError
 import botocore
 from boto3.session import Session
 import docker
-from docker.errors import APIError, ContainerError
+from docker.errors import DockerException
+from requests.exceptions import ReadTimeout
 import yaml
 
 
@@ -149,11 +150,21 @@ def docker_run(
             },
             working_dir=project_root,
         )
-        atexit.register(_kill_container, container)
+        atexit.register(_remove_container, container)
         _print_logs(container)
-    except ContainerError as error:
+        return handle_finished_container(container)
+    except DockerException as error:
         exit_status = 1
-        output = error.stderr
+        output = str(error)
+    return exit_status, output
+
+
+def handle_finished_container(container):
+    container.reload()
+    exit_status = container.attrs['State']['ExitCode']
+    output = 'Done'
+    if exit_status != 0:
+        output = 'Error'
     return exit_status, output
 
 
@@ -164,11 +175,12 @@ def _print_logs(container):
         print(message, end='')
 
 
-def _kill_container(container):
+def _remove_container(container):
     try:
-        container.kill()
-    except APIError:
+        container.stop()
+    except ReadTimeout:
         pass
+    container.remove()
 
 
 def get_environment():
