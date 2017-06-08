@@ -32,6 +32,12 @@ class TestIntegration(unittest.TestCase):
                 'RepoDigests': ['hash']
             }
 
+            docker.from_env.return_value.containers.run.return_value.attrs = {
+                'State': {
+                    'ExitCode': 0,
+                }
+            }
+
             os.path.abspath.return_value = project_root
 
             exit_status = main(argv)
@@ -97,6 +103,12 @@ class TestIntegration(unittest.TestCase):
             docker.from_env.return_value.images.pull.return_value = image
             image.attrs = {
                 'RepoDigests': ['hash']
+            }
+
+            docker.from_env.return_value.containers.run.return_value.attrs = {
+                'State': {
+                    'ExitCode': 0,
+                }
             }
 
             os.path.abspath.return_value = project_root
@@ -182,6 +194,12 @@ class TestIntegration(unittest.TestCase):
 
             docker_client = MagicMock(spec=DockerClient)
             docker.from_env.return_value = docker_client
+            docker.from_env.return_value.containers.run.return_value.attrs = {
+                'State': {
+                    'ExitCode': 0,
+                }
+            }
+
 
             os.path.abspath.return_value = project_root
 
