@@ -3,14 +3,19 @@ from hashlib import sha256
 from string import printable
 
 from mock import MagicMock, patch
-from hypothesis import given
-from hypothesis.strategies import lists, text, fixed_dictionaries, dictionaries
+from hypothesis import given, assume
+from hypothesis.strategies import (
+    dictionaries, fixed_dictionaries, integers, lists, text
+)
 from docker.client import DockerClient
-from docker.errors import APIError, ContainerError
+from docker.errors import DockerException
 from docker.models.images import Image
 from docker.models.containers import Container
+from requests.exceptions import ReadTimeout
 
-from cdflow import docker_run, get_image_sha, get_environment, _kill_container
+from cdflow import (
+    docker_run, get_image_sha, get_environment, _remove_container
+)
 from strategies import image_id, filepath, VALID_ALPHABET
 
 
@@ -76,6 +81,15 @@ class TestDockerRun(unittest.TestCase):
         command = fixtures['command']
         project_root = fixtures['project_root']
         environment_variables = fixtures['environment_variables']
+
+        container = MagicMock(spec=Container)
+        container.attrs = {
+            'State': {
+                'ExitCode': 0
+            }
+        }
+        docker_client.containers.run.return_value = container
+
         exit_status, output = docker_run(
             docker_client,
             image_id,
@@ -124,13 +138,8 @@ class TestDockerRun(unittest.TestCase):
         environment_variables = fixtures['environment_variables']
 
         docker_client = MagicMock(spec=DockerClient)
-        docker_client.containers.run.side_effect = ContainerError(
-            container=image_id,
-            exit_status=1,
-            command=command,
-            image=image_id,
-            stderr='file not found'
-        )
+        docker_client.containers.run.side_effect = DockerException
+
         exit_status, output = docker_run(
             docker_client,
             image_id,
@@ -140,7 +149,7 @@ class TestDockerRun(unittest.TestCase):
         )
 
         assert exit_status == 1
-        assert output == 'file not found'
+        assert output == str(DockerException())
 
     @given(fixed_dictionaries({
         'image_id': image_id(),
@@ -160,6 +169,12 @@ class TestDockerRun(unittest.TestCase):
         messages = ['Running', 'the', 'command']
         logs.__iter__.return_value = iter(messages)
         container.logs.return_value = logs
+
+        container.attrs = {
+            'State': {
+                'ExitCode': 0
+            }
+        }
 
         docker_client.containers.run.return_value = container
 
@@ -188,9 +203,14 @@ class TestDockerRun(unittest.TestCase):
             min_size=1,
         ),
     }))
-    def test_container_is_killed_at_script_exit(self, fixtures):
+    def test_container_can_be_removed_at_script_exit(self, fixtures):
         docker_client = MagicMock(spec=DockerClient)
         container = MagicMock(spec=Container)
+        container.attrs = {
+            'State': {
+                'ExitCode': 0
+            }
+        }
 
         docker_client.containers.run.return_value = container
 
@@ -200,22 +220,59 @@ class TestDockerRun(unittest.TestCase):
                 fixtures['project_root'], fixtures['environment_variables']
             )
 
-            atexit.register.assert_called_once_with(_kill_container, container)
+            atexit.register.assert_called_once_with(
+                _remove_container, container
+            )
 
-    def test_kill_container(self):
+    def test_remove_container(self):
         container = MagicMock(spec=Container)
 
-        _kill_container(container)
+        _remove_container(container)
 
-        container.kill.assert_called_once_with()
+        container.stop.assert_called_once_with()
+        container.remove.assert_called_once_with()
 
-    def test_kill_already_stopped_container(self):
+    def test_remove_still_running_container(self):
         container = MagicMock(spec=Container)
-        container.kill.side_effect = APIError('message')
+
+        container.stop.side_effect = ReadTimeout
 
         try:
-            _kill_container(container)
-        except APIError:
-            self.fail('Should not surface error')
+            _remove_container(container)
+        except Exception as e:
+            self.fail('Exception was raised: {}'.format(e))
 
-        container.kill.assert_called_once_with()
+        container.stop.assert_called_once_with()
+        container.remove.assert_called_once_with()
+
+    @given(fixed_dictionaries({
+        'image_id': image_id(),
+        'command': lists(text(alphabet=printable)),
+        'project_root': filepath(),
+        'environment_variables': dictionaries(
+            keys=text(alphabet=VALID_ALPHABET),
+            values=text(alphabet=VALID_ALPHABET),
+            min_size=1,
+        ),
+        'exit_code': integers(min_value=-255, max_value=256),
+    }))
+    def test_exit_code_from_container_is_returned(self, fixtures):
+        assume(fixtures['exit_code'] != 0)
+        docker_client = MagicMock(spec=DockerClient)
+        container = MagicMock(spec=Container)
+
+        container.attrs = {
+            'State': {
+                'ExitCode': fixtures['exit_code'],
+            }
+        }
+
+        docker_client.containers.run.return_value = container
+
+        exit_status, output = docker_run(
+            docker_client, fixtures['image_id'], fixtures['command'],
+            fixtures['project_root'], fixtures['environment_variables']
+        )
+
+        assert exit_status == fixtures['exit_code']
+        assert output == 'Error'
