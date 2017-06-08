@@ -200,7 +200,6 @@ class TestIntegration(unittest.TestCase):
                 }
             }
 
-
             os.path.abspath.return_value = project_root
 
             exit_status = main(argv)
