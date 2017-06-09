@@ -4,6 +4,7 @@ from __future__ import print_function
 import atexit
 import os
 from io import BytesIO
+import json
 import sys
 import logging
 from subprocess import check_output, CalledProcessError
@@ -17,8 +18,6 @@ import yaml
 
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
-RELEASES_TAG_NAME = 'cdflow-releases'
-ACCOUNT_MAPPING_TAG_NAME = 'account_mapping'
 MANIFEST_PATH = 'cdflow.yml'
 
 
@@ -36,13 +35,6 @@ class MissingBucketError(CDFlowWrapperException):
 
 class GitRemoteError(CDFlowWrapperException):
     pass
-
-
-def get_release_metadata(s3_resource, component_name, version):
-    s3_bucket = find_bucket(s3_resource, RELEASES_TAG_NAME)
-    return fetch_release_metadata(
-        s3_resource, s3_bucket.name, component_name, version
-    )
 
 
 def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
@@ -200,32 +192,10 @@ def _command(argv):
         pass
 
 
-def assume_role(root_session, account_id, session_name):
-    sts = root_session.client('sts')
-    response = sts.assume_role(
-        RoleArn='arn:aws:iam::{}:role/admin'.format(account_id),
-        RoleSessionName=session_name,
-    )
-    return Session(
-        response['Credentials']['AccessKeyId'],
-        response['Credentials']['SecretAccessKey'],
-        response['Credentials']['SessionToken'],
-        root_session.region_name,
-    )
-
-
 def get_account_prefix():
     with open(MANIFEST_PATH) as config_file:
         config = yaml.load(config_file.read())
         return config['account_prefix']
-
-
-def get_account_id(s3_bucket):
-    account_prefix = get_account_prefix()
-    with BytesIO() as f:
-        s3_bucket.download_fileobj('{}dev'.format(account_prefix), f)
-        f.seek(0)
-        return f.read()
 
 
 def get_image_id(environment):
@@ -234,17 +204,25 @@ def get_image_id(environment):
     return CDFLOW_IMAGE_ID
 
 
-def find_image_id_from_release(component_name, version, role_session_name):
-    root_session = Session()
-    s3_bucket = find_bucket(
-        root_session.resource('s3'), ACCOUNT_MAPPING_TAG_NAME
-    )
-    account_id = get_account_id(s3_bucket)
-    session = assume_role(root_session, account_id, role_session_name)
-    release_metadata = get_release_metadata(
-        session.resource('s3'), component_name, version
+def find_image_id_from_release(component_name, version):
+    session = Session()
+    s3_resource = session.resource('s3')
+    account_prefix = get_account_prefix()
+    account_scheme = fetch_account_scheme(s3_resource, account_prefix)
+    release_metadata = fetch_release_metadata(
+        s3_resource, account_scheme['release-bucket'], component_name, version
     )
     return release_metadata['cdflow_image_digest']
+
+
+def fetch_account_scheme(s3_resource, account_prefix):
+    s3_object = s3_resource.Object(
+        '{}-account-resources'.format(account_prefix), 'account-scheme.json'
+    )
+    with BytesIO() as f:
+        s3_object.download_fileobj(f)
+        f.seek(0)
+        return json.loads(f.read())
 
 
 def main(argv):
@@ -259,9 +237,7 @@ def main(argv):
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)
-        image_id = find_image_id_from_release(
-            component_name, version, environment_variables['ROLE_SESSION_NAME']
-        )
+        image_id = find_image_id_from_release(component_name, version)
 
     exit_status, output = docker_run(
         docker_client, image_id, argv,

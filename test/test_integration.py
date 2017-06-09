@@ -11,11 +11,9 @@ from docker.errors import ContainerError
 from docker.models.images import Image
 import yaml
 
-from strategies import filepath, image_id
+from strategies import filepath, image_id, VALID_ALPHABET
 
-from cdflow import (
-    main, ACCOUNT_MAPPING_TAG_NAME, RELEASES_TAG_NAME, CDFLOW_IMAGE_ID
-)
+from cdflow import main, CDFLOW_IMAGE_ID
 
 
 class TestIntegration(unittest.TestCase):
@@ -147,48 +145,38 @@ class TestIntegration(unittest.TestCase):
             working_dir=project_root
         )
 
-    @given(filepath())
-    def test_deploy(self, project_root):
+    @given(fixed_dictionaries({
+        'project_root': filepath(),
+        'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
+        'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
+    }))
+    def test_deploy(self, fixtures):
         argv = ['deploy', 'aslive', '42']
 
         with patch('cdflow.Session') as Session, \
+                patch('cdflow.BytesIO') as BytesIO, \
                 patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os, \
                 patch('cdflow.open') as open_:
 
             s3_resource = Mock()
-            account_mapping_bucket = Mock()
-            account_mapping_bucket.Tagging.return_value.tag_set = [
-                {'Key': ACCOUNT_MAPPING_TAG_NAME, 'Value': 'true'}
-            ]
-            releases_bucket = Mock()
-            releases_bucket.Tagging.return_value.tag_set = [
-                {'Key': RELEASES_TAG_NAME, 'Value': 'true'}
-            ]
 
             image_digest = 'sha:12345asdfg'
             s3_resource.Object.return_value.metadata = {
                 'cdflow_image_digest': image_digest
             }
 
-            Session.return_value.client.return_value.assume_role.\
-                return_value = {
-                    'Credentials': {
-                        'AccessKeyId': 'foo',
-                        'SecretAccessKey': 'bar',
-                        'SessionToken': 'baz',
-                    }
-                }
-
-            s3_resource.buckets.all.return_value = [
-                account_mapping_bucket, releases_bucket
-            ]
-
             Session.return_value.resource.return_value = s3_resource
+
+            BytesIO.return_value.__enter__.return_value.read.return_value = '''
+                {{
+                    "release-bucket": "{}"
+                }}
+            '''.format(fixtures['release_bucket'])
 
             config_file = MagicMock(spec=file)
             config_file.read.return_value = yaml.dump({
-                'account_prefix': 'foo',
+                'account_prefix': fixtures['account_prefix'],
             })
             open_.return_value.__enter__.return_value = config_file
 
@@ -200,11 +188,17 @@ class TestIntegration(unittest.TestCase):
                 }
             }
 
+            project_root = fixtures['project_root']
             os.path.abspath.return_value = project_root
 
             exit_status = main(argv)
 
             assert exit_status == 0
+
+            s3_resource.Object.assert_any_call(
+                '{}-account-resources'.format(fixtures['account_prefix']),
+                'account-scheme.json',
+            )
 
             docker_client.containers.run.assert_called_once_with(
                 image_digest,
