@@ -2,21 +2,21 @@ import unittest
 from hashlib import sha256
 from string import printable
 
-from mock import MagicMock, patch
-from hypothesis import given, assume
-from hypothesis.strategies import (
-    dictionaries, fixed_dictionaries, integers, lists, text
-)
 from docker.client import DockerClient
 from docker.errors import DockerException
-from docker.models.images import Image
 from docker.models.containers import Container
+from docker.models.images import Image
 from requests.exceptions import ReadTimeout
 
 from cdflow import (
-    docker_run, get_image_sha, get_environment, _remove_container
+    _remove_container, docker_run, get_environment, get_image_sha
 )
-from strategies import image_id, filepath, VALID_ALPHABET
+from hypothesis import assume, given
+from hypothesis.strategies import (
+    dictionaries, fixed_dictionaries, integers, lists, text
+)
+from mock import MagicMock, patch
+from strategies import VALID_ALPHABET, filepath, image_id
 
 
 class TestEnvironment(unittest.TestCase):

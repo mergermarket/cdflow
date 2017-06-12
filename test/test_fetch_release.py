@@ -1,12 +1,10 @@
 import unittest
 
+from cdflow import fetch_release_metadata, get_component_name, get_version
 from hypothesis import given
-from hypothesis.strategies import text, fixed_dictionaries
-from mock import patch, Mock
-
+from hypothesis.strategies import fixed_dictionaries, text
+from mock import Mock, patch
 from strategies import VALID_ALPHABET
-
-from cdflow import get_component_name, get_version, fetch_release_metadata
 
 
 class TestGetComponentName(unittest.TestCase):

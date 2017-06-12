@@ -1,19 +1,17 @@
-import unittest
 import json
+import unittest
 from string import printable
 
-from hypothesis import given
-from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
-from mock import patch, ANY, MagicMock, Mock
-
+import yaml
 from docker.client import DockerClient
 from docker.errors import ContainerError
 from docker.models.images import Image
-import yaml
 
-from strategies import filepath, image_id, VALID_ALPHABET
-
-from cdflow import main, CDFLOW_IMAGE_ID
+from cdflow import CDFLOW_IMAGE_ID, main
+from hypothesis import given
+from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
+from mock import ANY, MagicMock, Mock, patch
+from strategies import VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
 
 
 class TestIntegration(unittest.TestCase):
@@ -147,7 +145,7 @@ class TestIntegration(unittest.TestCase):
 
     @given(fixed_dictionaries({
         'project_root': filepath(),
-        'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
+        's3_bucket_and_key': s3_bucket_and_key(),
         'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
     }))
     def test_deploy(self, fixtures):
@@ -176,7 +174,9 @@ class TestIntegration(unittest.TestCase):
 
             config_file = MagicMock(spec=file)
             config_file.read.return_value = yaml.dump({
-                'account_prefix': fixtures['account_prefix'],
+                'account_scheme': 's3://{}/{}'.format(
+                    *fixtures['s3_bucket_and_key']
+                ),
             })
             open_.return_value.__enter__.return_value = config_file
 
@@ -196,8 +196,8 @@ class TestIntegration(unittest.TestCase):
             assert exit_status == 0
 
             s3_resource.Object.assert_any_call(
-                '{}-account-resources'.format(fixtures['account_prefix']),
-                'account-scheme.json',
+                fixtures['s3_bucket_and_key'][0],
+                fixtures['s3_bucket_and_key'][1],
             )
 
             docker_client.containers.run.assert_called_once_with(
@@ -226,7 +226,7 @@ class TestIntegration(unittest.TestCase):
                 patch('cdflow.os') as os, \
                 patch('cdflow.open') as open_:
 
-            account_id = "1234567890"
+            account_id = '1234567890'
             config_file = MagicMock(spec=file)
             config_file.read.return_value = json.dumps({
                 'platform_config': {'account_id': account_id}

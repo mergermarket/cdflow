@@ -2,19 +2,18 @@
 from __future__ import print_function
 
 import atexit
-import os
-from io import BytesIO
 import json
-import sys
 import logging
-from subprocess import check_output, CalledProcessError
+import os
+import sys
+from io import BytesIO
+from subprocess import CalledProcessError, check_output
 
-from boto3.session import Session
 import docker
+import yaml
+from boto3.session import Session
 from docker.errors import DockerException
 from requests.exceptions import ReadTimeout
-import yaml
-
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 MANIFEST_PATH = 'cdflow.yml'
@@ -25,6 +24,10 @@ class CDFlowWrapperException(Exception):
 
 
 class GitRemoteError(CDFlowWrapperException):
+    pass
+
+
+class InvalidURLError(CDFlowWrapperException):
     pass
 
 
@@ -162,10 +165,10 @@ def _command(argv):
         pass
 
 
-def get_account_prefix():
+def get_account_scheme_url():
     with open(MANIFEST_PATH) as config_file:
         config = yaml.load(config_file.read())
-        return config['account_prefix']
+        return config['account_scheme']
 
 
 def get_image_id(environment):
@@ -177,18 +180,26 @@ def get_image_id(environment):
 def find_image_id_from_release(component_name, version):
     session = Session()
     s3_resource = session.resource('s3')
-    account_prefix = get_account_prefix()
-    account_scheme = fetch_account_scheme(s3_resource, account_prefix)
+    account_scheme_url = get_account_scheme_url()
+    bucket, key = parse_s3_url(account_scheme_url)
+    account_scheme = fetch_account_scheme(s3_resource, bucket, key)
     release_metadata = fetch_release_metadata(
         s3_resource, account_scheme['release-bucket'], component_name, version
     )
     return release_metadata['cdflow_image_digest']
 
 
-def fetch_account_scheme(s3_resource, account_prefix):
-    s3_object = s3_resource.Object(
-        '{}-account-resources'.format(account_prefix), 'account-scheme.json'
-    )
+def parse_s3_url(s3_url):
+    if not s3_url.startswith('s3://'):
+        raise InvalidURLError('URL must start with s3://')
+    bucket_and_key = s3_url[5:].split('/', 1)
+    if len(bucket_and_key) != 2:
+        raise InvalidURLError('URL must contain a bucket and a key')
+    return bucket_and_key
+
+
+def fetch_account_scheme(s3_resource, bucket, key):
+    s3_object = s3_resource.Object(bucket, key)
     with BytesIO() as f:
         s3_object.download_fileobj(f)
         f.seek(0)
