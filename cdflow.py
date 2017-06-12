@@ -137,6 +137,9 @@ def _print_logs(container):
 def _remove_container(container):
     try:
         container.stop()
+    # An HTTP timeout is thrown until this issue is addressed, then we can
+    # stop catching any exception:
+    # https://github.com/docker/docker-py/issues/1374
     except ReadTimeout:
         pass
     container.remove()
