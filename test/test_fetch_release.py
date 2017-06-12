@@ -1,17 +1,12 @@
 import unittest
 
-from hypothesis import assume, given
+from hypothesis import given
 from hypothesis.strategies import text, fixed_dictionaries
-from mock import patch, Mock, PropertyMock
-
-from botocore.exceptions import ClientError
+from mock import patch, Mock
 
 from strategies import VALID_ALPHABET
 
-from cdflow import (
-    get_component_name, get_version, find_bucket, fetch_release_metadata,
-    MultipleBucketError, MissingBucketError, RELEASES_TAG_NAME
-)
+from cdflow import get_component_name, get_version, fetch_release_metadata
 
 
 class TestGetComponentName(unittest.TestCase):
@@ -128,67 +123,6 @@ class TestGetVersion(unittest.TestCase):
         found_version = get_version(argv)
 
         assert found_version is None
-
-
-class TestFindBucket(unittest.TestCase):
-
-    def _create_bucket(self, tag_set):
-        bucket = Mock()
-        tags = Mock()
-        bucket.Tagging.return_value = tags
-        if tag_set:
-            tags.tag_set = tag_set
-        else:
-            type(tags).tag_set = PropertyMock(side_effect=ClientError(
-                {'Error': {
-                    'Code': 'NoSuchTagSet',
-                    'Message': 'The TagSet does not exist'
-                }},
-                'GetBucketTagging'
-            ))
-        return bucket
-
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
-    def test_find_bucket_based_on_tag(self, tag_name):
-        assume(tag_name != RELEASES_TAG_NAME)
-        s3_resource = Mock()
-        bucket = self._create_bucket([
-            {u'Value': 'team-rocket', u'Key': 'Project'},
-            {u'Value': 'true', u'Key': tag_name},
-        ])
-        buckets = [self._create_bucket(t) for t in ([], [], [], [])]
-        buckets.insert(2, bucket)
-        s3_resource.buckets.all.return_value = buckets
-        found_bucket = find_bucket(s3_resource, tag_name)
-
-        assert found_bucket == bucket
-
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
-    def test_multiple_buckets_causes_an_exception(self, tag_name):
-        assume(tag_name != RELEASES_TAG_NAME)
-        s3_resource = Mock()
-        tag_sets = (
-            [{u'Value': 'true', u'Key': tag_name}],
-            [{u'Value': 'true', u'Key': tag_name}],
-            [], [], [], []
-        )
-        buckets = [self._create_bucket(t) for t in tag_sets]
-        s3_resource.buckets.all.return_value = buckets
-
-        self.assertRaises(
-            MultipleBucketError, find_bucket, s3_resource, tag_name
-        )
-
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
-    def test_missing_bucket_causes_an_exception(self, tag_name):
-        assume(tag_name != RELEASES_TAG_NAME)
-        s3_resource = Mock()
-        buckets = [self._create_bucket(t) for t in ([], [], [], [])]
-        s3_resource.buckets.all.return_value = buckets
-
-        self.assertRaises(
-            MissingBucketError, find_bucket, s3_resource, tag_name
-        )
 
 
 class TestFetchReleaseMetadata(unittest.TestCase):

@@ -9,7 +9,6 @@ import sys
 import logging
 from subprocess import check_output, CalledProcessError
 
-import botocore
 from boto3.session import Session
 import docker
 from docker.errors import DockerException
@@ -25,14 +24,6 @@ class CDFlowWrapperException(Exception):
     pass
 
 
-class MultipleBucketError(CDFlowWrapperException):
-    pass
-
-
-class MissingBucketError(CDFlowWrapperException):
-    pass
-
-
 class GitRemoteError(CDFlowWrapperException):
     pass
 
@@ -41,30 +32,6 @@ def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
     key = _get_release_storage_key(component_name, version)
     release_object = s3_resource.Object(bucket_name, key)
     return release_object.metadata
-
-
-def find_bucket(s3_resource, tag_name):
-    buckets = [b for b in s3_resource.buckets.all()]
-    tagged_buckets = [b for b in buckets if is_tagged(b, tag_name)]
-    if len(tagged_buckets) > 1:
-        raise MultipleBucketError
-    if len(tagged_buckets) < 1:
-        raise MissingBucketError
-    return tagged_buckets[0]
-
-
-def is_tagged(bucket, tag_name):
-    for tag in get_bucket_tags(bucket):
-        if tag['Key'] == tag_name:
-            return True
-    return False
-
-
-def get_bucket_tags(bucket):
-    try:
-        return bucket.Tagging().tag_set
-    except botocore.exceptions.ClientError:
-        return []
 
 
 def get_version(argv):
