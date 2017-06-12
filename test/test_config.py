@@ -1,13 +1,14 @@
 import unittest
 from string import printable
 
-from mock import patch, Mock
-from hypothesis import given, assume
+from cdflow import (
+    CDFLOW_IMAGE_ID, InvalidURLError, fetch_account_scheme, get_image_id,
+    parse_s3_url
+)
+from hypothesis import assume, given
 from hypothesis.strategies import dictionaries, fixed_dictionaries, text
-
-from strategies import image_id, VALID_ALPHABET
-
-from cdflow import get_image_id, fetch_account_scheme, CDFLOW_IMAGE_ID
+from mock import Mock, patch
+from strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
 
 
 class TestGetReleaseCommandsImage(unittest.TestCase):
@@ -37,11 +38,46 @@ class TestGetReleaseCommandsImage(unittest.TestCase):
         assert image_id == fixtures['image_id']
 
 
+class TestParseS3Url(unittest.TestCase):
+
+    @given(s3_bucket_and_key())
+    def test_gets_bucket_name_and_key(self, s3_bucket_and_key):
+        expected_bucket = s3_bucket_and_key[0]
+        expected_key = s3_bucket_and_key[1]
+        s3_url = 's3://{}/{}'.format(expected_bucket, expected_key)
+
+        bucket, key = parse_s3_url(s3_url)
+
+        assert bucket == expected_bucket
+        assert key == expected_key
+
+    @given(text())
+    def test_invalid_url_protocol_throws_exception(self, invalid_url):
+        assume(not invalid_url.startswith('s3://'))
+
+        self.assertRaises(InvalidURLError, parse_s3_url, invalid_url)
+
+    @given(text(alphabet=VALID_ALPHABET))
+    def test_invalid_url_format_throws_exception(self, invalid_url):
+        assume('/' not in invalid_url)
+
+        self.assertRaises(
+            InvalidURLError, parse_s3_url, 's3://{}'.format(invalid_url)
+        )
+
+
 class TestFetchAccountScheme(unittest.TestCase):
 
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
-    def test_fetch_account_scheme(self, account_prefix):
+    @given(fixed_dictionaries({
+        's3_bucket_and_key': s3_bucket_and_key(),
+        'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
+    }))
+    def test_fetch_account_scheme(self, fixtures):
         s3_resource = Mock()
+
+        account_prefix = fixtures['account_prefix']
+        bucket = fixtures['s3_bucket_and_key'][0]
+        key = fixtures['s3_bucket_and_key'][1]
 
         with patch('cdflow.BytesIO') as BytesIO:
             BytesIO.return_value.__enter__.return_value.read.return_value = '''
@@ -68,7 +104,7 @@ class TestFetchAccountScheme(unittest.TestCase):
                 }}
             '''.format(account_prefix)
 
-            account_scheme = fetch_account_scheme(s3_resource, account_prefix)
+            account_scheme = fetch_account_scheme(s3_resource, bucket, key)
 
         expected_keys = sorted([
             'accounts', 'release-account', 'release-bucket', 'environments',
@@ -81,7 +117,4 @@ class TestFetchAccountScheme(unittest.TestCase):
 
         assert account_scheme['release-bucket'] == release_bucket
 
-        s3_resource.Object.assert_called_once_with(
-            '{}-account-resources'.format(account_prefix),
-            'account-scheme.json'
-        )
+        s3_resource.Object.assert_called_once_with(bucket, key)
