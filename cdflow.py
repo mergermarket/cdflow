@@ -12,7 +12,7 @@ from subprocess import CalledProcessError, check_output
 import docker
 import yaml
 from boto3.session import Session
-from docker.errors import DockerException
+from docker.errors import DockerException, ImageNotFound
 from requests.exceptions import ReadTimeout
 
 CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
@@ -85,8 +85,13 @@ def _get_release_storage_key(component_name, version):
 
 def get_image_sha(docker_client, image_id):
     logging.info('Pulling image', image_id)
-    image = docker_client.images.pull(image_id)
-    return image.attrs['RepoDigests'][0]
+    try:
+        image = docker_client.images.get(image_id)
+    except ImageNotFound as e:
+        logging.exception(e)
+        image = docker_client.images.pull(image_id)
+    digests = image.attrs['RepoDigests']
+    return digests[0] if len(digests) else image_id
 
 
 def docker_run(
