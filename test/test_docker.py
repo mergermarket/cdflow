@@ -3,13 +3,14 @@ from hashlib import sha256
 from string import printable
 
 from docker.client import DockerClient
-from docker.errors import DockerException
+from docker.errors import DockerException, ImageNotFound
 from docker.models.containers import Container
 from docker.models.images import Image
 from requests.exceptions import ReadTimeout
 
 from cdflow import (
-    _remove_container, docker_run, get_environment, get_image_sha
+    _remove_container, docker_run, get_environment, get_image_sha,
+    CDFLOW_IMAGE_ID,
 )
 from hypothesis import assume, given
 from hypothesis.strategies import (
@@ -42,7 +43,9 @@ class TestEnvironment(unittest.TestCase):
 class TestImage(unittest.TestCase):
 
     @given(image_id())
-    def test_get_sha(self, image_id):
+    def test_get_latest_sha(self, image_id):
+        assume(image_id != CDFLOW_IMAGE_ID)
+
         docker_client = MagicMock(spec=DockerClient)
 
         image_sha = '{}@sha256:{}'.format(
@@ -54,11 +57,28 @@ class TestImage(unittest.TestCase):
             'RepoDigests': [image_sha]
         }
 
+        docker_client.images.get.side_effect = ImageNotFound(image_id)
         docker_client.images.pull.return_value = image
 
         fetched_image_sha = get_image_sha(docker_client, image_id)
 
         assert fetched_image_sha == image_sha
+
+    @given(image_id())
+    def test_get_local_image_id(self, image_id):
+        docker_client = MagicMock(spec=DockerClient)
+
+        image = MagicMock(spec=Image)
+        image.attrs = {
+            'RepoDigests': []
+        }
+
+        docker_client.images.pull.side_effect = ImageNotFound(image_id)
+        docker_client.images.get.return_value = image
+
+        fetched_image_sha = get_image_sha(docker_client, image_id)
+
+        assert fetched_image_sha == image_id
 
 
 class TestDockerRun(unittest.TestCase):
