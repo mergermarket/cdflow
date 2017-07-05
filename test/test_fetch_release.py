@@ -1,10 +1,15 @@
 import unittest
+from random import shuffle
+from itertools import chain
 
-from cdflow import fetch_release_metadata, get_component_name, get_version
+from cdflow import (
+    fetch_release_metadata, get_component_name, get_version,
+    get_platform_config_path, MissingParameterError,
+)
 from hypothesis import given
-from hypothesis.strategies import fixed_dictionaries, text
+from hypothesis.strategies import fixed_dictionaries, lists, sampled_from, text
 from mock import Mock, patch
-from strategies import VALID_ALPHABET
+from strategies import VALID_ALPHABET, filepath
 
 
 class TestGetComponentName(unittest.TestCase):
@@ -116,11 +121,65 @@ class TestGetVersion(unittest.TestCase):
 
         assert found_version == version
 
+    @given(fixed_dictionaries({
+        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'options': lists(
+            elements=sampled_from((
+                '-c foo', '--component bar',
+                '--platform-config path/to/config',
+                '-v', '--verbose', '-p', '--plan-only'
+            )),
+            unique=True,
+        ),
+    }))
+    def test_get_version_when_options_present(self, fixtures):
+        version = fixtures['version']
+        extra = fixtures['options'] + [version]
+
+        shuffle(extra)
+
+        extra = chain.from_iterable(e.split(' ') for e in extra)
+
+        argv = ['release'] + list(extra)
+
+        assert version == get_version(argv)
+
     def test_missing_version_returns_nothing(self):
         argv = ['release']
         found_version = get_version(argv)
 
         assert found_version is None
+
+    @given(fixed_dictionaries({
+        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'path': filepath(),
+    }))
+    def test_get_version_when_platform_config_present(self, fixtures):
+        version = fixtures['version']
+        path = fixtures['path']
+        argv = ['release', '--platform-config', path, version]
+
+        found_version = get_version(argv)
+
+        assert found_version == version
+
+
+class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
+
+    @given(filepath())
+    def test_get_config_path_from_args(self, path):
+        args = ['release', '--platform-config', path, '42']
+
+        assert get_platform_config_path(args) == path
+
+    def test_raises_exception_when_missing_flag(self):
+        self.assertRaises(MissingParameterError, get_platform_config_path, [])
+
+    def test_raises_exception_when_missing_value(self):
+        self.assertRaises(
+            MissingParameterError, get_platform_config_path,
+            ['--platform-config'],
+        )
 
 
 class TestFetchReleaseMetadata(unittest.TestCase):
