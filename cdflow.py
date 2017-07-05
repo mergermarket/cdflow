@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import atexit
+from copy import copy
+from contextlib import contextmanager
 import json
 import logging
 import os
@@ -31,6 +33,10 @@ class InvalidURLError(CDFlowWrapperException):
     pass
 
 
+class MissingParameterError(CDFlowWrapperException):
+    pass
+
+
 def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
     key = _get_release_storage_key(component_name, version)
     release_object = s3_resource.Object(bucket_name, key)
@@ -38,14 +44,35 @@ def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
 
 
 def get_version(argv):
-    command = argv[0]
+    local_argv = remove_argv_options(argv)
+    command = local_argv[0]
     if command == 'deploy':
         version_index = 2
     elif command == 'release':
         version_index = 1
     try:
-        return argv[version_index]
+        return local_argv[version_index]
     except IndexError:
+        pass
+
+
+def remove_argv_options(argv):
+    local_argv = copy(argv)
+    for flag in ('-p', '-v', '--plan-only', '--verbose'):
+        with _suppress(ValueError):
+            local_argv.remove(flag)
+    for option in ('-c', '--component', '--platform-config'):
+        with _suppress(ValueError):
+            option_index = local_argv.index(option)
+            del local_argv[option_index:option_index+2]
+    return local_argv
+
+
+@contextmanager
+def _suppress(*exceptions):
+    try:
+        yield
+    except tuple(exceptions):
         pass
 
 
@@ -79,6 +106,17 @@ def _get_component_name_from_git_remote():
     return name
 
 
+def get_platform_config_path(argv):
+    try:
+        flag_index = argv.index('--platform-config')
+    except ValueError as e:
+        raise MissingParameterError(e)
+    try:
+        return argv[flag_index+1]
+    except IndexError as e:
+        raise MissingParameterError(e)
+
+
 def _get_release_storage_key(component_name, version):
     return '{}/release-{}.zip'.format(component_name, version)
 
@@ -95,26 +133,33 @@ def get_image_sha(docker_client, image_id):
 
 
 def docker_run(
-    docker_client, image_id, command, project_root, environment_variables
+    docker_client, image_id, command, project_root,
+    environment_variables, platform_config_path=None,
 ):
     exit_status = 0
     output = 'Done'
     try:
+        volumes = {
+            project_root: {
+                'bind': project_root,
+                'mode': 'rw',
+            },
+            '/var/run/docker.sock': {
+                'bind': '/var/run/docker.sock',
+                'mode': 'ro',
+            }
+        }
+        if platform_config_path:
+            volumes[platform_config_path] = {
+                'bind': platform_config_path,
+                'mode': 'ro',
+            }
         container = docker_client.containers.run(
             image_id,
             command=command,
             environment=environment_variables,
             detach=True,
-            volumes={
-                project_root: {
-                    'bind': project_root,
-                    'mode': 'rw',
-                },
-                '/var/run/docker.sock': {
-                    'bind': '/var/run/docker.sock',
-                    'mode': 'ro',
-                }
-            },
+            volumes=volumes,
             working_dir=project_root,
         )
         atexit.register(_remove_container, container)
@@ -160,6 +205,7 @@ def get_environment():
         'AWS_SESSION_TOKEN': os.environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': os.environ.get('FASTLY_API_KEY'),
         'ROLE_SESSION_NAME': os.environ.get('ROLE_SESSION_NAME'),
+        'JOB_NAME': os.environ.get('JOB_NAME'),
     }
 
 
@@ -217,18 +263,28 @@ def main(argv):
     image_id = get_image_id(os.environ)
     command = _command(argv)
 
+    kwargs = {
+        'docker_client': docker_client,
+        'image_id': image_id,
+        'command': argv,
+        'project_root': os.getcwd(),
+        'environment_variables': environment_variables,
+    }
+
     if command == 'release':
         image_digest = get_image_sha(docker_client, image_id)
         environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
+        kwargs['platform_config_path'] = os.path.abspath(
+            get_platform_config_path(argv)
+        )
     elif command == 'deploy':
         component_name = get_component_name(argv)
         version = get_version(argv)
-        image_id = find_image_id_from_release(component_name, version)
+        kwargs['image_id'] = find_image_id_from_release(
+            component_name, version
+        )
 
-    exit_status, output = docker_run(
-        docker_client, image_id, argv,
-        os.path.abspath(os.path.curdir), environment_variables
-    )
+    exit_status, output = docker_run(**kwargs)
 
     print(output, file=sys.stderr if exit_status else sys.stdout)
     return exit_status
