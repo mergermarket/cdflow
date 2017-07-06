@@ -118,7 +118,7 @@ def get_platform_config_path(argv):
 
 
 def _get_release_storage_key(component_name, version):
-    return '{}/release-{}.zip'.format(component_name, version)
+    return '{}/{}-{}.zip'.format(component_name, component_name, version)
 
 
 def get_image_sha(docker_client, image_id):
@@ -219,7 +219,7 @@ def _command(argv):
 def get_account_scheme_url():
     with open(MANIFEST_PATH) as config_file:
         config = yaml.load(config_file.read())
-        return config['account_scheme']
+        return config['account-scheme-url']
 
 
 def get_image_id(environment):
