@@ -22,14 +22,14 @@ From the root of your freshly cloned service, run:
 
 ```shell
 git pull --allow-unrelated-histories --no-edit \
-  git@github.com:mergermarket/cdflow.git master
+  git@github.com:mergermarket/cdflow-classic.git master
 ```
 
 If you prefer to clone via HTTPS, use this command instead:
 
 ```shell    
 git pull --allow-unrelated-histories --no-edit \
-  https://github.com/mergermarket/cdflow.git master
+  https://github.com/mergermarket/cdflow-classic.git master
 ```
 
 The above commands pull the Git history of the _infra_ project into your repository. This allows future updates to be pulled into your repository and be merged with any customisations you have made with the `infra/` folder - i.e. it is by design (the `--squash` option shiould be avoided).
@@ -54,14 +54,14 @@ To pull in future updates, simply run:
 
 ```shell
 git pull --no-edit \
-  git@github.com:mergermarket/infra.git master
+  git@github.com:mergermarket/cdflow-classic.git master
 ```
 
 Or, if you prefer to clone over HTTPS:
 
 ```shell
 git pull --no-edit \
-  https://github.com/mergermarket/infra.git master
+  https://github.com/mergermarket/cdflow-classic.git master
 ```
 
 ## 3. Include platform config info your repository
