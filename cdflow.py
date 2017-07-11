@@ -21,6 +21,12 @@ CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
 MANIFEST_PATH = 'cdflow.yml'
 
 
+logging.basicConfig(format='[%(asctime)s] %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 class CDFlowWrapperException(Exception):
     pass
 
@@ -122,11 +128,11 @@ def _get_release_storage_key(component_name, version):
 
 
 def get_image_sha(docker_client, image_id):
-    logging.info('Pulling image', image_id)
+    logger.info('Pulling image', image_id)
     try:
         image = docker_client.images.get(image_id)
     except ImageNotFound as e:
-        logging.exception(e)
+        logger.exception(e)
         image = docker_client.images.pull(image_id)
     digests = image.attrs['RepoDigests']
     return digests[0] if len(digests) else image_id

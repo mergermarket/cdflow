@@ -188,7 +188,7 @@ class TestIntegration(unittest.TestCase):
 
             config_file = MagicMock(spec=file)
             config_file.read.return_value = yaml.dump({
-                'account_scheme': 's3://{}/{}'.format(
+                'account-scheme-url': 's3://{}/{}'.format(
                     *fixtures['s3_bucket_and_key']
                 ),
             })

@@ -209,5 +209,7 @@ class TestFetchReleaseMetadata(unittest.TestCase):
         assert metadata == expected_metadata
 
         s3_resource.Object.assert_called_once_with(
-            bucket_name, '{}/release-{}.zip'.format(component_name, version)
+            bucket_name, '{}/{}-{}.zip'.format(
+                component_name, component_name, version,
+            )
         )
