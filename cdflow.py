@@ -128,7 +128,7 @@ def _get_release_storage_key(component_name, version):
 
 
 def get_image_sha(docker_client, image_id):
-    logger.info('Pulling image', image_id)
+    logger.info('Pulling image {}'.format(image_id))
     try:
         image = docker_client.images.get(image_id)
     except ImageNotFound as e:
