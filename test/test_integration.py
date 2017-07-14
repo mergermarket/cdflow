@@ -18,7 +18,7 @@ class TestIntegration(unittest.TestCase):
 
     @given(filepath())
     def test_release(self, project_root):
-        argv = ['release', '42']
+        argv = ['release', '--platform-config', '../path/to/config', '42']
         with patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os:
 
@@ -34,7 +34,9 @@ class TestIntegration(unittest.TestCase):
                 }
             }
 
-            os.path.abspath.return_value = project_root
+            os.getcwd.return_value = project_root
+            abs_path_to_config = '/root/path/to/config'
+            os.path.abspath.return_value = abs_path_to_config
 
             exit_status = main(argv)
 
@@ -46,7 +48,7 @@ class TestIntegration(unittest.TestCase):
         )
         docker.from_env.return_value.containers.run.assert_called_once_with(
             'mergermarket/cdflow-commands:latest',
-            command=['release', '42'],
+            command=argv,
             environment={
                 'AWS_ACCESS_KEY_ID': ANY,
                 'AWS_SECRET_ACCESS_KEY': ANY,
@@ -54,12 +56,17 @@ class TestIntegration(unittest.TestCase):
                 'FASTLY_API_KEY': ANY,
                 'ROLE_SESSION_NAME': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
+                'JOB_NAME': ANY,
             },
             detach=True,
             volumes={
                 project_root: {
                     'bind': project_root,
                     'mode': 'rw',
+                },
+                abs_path_to_config: {
+                    'bind': abs_path_to_config,
+                    'mode': 'ro',
                 },
                 '/var/run/docker.sock': {
                     'bind': '/var/run/docker.sock',
@@ -86,7 +93,7 @@ class TestIntegration(unittest.TestCase):
         'image_id': image_id(),
     }))
     def test_release_with_pinned_command_image(self, fixtures):
-        argv = ['release', '42']
+        argv = ['release', '42', '--platform-config', 'path/to/config']
         project_root = fixtures['project_root']
         environment = fixtures['environment']
         pinned_image_id = fixtures['image_id']
@@ -107,7 +114,9 @@ class TestIntegration(unittest.TestCase):
                 }
             }
 
-            os.path.abspath.return_value = project_root
+            os.getcwd.return_value = project_root
+            abs_path_to_config = '/root/path/to/config'
+            os.path.abspath.return_value = abs_path_to_config
 
             os.environ = environment
 
@@ -120,7 +129,7 @@ class TestIntegration(unittest.TestCase):
         )
         docker.from_env.return_value.containers.run.assert_called_once_with(
             pinned_image_id,
-            command=['release', '42'],
+            command=argv,
             environment={
                 'AWS_ACCESS_KEY_ID': ANY,
                 'AWS_SECRET_ACCESS_KEY': ANY,
@@ -128,12 +137,17 @@ class TestIntegration(unittest.TestCase):
                 'FASTLY_API_KEY': ANY,
                 'ROLE_SESSION_NAME': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
+                'JOB_NAME': ANY,
             },
             detach=True,
             volumes={
                 project_root: {
                     'bind': project_root,
                     'mode': 'rw',
+                },
+                abs_path_to_config: {
+                    'bind': abs_path_to_config,
+                    'mode': 'ro',
                 },
                 '/var/run/docker.sock': {
                     'bind': '/var/run/docker.sock',
@@ -174,7 +188,7 @@ class TestIntegration(unittest.TestCase):
 
             config_file = MagicMock(spec=file)
             config_file.read.return_value = yaml.dump({
-                'account_scheme': 's3://{}/{}'.format(
+                'account-scheme-url': 's3://{}/{}'.format(
                     *fixtures['s3_bucket_and_key']
                 ),
             })
@@ -189,7 +203,7 @@ class TestIntegration(unittest.TestCase):
             }
 
             project_root = fixtures['project_root']
-            os.path.abspath.return_value = project_root
+            os.getcwd.return_value = project_root
 
             exit_status = main(argv)
 

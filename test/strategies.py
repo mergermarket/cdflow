@@ -20,7 +20,8 @@ def s3_bucket_and_key(draw):
 @composite
 def filepath(draw):
     parts = draw(lists(
-        elements=text(alphabet=(ascii_letters + digits)), min_size=1
+        elements=text(alphabet=(ascii_letters + digits), min_size=1),
+        min_size=1,
     ))
     return path.join(*parts)
 
