@@ -19,7 +19,7 @@ In order to create a service, you will need:
 
 From the root of your workspace (i.e. where you check projects out to) run the following command, substituting in the name of your new service, the boilerplate and team:
 
-    curl -fsS https://setup.mergermarket.it/setup.sh | sh -s -- \
+    bash <( curl -fsS https://setup.mergermarket.it/setup.sh ) \
         --name <name-of-your-service> \
         --boilerplate <boilerplate-repo> \
         --team <your-team>
