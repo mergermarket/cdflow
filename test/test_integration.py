@@ -23,7 +23,7 @@ class TestIntegration(unittest.TestCase):
                 patch('cdflow.os') as os:
 
             image = MagicMock(spec=Image)
-            docker.from_env.return_value.images.get.return_value = image
+            docker.from_env.return_value.images.pull.return_value = image
             image.attrs = {
                 'RepoDigests': ['hash']
             }
@@ -43,7 +43,7 @@ class TestIntegration(unittest.TestCase):
         assert exit_status == 0
 
         docker.from_env.assert_called_once()
-        docker.from_env.return_value.images.get.assert_called_once_with(
+        docker.from_env.return_value.images.pull.assert_called_once_with(
             'mergermarket/cdflow-commands:latest'
         )
         docker.from_env.return_value.containers.run.assert_called_once_with(
@@ -103,7 +103,7 @@ class TestIntegration(unittest.TestCase):
                 patch('cdflow.os') as os:
 
             image = MagicMock(spec=Image)
-            docker.from_env.return_value.images.get.return_value = image
+            docker.from_env.return_value.images.pull.return_value = image
             image.attrs = {
                 'RepoDigests': ['hash']
             }
@@ -124,7 +124,7 @@ class TestIntegration(unittest.TestCase):
 
         assert exit_status == 0
 
-        docker.from_env.return_value.images.get.assert_called_once_with(
+        docker.from_env.return_value.images.pull.assert_called_once_with(
             pinned_image_id
         )
         docker.from_env.return_value.containers.run.assert_called_once_with(

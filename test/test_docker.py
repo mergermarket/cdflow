@@ -57,7 +57,6 @@ class TestImage(unittest.TestCase):
             'RepoDigests': [image_sha]
         }
 
-        docker_client.images.get.side_effect = ImageNotFound(image_id)
         docker_client.images.pull.return_value = image
 
         fetched_image_sha = get_image_sha(docker_client, image_id)
