@@ -180,9 +180,9 @@ def docker_run(
 def handle_finished_container(container):
     container.reload()
     exit_status = container.attrs['State']['ExitCode']
-    output = 'Done'
+    output = ''
     if exit_status != 0:
-        output = 'Error'
+        output = ''
     return exit_status, output
 
 
