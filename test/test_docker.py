@@ -121,7 +121,7 @@ class TestDockerRun(unittest.TestCase):
         )
 
         assert exit_status == 0
-        assert output == 'Done'
+        assert output == ''
 
         docker_client.containers.run.assert_called_once_with(
             image_id,
@@ -181,7 +181,7 @@ class TestDockerRun(unittest.TestCase):
         )
 
         assert exit_status == 0
-        assert output == 'Done'
+        assert output == ''
 
         docker_client.containers.run.assert_called_once_with(
             image_id,
@@ -366,4 +366,4 @@ class TestDockerRun(unittest.TestCase):
         )
 
         assert exit_status == fixtures['exit_code']
-        assert output == 'Error'
+        assert output == ''
