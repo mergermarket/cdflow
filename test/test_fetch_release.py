@@ -4,7 +4,7 @@ from itertools import chain
 
 from cdflow import (
     fetch_release_metadata, get_component_name, get_version,
-    get_platform_config_path, MissingParameterError,
+    get_platform_config_path, MissingPlatformConfigError,
 )
 from hypothesis import given
 from hypothesis.strategies import fixed_dictionaries, lists, sampled_from, text
@@ -173,11 +173,13 @@ class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
         assert get_platform_config_path(args) == path
 
     def test_raises_exception_when_missing_flag(self):
-        self.assertRaises(MissingParameterError, get_platform_config_path, [])
+        self.assertRaises(
+            MissingPlatformConfigError, get_platform_config_path, []
+        )
 
     def test_raises_exception_when_missing_value(self):
         self.assertRaises(
-            MissingParameterError, get_platform_config_path,
+            MissingPlatformConfigError, get_platform_config_path,
             ['--platform-config'],
         )
 

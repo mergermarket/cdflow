@@ -28,7 +28,8 @@ logger.setLevel(logging.INFO)
 
 
 class CDFlowWrapperException(Exception):
-    pass
+    def __str__(self):
+        return self.message or self.__class__.message
 
 
 class GitRemoteError(CDFlowWrapperException):
@@ -39,8 +40,8 @@ class InvalidURLError(CDFlowWrapperException):
     pass
 
 
-class MissingParameterError(CDFlowWrapperException):
-    pass
+class MissingPlatformConfigError(CDFlowWrapperException):
+    message = 'error: --platform-config parameter is required'
 
 
 def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
@@ -105,7 +106,10 @@ def _get_component_name_from_git_remote():
     try:
         remote = check_output(['git', 'config', 'remote.origin.url'])
     except CalledProcessError:
-        raise GitRemoteError
+        raise GitRemoteError(
+            'error: could not get remote from git repo '
+            ' (git config remote.origin.url)'
+        )
     name = remote.decode('utf-8').strip('\t\n /').split('/')[-1]
     if name.endswith('.git'):
         return name[:-4]
@@ -115,12 +119,12 @@ def _get_component_name_from_git_remote():
 def get_platform_config_path(argv):
     try:
         flag_index = argv.index('--platform-config')
-    except ValueError as e:
-        raise MissingParameterError(e)
+    except ValueError:
+        raise MissingPlatformConfigError()
     try:
         return argv[flag_index+1]
-    except IndexError as e:
-        raise MissingParameterError(e)
+    except IndexError:
+        raise MissingPlatformConfigError()
 
 
 def _get_release_storage_key(component_name, version):
@@ -277,18 +281,22 @@ def main(argv):
         'environment_variables': environment_variables,
     }
 
-    if command == 'release':
-        image_digest = get_image_sha(docker_client, image_id)
-        environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
-        kwargs['platform_config_path'] = os.path.abspath(
-            get_platform_config_path(argv)
-        )
-    elif command == 'deploy':
-        component_name = get_component_name(argv)
-        version = get_version(argv)
-        kwargs['image_id'] = find_image_id_from_release(
-            component_name, version
-        )
+    try:
+        if command == 'release':
+            image_digest = get_image_sha(docker_client, image_id)
+            environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
+            kwargs['platform_config_path'] = os.path.abspath(
+                get_platform_config_path(argv)
+            )
+        elif command == 'deploy':
+            component_name = get_component_name(argv)
+            version = get_version(argv)
+            kwargs['image_id'] = find_image_id_from_release(
+                component_name, version
+            )
+    except CDFlowWrapperException as e:
+        print(str(e), file=sys.stderr)
+        return 1
 
     exit_status, output = docker_run(**kwargs)
 
