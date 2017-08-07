@@ -214,6 +214,7 @@ def get_environment():
         'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_SESSION_TOKEN': os.environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': os.environ.get('FASTLY_API_KEY'),
+        'LOGENTRIES_ACCOUNT_KEY': os.environ.get('LOGENTRIES_ACCOUNT_KEY'),
         'ROLE_SESSION_NAME': os.environ.get('ROLE_SESSION_NAME'),
         'JOB_NAME': os.environ.get('JOB_NAME'),
     }
