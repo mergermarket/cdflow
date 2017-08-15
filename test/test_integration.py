@@ -57,6 +57,7 @@ class TestIntegration(unittest.TestCase):
                 'ROLE_SESSION_NAME': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
                 'JOB_NAME': ANY,
+                'LOGENTRIES_ACCOUNT_KEY': ANY,
             },
             detach=True,
             volumes={
@@ -138,6 +139,7 @@ class TestIntegration(unittest.TestCase):
                 'ROLE_SESSION_NAME': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
                 'JOB_NAME': ANY,
+                'LOGENTRIES_ACCOUNT_KEY': ANY,
             },
             detach=True,
             volumes={
