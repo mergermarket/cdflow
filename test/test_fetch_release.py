@@ -20,20 +20,22 @@ class TestGetComponentName(unittest.TestCase):
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
-    def test_get_component_name_passed_in(self, component_name):
-        argv = ['deploy', '42', '-c', component_name]
-        component_name = get_component_name(argv)
+    def test_get_component_name_passed_in(self, expected_component_name):
+        argv = ['deploy', '42', '-c', expected_component_name]
+        actual_component_name = get_component_name(argv)
 
-        assert component_name == component_name
+        assert actual_component_name == expected_component_name
 
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
-    def test_get_component_name_passed_in_with_long_flag(self, component_name):
-        argv = ['deploy', '42', '--component', component_name]
-        component_name = get_component_name(argv)
+    def test_get_component_name_passed_in_with_long_flag(
+        self, expected_component_name
+    ):
+        argv = ['deploy', '42', '--component', expected_component_name]
+        actual_component_name = get_component_name(argv)
 
-        assert component_name == component_name
+        assert actual_component_name == expected_component_name
 
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100

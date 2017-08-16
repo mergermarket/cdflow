@@ -95,7 +95,7 @@ def _get_component_name_from_cli_args(argv):
     component_flag_index = None
     for flag in ('-c', '--component'):
         try:
-            component_flag_index = argv.index('-c')
+            component_flag_index = argv.index(flag)
         except ValueError:
             pass
     if component_flag_index > -1:
