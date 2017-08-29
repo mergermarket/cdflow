@@ -50,3 +50,10 @@ def notifySlack(String buildStatus = 'STARTED') {
     slackSend(color: color, message: msg, channel: '#platform-team-alerts', token: fetch_credential('slack-r2d2'))
 }
 
+def fetch_credential(name) {
+  def v;
+  withCredentials([[$class: 'StringBinding', credentialsId: name, variable: 'CREDENTIAL']]) {
+      v = env.CREDENTIAL;
+  }
+  return v
+}
