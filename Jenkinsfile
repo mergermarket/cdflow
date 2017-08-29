@@ -25,7 +25,7 @@ def unitTest(slavePrefix) {
 
 def acceptanceTest(slavePrefix) {
     stage ("Acceptance Test") {
-		build job: 'platform/cdflow-test-service.temp', parameters: [string(name: 'CDFLOW_COMMIT_SHA', value: "${cdflow_commit_sha}")]
+		build job: 'platform/cdflow-test-service.temp', parameters: [string(name: 'CDFLOW_COMMIT_SHA', value: "${cdflow_commit_sha.GIT_COMMIT}")]
     }
 }
 
