@@ -1,16 +1,22 @@
 # CDFlow
 
-CDFlow is a suite of tools to help you continously deliver your software.
+CDFlow helps you continuously deliver your software.
 
-## Getting started
+## Introduction to cdflow
 
-If you work at Mergermarket, see the [quick-start guide](guides/quick-start) to get a service up and running quickly.
+This documentation should give you everything you need to get a service, lambda function, or infrastructure definition up and running using cdflow. We aim to cover what cdflow is, what the use case is, and what problems it can help solve. Finally, how you can help make cdflow better.
 
-For everyone, the [manual setup guide](guides/manual-setup) will talk you through everything you need, and should help you better understand how your service is created.
+If you are ready to jump in and get started setting up a service, we'd suggest going to the [service setup guide](guides/manual-setup).
 
-## Further guides
+If you already know the basics, head over to the [full documentation]() section.
 
-* [Configuring your service](guides/configuration)
-* [Managing secrets](guides/secrets)
-* [Adding routes to an existing ALB](guides/adding-routes-to-an-existing-alb)
-* [Redirecting HTTP traffic to HTTPS](guides/http-to-https-redirect)
+What is cdflow?
+---------------
+
+
+Supported Use Cases
+--------------------
+
+
+Contributing
+------------
