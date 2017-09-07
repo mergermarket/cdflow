@@ -16,8 +16,8 @@ Introduction
 | |_|_ Installation
 | |_|_ Usage
 | |_|_ Managing Secrets
-| |_|_ Terraform
-| |_|_|_ Links and description to relevant terraform modlues we use
+| |_ Terraform
+| |_|_ Links and description to relevant terraform modlues we use
 |_ Contribution Guidelines
 ```
 
