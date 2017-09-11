@@ -44,6 +44,8 @@ Once cdflow is installed, you'll need to setup some resources that you will use 
 Account Scheme
 --------------
 
+You'll need an account scheme created in an s3 bucket. The bucket should contain a file called `account-scheme.json` and should have a bucket policy to allow any account which you are going to deploy to access.
+
 For the docs, go [here](/full-documentation/account-scheme)
 
 External Config

@@ -6,6 +6,10 @@
 section {
   width: 80%;
   min-width: 170px;
+
+  h2 {
+    border-bottom: #727272 1px solid;
+  }
 }
 
 #notice {
@@ -15,6 +19,14 @@ section {
   color: black;
   width: 100%;
   margin: 10px 0;
+}
+
+h1 {
+  font-weight: normal;
+}
+
+h2 {
+  font-weight: normal;
 }
 
 header {
@@ -48,7 +60,6 @@ header {
     ul {
       margin: 1em 0;
       padding: 0;
-      list-style-type: disc;
       border: none;
       background: transparent;
       height: auto;
