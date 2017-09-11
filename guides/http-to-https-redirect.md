@@ -1,7 +1,7 @@
 ---
 title: Redirecting HTTP traffic to HTTPS
 menu: guides
-weight: 6
+weight: 99
 ---
 
 ## Summary

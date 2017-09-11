@@ -1,7 +1,7 @@
 ---
 title: Updating from cdflow-classic
 menu: guides
-weight: 5
+weight: 99
 ---
 
 # Updating from cdflow-classic 

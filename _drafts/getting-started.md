@@ -1,7 +1,7 @@
 ---
 title: Getting Started
 menu: guides
-weight: 2
+weight: 1
 ---
 
 # Getting Started

@@ -1,7 +1,7 @@
 ---
 title: Using AWS resources
 menu: guides
-weight: 7
+weight: 99
 ---
 
 # Using AWS resources

@@ -1,7 +1,7 @@
 ---
 title: Using Lambda Module
 menu: guides
-weight: 3
+weight: 99
 ---
 
 # Using Lambda Module

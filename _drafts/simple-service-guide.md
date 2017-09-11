@@ -1,7 +1,7 @@
 ---
 title: Simple Service Guide
 menu: guides
-weight: 2
+weight: 3
 ---
 
 # Simple Service Guide

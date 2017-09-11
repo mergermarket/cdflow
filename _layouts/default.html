@@ -14,10 +14,8 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1><a href="/{{ site.title | default: site.github.repository_name }}/">{{ site.title | default: site.github.repository_name }}</a></h1>
+        <h1><a href="/">{{ site.title | default: site.github.repository_name }}</a></h1>
         <p>{{ site.description | default: site.github.project_tagline }}</p>
-
-        
 
         {% if site.github.is_project_page %}
           <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ github_name }}</small></a></p>
@@ -35,33 +33,8 @@
           </ul>
         {% endif %}
         
-        <nav>
-          <h1>Guides</h1>
+        {% include nav.html %}
 
-          <ul>
-            {% assign pages = site.pages | sort: 'weight' %} 
-            {% for p in pages %}
-              {% if p.menu == 'guides' %}
-                <li{% if p.url == page.url %} class="active"{% endif %}>
-                  <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-
-          <h2>Reference</h2>
-
-          <ul>
-            {% assign pages = site.pages | sort: 'weight' %}
-            {% for p in pages %}
-              {% if p.menu == 'reference' %}
-                <li{% if p.url == page.url %} class="active"{% endif %}>
-                  <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </nav>
       </header>
       
       <section>

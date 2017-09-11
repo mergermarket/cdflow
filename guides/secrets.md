@@ -1,7 +1,7 @@
 ---
 title: Managing secrets
 menu: guides
-weight: 4
+weight: 99
 ---
 
 # Managing secrets
