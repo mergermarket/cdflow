@@ -6,12 +6,37 @@
 section {
   width: 80%;
   min-width: 170px;
+
+  h2 {
+    border-bottom: #727272 1px solid;
+  }
+}
+
+#notice {
+  text-align: right;
+  border: 1px #a9d4ba solid;
+  background-color: #b9e8cc;
+  color: black;
+  width: 100%;
+  margin: 10px 0;
+}
+
+h1 {
+  font-weight: normal;
+}
+
+h2 {
+  font-weight: normal;
 }
 
 header {
   width: 20%;
   min-width: 170px;
   position: relative;
+
+  ul {
+    width: 100%
+  }
 
   nav {
 
@@ -28,11 +53,13 @@ header {
       color: #069;
     }
 
-    
+    li {
+      width: auto;
+    }
+
     ul {
       margin: 1em 0;
       padding: 0;
-      list-style-type: disc;
       border: none;
       background: transparent;
       height: auto;
@@ -44,6 +71,11 @@ header {
         list-style-position: outside;
         float: none;
         height: auto;
+        width: auto;
+
+        + li + li {
+          width: auto;
+        }
     
         a {
           display: inline;
@@ -54,7 +86,7 @@ header {
   }
 }
 
-@media only screen and (max-width : 960px) {
+@media only screen and (max-width : 965px) {
     section {
       width: 100%;
       min-width: 170px;
@@ -66,7 +98,6 @@ header {
     }
 
     header nav ul li {
-      float: left;
       padding-right: 6px;
     }
 

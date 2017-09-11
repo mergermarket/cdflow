@@ -1,7 +1,7 @@
 ---
 title: Configuration
 menu: guides
-weight: 3
+weight: 99
 ---
 
 # Configuration

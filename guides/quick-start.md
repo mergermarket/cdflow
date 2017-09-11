@@ -1,7 +1,7 @@
 ---
 title: Quick start guide
 menu: guides
-weight: 1
+weight: 99
 ---
 
 # cdflow quick start

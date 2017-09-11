@@ -1,7 +1,7 @@
 ---
 title: Manual setup
 menu: guides
-weight: 2
+weight: 99
 ---
 
 # Manual setup
