@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-menu: guides
+menu: cdflow
 weight: 1
 ---
 
@@ -44,13 +44,18 @@ Once cdflow is installed, you'll need to setup some resources that you will use 
 Account Scheme
 --------------
 
+For the docs, go [here](/full-documentation/account-scheme)
+
 External Config
 ---------------
+
+For the docs, go [here](/full-documentation/platform-config).
 
 Application Load Balancer
 -------------------------
 
+For the docs, go [here](/full-documentation/ALB).
 
 # Next
 
-See how to use cdflow to deploy a [frontend service](setting-up-a-frontend-service), [backend service](), [lambda function](), or [infrastructure]().
+See how to use cdflow to deploy a [frontend service](setting-up-a-frontend-service), [backend service](setting-up-a-backend-service), [lambda function](setting-up-a-lambda-function), or [infrastructure](setting-up-infrastructure).

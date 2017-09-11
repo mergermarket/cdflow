@@ -1,6 +1,6 @@
 ---
 title: Setting Up A Frontend Service 
-menu: guides
+menu: cdflow
 weight: 2
 ---
 
@@ -181,11 +181,17 @@ variable "desired_count" {
 cdflow release --platform-config <platform_config> <version> [options]
 ```
 
+Releasing is what we call creating a docker image and pushing it to a remote container registry. In this case, we will be building an image and pushing it to Amazons EC2 Container Registry (ECR). To do this you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into. You need to specify the location of your `platform-config`, for more information on what should be included in the platform-config please go [here](/full-documentation/platform-config). You must also specify a version. This version is added as a tag to the docker image, along with the `latest` tag, and used when deploying the image to an environment.
+
 # Deploy
+
+To deploy your service, run the command
 
 ```shell
 cdflow deploy <environment> <version> [options]
 ```
+
+This will run `terraform plan` followed by `terraform apply`. If you would only like to "`plan`" your deploy, feel free to use the `--plan-only` option to see what changes will be made to the environment before applying. This is where you would specify the `version` created in the release step above to be deployed to an `environment`. It's important to note that the `environment` should match a json file in the `config/` directory if you want to use any specific configuration for that environment. 
 
 # Destroy
 

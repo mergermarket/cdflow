@@ -1,7 +1,7 @@
 ---
 title: Simple Service Guide
-menu: guides
-weight: 3
+menu: cdflow
+weight: 6
 ---
 
 # Simple Service Guide

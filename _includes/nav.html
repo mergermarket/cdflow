@@ -1,21 +1,40 @@
 <nav>
+
     <h1>Guides</h1>
 
     <ul>
-        {% assign pages = site.pages | sort: 'weight' %} {% for p in pages %} {% if p.menu == 'guides' %}
-        <li{% if p.url==page.url %} class="active" {% endif %}>
-            <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
-            </li>
-            {% endif %} {% endfor %}
+        {% assign pages = site.pages | sort: 'weight' %}
+        {% for p in pages %}
+            {% if p.menu == 'guides' %}
+                <li{% if p.url==page.url %} class="active" {% endif %}>
+                    <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <h1>Latest Guides</h1>
+    <ul>
+        {% assign pages = site.pages | sort: 'weight' %}
+        {% for p in pages %}
+            {% if p.menu == 'cdflow' %}
+                <li{% if p.url==page.url %} class="active" {% endif %}>
+                    <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
     </ul>
 
     <h2>Reference</h2>
 
     <ul>
-        {% assign pages = site.pages | sort: 'weight' %} {% for p in pages %} {% if p.menu == 'reference' %}
-        <li{% if p.url==page.url %} class="active" {% endif %}>
-            <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
-            </li>
-            {% endif %} {% endfor %}
+        {% assign pages = site.pages | sort: 'weight' %}
+        {% for p in pages %}
+            {% if p.menu == 'reference' %}
+                <li{% if p.url==page.url %} class="active" {% endif %}>
+                    <a href="{{ site.baseurl }}{{ p.url }}">{{ p.title }}</a>
+                </li>
+            {% endif %} 
+        {% endfor %}
     </ul>
 </nav>
