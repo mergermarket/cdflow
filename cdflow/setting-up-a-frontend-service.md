@@ -21,7 +21,7 @@ cdflow.yml
 
 You'll need a `cdflow.yml` file in the top-level of your project. We use this to enforce conventions on the resources created by Terraform.
 
-Please see the [cdflow.yml reference](/reference/cdflow-yaml) for more detail.
+Please see the [cdflow.yml reference](/cdflow/reference/cdflow-yaml) for more detail.
 Example below:
 ```yaml
 account-scheme-url: s3://some-account/account-scheme.json
@@ -34,7 +34,7 @@ config/ Folder
 
 The `config/` folder should also exist in the top-level of your project. This folder provides configuration to your ECS service, such as the amount of memory to supply to the container, the DNS domain etc. These files are Terraform files in JSON format that are applied when a release or deploy is run.
 
-This folder, at a minimum, should contain an `all.json` file. Please see the [all.json reference](/reference/config-all-json) for more detail.
+This folder, at a minimum, should contain an `all.json` file. Please see the [all.json reference](/cdflow/reference/config-all-json) for more detail.
     
 `all.json`
 
@@ -53,7 +53,7 @@ This folder, at a minimum, should contain an `all.json` file. Please see the [al
 
 You may also choose to include json files that are specific to each environment you want your service to run in.
 
-Please see the [environment.json reference](/reference/config-env-json) for more detail.
+Please see the [environment.json reference](/cdflow/reference/config-env-json) for more detail.
 
 `environment.json`
 ```json
@@ -181,7 +181,7 @@ variable "desired_count" {
 cdflow release --platform-config <platform_config> <version> [options]
 ```
 
-Releasing is what we call creating a docker image and pushing it to a remote container registry. In this case, we will be building an image and pushing it to Amazons EC2 Container Registry (ECR). To do this you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into. You need to specify the location of your `platform-config`, for more information on what should be included in the platform-config please go [here](/full-documentation/platform-config). You must also specify a version. This version is added as a tag to the docker image, along with the `latest` tag, and used when deploying the image to an environment.
+Releasing is what we call creating a docker image and pushing it to a remote container registry. In this case, we will be building an image and pushing it to Amazons EC2 Container Registry (ECR). To do this you will need to have AWS credentials configured that are permitted to assume the `admin` role within the accounts you will be deploying into. You need to specify the location of your `platform-config`, for more information on what should be included in the platform-config please go [here](/cdflow/full-documentation/platform-config). You must also specify a version. This version is added as a tag to the docker image, along with the `latest` tag, and used when deploying the image to an environment.
 
 # Deploy
 
