@@ -116,15 +116,24 @@ def _get_component_name_from_git_remote():
     return name
 
 
-def get_platform_config_path(argv):
+def _get_platform_config_path_arg(iterator):
     try:
-        flag_index = argv.index('--platform-config')
-    except ValueError:
+        return next(iterator)
+    except StopIteration:
         raise MissingPlatformConfigError()
-    try:
-        return argv[flag_index+1]
-    except IndexError:
+
+
+def get_platform_config_paths(argv):
+    paths = []
+    iterator = iter(argv)
+    for arg in iterator:
+        if arg == '--platform-config':
+            paths.append(_get_platform_config_path_arg(iterator))
+        elif arg.startswith('--platform-config='):
+            paths.append(arg.split('=', 1)[1])
+    if len(paths) == 0:
         raise MissingPlatformConfigError()
+    return paths
 
 
 def _get_release_storage_key(component_name, version):
@@ -144,7 +153,7 @@ def get_image_sha(docker_client, image_id):
 
 def docker_run(
     docker_client, image_id, command, project_root,
-    environment_variables, platform_config_path=None,
+    environment_variables, platform_config_paths=[],
 ):
     exit_status = 0
     output = 'Done'
@@ -159,7 +168,7 @@ def docker_run(
                 'mode': 'ro',
             }
         }
-        if platform_config_path:
+        for platform_config_path in platform_config_paths:
             volumes[platform_config_path] = {
                 'bind': platform_config_path,
                 'mode': 'ro',
@@ -284,9 +293,10 @@ def main(argv):
         if command == 'release':
             image_digest = get_image_sha(docker_client, image_id)
             environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
-            kwargs['platform_config_path'] = os.path.abspath(
-                get_platform_config_path(argv)
-            )
+            kwargs['platform_config_paths'] = [
+                os.path.abspath(path)
+                for path in get_platform_config_paths(argv)
+            ]
         elif command == 'deploy':
             component_name = get_component_name(argv)
             version = get_version(argv)

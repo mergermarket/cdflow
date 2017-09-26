@@ -14,7 +14,7 @@ from cdflow import (
 )
 from hypothesis import assume, given
 from hypothesis.strategies import (
-    dictionaries, fixed_dictionaries, integers, lists, none, one_of, text
+    dictionaries, fixed_dictionaries, integers, lists, text
 )
 from mock import MagicMock, patch
 from strategies import VALID_ALPHABET, filepath, image_id
@@ -91,7 +91,7 @@ class TestDockerRun(unittest.TestCase):
         }),
         'image_id': image_id(),
         'project_root': filepath(),
-        'platform_config_path': filepath(),
+        'platform_config_paths': lists(elements=filepath(), max_size=1),
         'command': lists(text(alphabet=printable)),
     }))
     def test_run_args(self, fixtures):
@@ -99,7 +99,7 @@ class TestDockerRun(unittest.TestCase):
         image_id = fixtures['image_id']
         command = fixtures['command']
         project_root = fixtures['project_root']
-        platform_config_path = fixtures['platform_config_path']
+        platform_config_paths = fixtures['platform_config_paths']
         environment_variables = fixtures['environment_variables']
 
         container = MagicMock(spec=Container)
@@ -116,31 +116,35 @@ class TestDockerRun(unittest.TestCase):
             command,
             project_root,
             environment_variables,
-            platform_config_path,
+            platform_config_paths,
         )
 
         assert exit_status == 0
         assert output == ''
+
+        expected_volumes = {
+            project_root: {
+                'bind': project_root,
+                'mode': 'rw',
+            },
+            '/var/run/docker.sock': {
+                'bind': '/var/run/docker.sock',
+                'mode': 'ro',
+            },
+        }
+
+        for platform_config_path in platform_config_paths:
+            expected_volumes[platform_config_path] = {
+                'bind': platform_config_path,
+                'mode': 'ro',
+            }
 
         docker_client.containers.run.assert_called_once_with(
             image_id,
             command=command,
             environment=environment_variables,
             detach=True,
-            volumes={
-                project_root: {
-                    'bind': project_root,
-                    'mode': 'rw',
-                },
-                platform_config_path: {
-                    'bind': platform_config_path,
-                    'mode': 'ro',
-                },
-                '/var/run/docker.sock': {
-                    'bind': '/var/run/docker.sock',
-                    'mode': 'ro',
-                },
-            },
+            volumes=expected_volumes,
             working_dir=project_root,
         )
 
@@ -210,14 +214,14 @@ class TestDockerRun(unittest.TestCase):
         }),
         'image_id': image_id(),
         'project_root': filepath(),
-        'platform_config_path': one_of(filepath(), none()),
+        'platform_config_paths': lists(elements=filepath(), max_size=1),
         'command': lists(text(alphabet=printable)),
     }))
     def test_error_from_docker(self, fixtures):
         image_id = fixtures['image_id']
         command = fixtures['command']
         project_root = fixtures['project_root']
-        platform_config_path = fixtures['platform_config_path']
+        platform_config_paths = fixtures['platform_config_paths']
         environment_variables = fixtures['environment_variables']
 
         docker_client = MagicMock(spec=DockerClient)
@@ -229,7 +233,7 @@ class TestDockerRun(unittest.TestCase):
             command,
             project_root,
             environment_variables,
-            platform_config_path,
+            platform_config_paths,
         )
 
         assert exit_status == 1
@@ -239,7 +243,7 @@ class TestDockerRun(unittest.TestCase):
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
         'project_root': filepath(),
-        'platform_config_path': one_of(filepath(), none()),
+        'platform_config_paths': lists(elements=filepath(), max_size=1),
         'environment_variables': dictionaries(
             keys=text(alphabet=VALID_ALPHABET),
             values=text(alphabet=VALID_ALPHABET),
@@ -267,7 +271,7 @@ class TestDockerRun(unittest.TestCase):
             docker_run(
                 docker_client, fixtures['image_id'], fixtures['command'],
                 fixtures['project_root'], fixtures['environment_variables'],
-                fixtures['platform_config_path'],
+                fixtures['platform_config_paths'],
             )
 
             container.logs.assert_called_once_with(
@@ -283,7 +287,7 @@ class TestDockerRun(unittest.TestCase):
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
         'project_root': filepath(),
-        'platform_config_path': one_of(filepath(), none()),
+        'platform_config_paths': lists(elements=filepath(), max_size=1),
         'environment_variables': dictionaries(
             keys=text(alphabet=VALID_ALPHABET),
             values=text(alphabet=VALID_ALPHABET),
@@ -305,7 +309,7 @@ class TestDockerRun(unittest.TestCase):
             docker_run(
                 docker_client, fixtures['image_id'], fixtures['command'],
                 fixtures['project_root'], fixtures['environment_variables'],
-                fixtures['platform_config_path'],
+                fixtures['platform_config_paths'],
             )
 
             atexit.register.assert_called_once_with(
@@ -337,7 +341,7 @@ class TestDockerRun(unittest.TestCase):
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
         'project_root': filepath(),
-        'platform_config_path': one_of(filepath(), none()),
+        'platform_config_paths': lists(elements=filepath(), max_size=1),
         'environment_variables': dictionaries(
             keys=text(alphabet=VALID_ALPHABET),
             values=text(alphabet=VALID_ALPHABET),
@@ -361,7 +365,7 @@ class TestDockerRun(unittest.TestCase):
         exit_status, output = docker_run(
             docker_client, fixtures['image_id'], fixtures['command'],
             fixtures['project_root'], fixtures['environment_variables'],
-            fixtures['platform_config_path'],
+            fixtures['platform_config_paths'],
         )
 
         assert exit_status == fixtures['exit_code']
