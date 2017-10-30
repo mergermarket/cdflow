@@ -12,6 +12,11 @@ section {
   }
 }
 
+a:hover {
+  color: #069;
+  font-weight: normal;
+}
+
 #notice {
   text-align: right;
   border: 1px #a9d4ba solid;
@@ -51,6 +56,7 @@ header {
 
     a:hover {
       color: #069;
+      font-weight: normal;
     }
 
     li {
