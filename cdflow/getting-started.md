@@ -8,14 +8,23 @@ weight: 1
 
 Here you will find all of the steps to get started using cdflow in your project.
 
-# Installing cdflow
+# Installing
 
-To Install cdflow clone the cdflow repo from [here](https://github.com/mergermarket/cdflow), and copy the `cdflow.py` file into your PATH.
-```
-cp cdflow.py /usr/local/bin/cdflow
+To install the `cdflow` tool, put the `cdflow.py` script somewhere on your `PATH` and make it executable e.g.
+
+```bash
+curl -o /usr/local/bin/cdflow https://raw.githubusercontent.com/mergermarket/cdflow/master/cdflow.py
 ```
 
-# Verifying Installation
+## Prerequisites
+
+To use the `cdflow` tool you'll need:
+
+ - Docker (https://docs.docker.com/engine/installation/)
+ - Python
+ - Python packages (`pip install -U docker boto3 PyYAML`)
+
+## Verifying Installation
 
 You can verify cdflow is installed correctly by opening a new terminal session and trying `cdflow`. By executing 'help' you should see helpful output like below
 
@@ -27,7 +36,7 @@ cdflow
 Create and manage software services using continuous delivery.
 
 Usage:
-    cdflow release --platform-config <platform_config> <version> [options]
+    cdflow release (--platform-config <platform_config>)... <version> [options]
     cdflow deploy <environment> <version> [options]
     cdflow destroy <environment> [options]
 
@@ -37,27 +46,19 @@ Options:
     -p, --plan-only
 ```
 
-# cdflow Prerequisites
+# Runtime Requirements
 
-Once cdflow is installed, you'll need to setup some resources that you will use when using cdflow.
+The tool requires some additional components to be able to build and deploy releases.
 
-Account Scheme
---------------
+## Account Scheme
 
-You'll need an account scheme created in an s3 bucket. The bucket should contain a file called `account-scheme.json` and should have a bucket policy to allow any account which you are going to deploy to access.
+To work out where to store releases and which account corresponds to which environment `cdflow` uses an account scheme. This is a JSON file which needs to be stored in an S3 bucket in an AWS account and the IAM user running the `cdflow` command needs to be able to access that S3 URL.
 
-For the docs, go [here](/cdflow/full-documentation/account-scheme)
+The URL is included in the `cdflow.yml` file under the `account-scheme-url` key.
 
-External Config
----------------
+See the [account-scheme.json reference](/reference/account-scheme-json).
 
-For the docs, go [here](/cdflow/full-documentation/platform-config).
 
-Application Load Balancer
--------------------------
+## Platform Config
 
-For the docs, go [here](/cdflow/full-documentation/ALB).
-
-# Next
-
-See how to use cdflow to deploy a [frontend service](setting-up-a-frontend-service), [backend service](setting-up-a-backend-service), [lambda function](setting-up-a-lambda-function), or [infrastructure](setting-up-infrastructure).
+This defines information about common resources that are needed by components being deployed e.g. VPC, subnets etc. It's passed as a JSON file to the Terraform and the map is then accessible within the Terraform code.
