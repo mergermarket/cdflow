@@ -1,8 +1,6 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
-cd "$( dirname "${BASH_SOURCE[0]}" )"
-
-bundle install
-bundle exec jekyll serve -w --force_polling
+docker build -t cdflow-docs.local .
+docker run --rm -v $(pwd):/usr/local/app -p 4000:4000 cdflow-docs.local bundle exec jekyll serve -w --force_polling --host 0.0.0.0
