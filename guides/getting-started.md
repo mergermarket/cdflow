@@ -1,7 +1,6 @@
 ---
-title: Getting Started
-menu: cdflow
-weight: 1
+menu: guides
+weight: 10
 ---
 
 # Getting Started

@@ -1,7 +1,7 @@
 ---
 title: cdflow.yml
 menu: reference
-weight: 1
+weight: 30
 ---
 
 # cdflow.yml Reference
