@@ -56,7 +56,7 @@ To work out where to store releases and which account corresponds to which envir
 
 The URL is included in the `cdflow.yml` file under the `account-scheme-url` key.
 
-See the [account-scheme.json reference](/reference/account-scheme-json).
+See the [account-scheme.json reference](reference/account-scheme-json.md).
 
 
 ## Platform Config
