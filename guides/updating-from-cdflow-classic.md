@@ -17,7 +17,7 @@ We have updated the implementation of cdflow and made some changes to the projec
 Please see the [cdflow.yml reference](/reference/cdflow-yaml) for more detail.
 Example below:
 ```yaml
-account-scheme-url: s3://mmg-account-resources/account-scheme.json
+account-scheme-url: s3://resources/accounts.json
 type: docker
 team: DevTeam-Platform
 ```
@@ -27,10 +27,9 @@ team: DevTeam-Platform
 Please see the [all.json reference](/reference/config-all-json) for more detail.
     
 `all.json`
-
 ```json
 {
-    "dns_domain": "mmgapi.net",
+    "dns_domain": "example.com",
     "cpu": 16,
     "memory": 128,
     "port": 8000,

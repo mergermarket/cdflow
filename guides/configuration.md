@@ -4,175 +4,99 @@ menu: guides
 weight: 99
 ---
 
-# Configuration
+# Service Configuration
 
-This guide describes how to add environment specific configuration to your service repository that will be provided to your container(s) within an environment as environment variables. Since this configuration is stored with the code in your service repository, changes require that your code is redeployed - i.e. it is not suitable for configuration that needs to be dynamically updated without a redeploy. Also, since configuration is stored in the repository in plain text, it is not suitable for storing secrets or credentials - if you need that see the [managing secrets](secrets/) guide.
-
-## TL;DR
+### TL;DR
 
 Place your config in `config/ENV.json`:
 
 ```json
 {
-  "container_env": {
+  "application_environment": {
     "MY_CONFIG_VAR": "my-config-value"
   }
 }
 ```
 
-In addition to this, there are two places where we need to pass this through in order to expose it to your container:
+## Common Service Configuration
 
-### `infra/main.tf`
+Configuration files for your service should be placed in the `config/` directory in `.json` format.
 
-```terraform
-data "template_file" "container_definitions" {
-    ...
-    vars {
-       ...
-       # Add a line like the following (there should be a commented example):
-       MY_CONFIG_VAR   = "${var.container_env["MY_CONFIG_VAR"]}"
-       ...
+Common service configuration should be placed in a `common.json` file. This file contains the common properties of your service across all environments. Such as CPU, Memory allocation, DNS domain.
+
+Environment variables that are exposed to your service, which have the same value across all environments can be specified here (`common_application_environment`) so as not to duplicate in each environment file.
+
+### Quick Example
+`common.json`
+```json
+{
+    "dns_domain": "example.com",
+    "cpu": 16,
+    "memory": 128,
+    "port": 8000,
+    "alb_listener_rule_priority": 100,
+    "common_application_environment": {
+        "ENV_VAR": "value"
     }
 }
 ```
 
-### `infra/container_definitions.json`
+A full reference to the `common.json` file can be found [here](/reference/config-all-json).
 
+## Environment Specific Service Configuration
+
+Configuration files for your service should be placed in the `config/` directory in `.json` format.
+
+Environment specific configuration should be placed in a `.json` file. The file name should match the environment that you are deploying to i.e the first argument you pass to the `cdflow deploy` command.
+
+### Quick Example
+
+`environment.json`
+```json
+{
+    "application_environment": {
+        "ANOTHER_ENV_VAR": "value"
+    },
+    "alb_listener_arn": "arn:aws:...",
+    "alb_dns_name": "...elb.amazonaws.com"
+}
+```
+
+A full reference to the `environment.json` file can be found [here](/reference/config-env-json).
+
+## Secret Service Configuration
+
+As configuration is stored in the repository in plain text, it is not suitable for storing secrets or credentials - if you need that see the [managing secrets](secrets/) guide.
+
+In addition to this, there are two places where we need to pass this through in order to expose it to your container:
+
+# Working with Terraform
+
+## Terraform Service Configuration Variables 
+
+A cdflow service requires **all** the input parameters that are defined in the `infra/params.tf` file.
+Any parameters specified in the `infra/params.tf` which **do not have a default** must be passed in. If a parameter does not exist in anywhere in the `config/` directory and has no default the deployment will throw an error.
+
+All `.json` files in the `config/` directory are passed to Terraform as a `-var-file`. You can find more info in the Terraform docs [here](https://www.terraform.io/intro/getting-started/variables.html#from-a-file). 
+
+### Quick Example
+
+Example parameter from `infra/params.tf`
 ```terraform
-[
-  {
-    ...
-    "environment": [
-      ...
-      { "name": "MY_CONFIG_VAR", "value": "${MY_CONFIG_VAR}" }
-    ],
-    ...
-  }
-]   
-```
-
-Read on for a more long-winded description of this configuration.
-
-## Adding environment specific config to Terraform
-
-If there is a file called `config/ENVIRONMENT_NAME.json` (e.g. `config/aslive.json`) committed to your repository, then it will be used as a Terraform `-var-file` for input variables.
-
-Deployment to a given environment is triggered via the following (hopefully from within a Jenkins pipeline):
-
-```Shell
-infra/scripts/deploy ENVIRONMENT_NAME VERSION
-```
-
-For example, deploying version `7` to `aslive` would be triggered with:
-
-```Shell
-infra/scripts/deploy aslive 7
-```
-
-By default, this will result in [Terraform](https://www.terraform.io/) being triggered (via [Terragrunt](https://github.com/gruntwork-io/terragrunt)) simliar to the following (as it appears in the output):
-
-```
-[terragrunt] 2017/01/01 00:00:00 Running command: \
-  terraform apply \
-  -var env=aslive \
-  ...
-  -var version="7" \
-  -var-file infra/platform-config/mmg/dev/eu-west-1.json \
-  infra
-```
-
-If there exists a file `config/ENVIRONMENT_NAME.json` (e.g. `config/aslive.json`), then an additional `-var-file` will be added to include this file:
-
-```
-[terragrunt] 2017/01/01 00:00:00 Running command: \
-  terraform apply \
-  -var env=aslive \
-  ...
-  -var version="7" \
-  -var-file infra/platform-config/mmg/dev/eu-west-1.json \
-  -var-file config/aslive.json \
-  infra
-```
-
-## Config format
-
-The `config/ENVIRONMENT_NAME.json` file is a JSON file containing the values for any input parameters defined in your Terraform code (i.e. the `.tf` files under `infra/` - by convention in `infra/params.tf`). The default inlcudes a parameter called `container_env`:
-
-```terraform
-variable "container_env" {
+variable "application_environment" {
   description = "Environment parameters passed to the container"
   type        = "map"
   default     = {}
 }
 ```
 
-Since this input variable is defined as a map, you can add it with any keys you want in your config file:
-
-### config/aslive.json
+Passed through as config `config/aslive.json`
 
 ```json
 {
-  "container_env": {
+  "application_environment": {
     "MY_CONFIG_VAR": "my aslive config value"
   }
 }
 ```
-
-## Providing config values to your containers
-
-The above will provide a value within the `container_env` map to your Terraform code when deploying to `aslive`. However, by default nothing within the Terraform code will use this. To expose this value to your container, you will need to change the way your [ECS task definition](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_defintions.html) is generated to include the value.
-
-### infra/main.tf
-
-Within the `infra/main.tf` file, the following block controls rendering the ECS task definition:
-
-```terraform
-data "template_file" "container_definitions" {
-  template = "${file("${path.module}/container_definitions.json")}"
-  
-  vars {
-    # place your config environment variables here to make the available to your
-    # container definitions template, for example:
-    # MY_CONFIG_VAR   = "${var.container_env["MY_CONFIG_VAR"]}"
-
-    # standard variables
-    ...
-  }
-}
-```
-
-To pass a value from the `container_env` map to the template, add a line similar to the example from the comment:
-
-```terraform
-data "template_file" "container_definitions" {
-  template = "${file("${path.module}/container_definitions.json")}"
-  
-  vars {
-    # place your config environment variables here to make the available to your
-    # container definitions template, for example:
-    # MY_CONFIG_VAR   = "${var.container_env["MY_CONFIG_VAR"]}"
-    
-    MY_CONFIG_VAR   = "${var.container_env["MY_CONFIG_VAR"]}"
-
-    # standard variables
-    ...
-  }
-}
-```
-
-### infra/container_definitions.json
-
-Finally, the template itself is contained in the file `infra/container_definitions.json`. To add the value to the container's environment, pass the provided value in the `environment`:
-
-```json
-[
-  {
-    ...
-    "environment": [
-       ...
-       { "name": "MY_CONFIG_VAR", "value": "${MY_CONFIG_VAR}" }
-    ]
-    ...
-  }
-]
-```
+Since this input variable (`params.tf`) is defined as a map (`type = "map"`), you can add it with any keys you want in your config file (`aslive.json`).
