@@ -1,12 +1,9 @@
 ---
-title: account-scheme.json
 menu: reference
-weight: 1
+weight: 10
 ---
 
-{% include notice.html %}
-
-# account-scheme.json Reference
+# account-scheme.json
 
 These are the list of properties you can have in the account scheme json file. This file should be stored in an S3 bucket under a key which is accessible to the IAM user running the `cdflow` tools.
 

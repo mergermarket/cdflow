@@ -1,10 +1,11 @@
 ---
-title: Simple Service Guide
-menu: cdflow
-weight: 6
+menu: guides
+weight: 20
 ---
 
-# Simple Service Guide
+# Setting up a Docker Service
+
+{% include notice.html %}
 
 This guide will help you quickly add some files in order for you to have a service ready to release and deploy with cdflow. We will show you the files you need to build a simple node.js service running in Docker.
 
@@ -41,7 +42,3 @@ COPY . /usr/src/app
 	
 CMD [ "node", "server.js" ]
 ```
-
-# Next
-
-See how to use cdflow to deploy this simple service as a [frontend service](setting-up-a-frontend-service) or [backend service]().
