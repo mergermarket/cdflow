@@ -141,7 +141,7 @@ def _get_release_storage_key(component_name, version):
 
 
 def get_image_sha(docker_client, image_id):
-    if 'CDFLOW_TEST_LOCAL' in os.environ:
+    if 'CDFLOW_NO_IMAGE_PULL' in os.environ:
         image = docker_client.images.get(image_id)
     else:
         logger.info('Pulling image {}'.format(image_id))
