@@ -81,7 +81,7 @@ class TestImage(unittest.TestCase):
     @given(image_id())
     def test_do_not_pull_for_local_image(self, image_id):
         with patch('cdflow.os') as os:
-            os.environ = {"CDFLOW_TEST_LOCAL": "true"}
+            os.environ = {"CDFLOW_NO_IMAGE_PULL": "true"}
             docker_client = MagicMock(spec=DockerClient)
 
             image = MagicMock(spec=Image)
