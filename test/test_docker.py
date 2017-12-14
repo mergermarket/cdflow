@@ -81,7 +81,25 @@ class TestImage(unittest.TestCase):
     @given(image_id())
     def test_do_not_pull_for_local_image(self, image_id):
         with patch('cdflow.os') as os:
-            os.environ = {"CDFLOW_NO_IMAGE_PULL": "true"}
+            os.environ = {'CDFLOW_NO_IMAGE_PULL': 'true'}
+            docker_client = MagicMock(spec=DockerClient)
+
+            image = MagicMock(spec=Image)
+            image.attrs = {
+                'RepoDigests': []
+            }
+
+            docker_client.images.get.return_value = image
+
+            fetched_image_sha = get_image_sha(docker_client, image_id)
+
+            assert docker_client.images.pull.call_count == 0
+            assert fetched_image_sha == image_id
+
+    @given(image_id())
+    def test_do_not_pull_for_empty_var(self, image_id):
+        with patch('cdflow.os') as os:
+            os.environ = {'CDFLOW_NO_IMAGE_PULL': ''}
             docker_client = MagicMock(spec=DockerClient)
 
             image = MagicMock(spec=Image)
