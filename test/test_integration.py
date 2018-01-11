@@ -35,6 +35,7 @@ class TestIntegration(unittest.TestCase):
             }
 
             os.getcwd.return_value = project_root
+            os.getenv.return_value = False
             abs_path_to_config = '/root/path/to/config'
             os.path.abspath.return_value = abs_path_to_config
 
@@ -56,6 +57,8 @@ class TestIntegration(unittest.TestCase):
                 'FASTLY_API_KEY': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
                 'LOGENTRIES_ACCOUNT_KEY': ANY,
+                'DATADOG_APP_KEY': ANY,
+                'DATADOG_API_KEY': ANY,
             },
             detach=True,
             volumes={
@@ -114,6 +117,7 @@ class TestIntegration(unittest.TestCase):
             }
 
             os.getcwd.return_value = project_root
+            os.getenv.return_value = False
             abs_path_to_config = '/root/path/to/config'
             os.path.abspath.return_value = abs_path_to_config
 
@@ -136,6 +140,8 @@ class TestIntegration(unittest.TestCase):
                 'FASTLY_API_KEY': ANY,
                 'CDFLOW_IMAGE_DIGEST': 'hash',
                 'LOGENTRIES_ACCOUNT_KEY': ANY,
+                'DATADOG_APP_KEY': ANY,
+                'DATADOG_API_KEY': ANY,
             },
             detach=True,
             volumes={
