@@ -19,7 +19,7 @@ class TestIntegration(unittest.TestCase):
     @given(filepath())
     def test_release(self, project_root):
         argv = ['release', '--platform-config', '../path/to/config',
-                '--release-data ami_id:ami-z9876', '42']
+                '--release-data ami_id=ami-z9876', '42']
         with patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os:
 
