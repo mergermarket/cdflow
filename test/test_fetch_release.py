@@ -109,14 +109,20 @@ class TestGetComponentName(unittest.TestCase):
 
 class TestGetVersion(unittest.TestCase):
 
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    @given(
+        text(alphabet=VALID_ALPHABET, min_size=1)
+        .filter(lambda v: not v == '-v')
+    )
     def test_get_version_during_deploy(self, version):
         argv = ['deploy', 'test', version]
         found_version = get_version(argv)
 
         assert found_version == version
 
-    @given(text(alphabet=VALID_ALPHABET, min_size=1))
+    @given(
+        text(alphabet=VALID_ALPHABET, min_size=1)
+        .filter(lambda v: not v == '-v')
+    )
     def test_get_version_during_release(self, version):
         argv = ['release', version]
         found_version = get_version(argv)
@@ -124,7 +130,10 @@ class TestGetVersion(unittest.TestCase):
         assert found_version == version
 
     @given(fixed_dictionaries({
-        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'version': (
+            text(alphabet=VALID_ALPHABET, min_size=1)
+            .filter(lambda v: not v == '-v')
+        ),
         'options': lists(
             elements=sampled_from((
                 '-c foo', '--component bar',
@@ -153,7 +162,10 @@ class TestGetVersion(unittest.TestCase):
         assert found_version is None
 
     @given(fixed_dictionaries({
-        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'version': (
+            text(alphabet=VALID_ALPHABET, min_size=1)
+            .filter(lambda v: not v == '-v')
+        ),
         'path': filepath(),
     }))
     def test_get_version_when_platform_config_present(self, fixtures):
