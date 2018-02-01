@@ -12,7 +12,7 @@ docker run --rm --name "${image_id}" \
     py.test \
     --cov=. \
     --cov-report term-missing \
-    "${@}"
+    "$@"
 
 
 docker run --rm --name "${image_id}" "${image_id}" \
