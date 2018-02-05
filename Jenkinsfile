@@ -4,7 +4,7 @@ def cdflow_commit_sha
 // pipeline definition
 try {
     unitTest()
-    acceptanceTest(slavePrefix)
+    acceptanceTest()
 }
 catch (e) {
     currentBuild.result = 'FAILURE'
@@ -22,7 +22,7 @@ def unitTest() {
     }
 }
 
-def acceptanceTest(slavePrefix) {
+def acceptanceTest() {
     stage ("Acceptance Test") {
 		build job: 'platform/cdflow-test-service', parameters: [string(name: 'CDFLOW_COMMIT_SHA', value: "${cdflow_commit_sha.GIT_COMMIT}")]
     }
