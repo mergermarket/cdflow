@@ -1,10 +1,9 @@
 // configuration
-def slavePrefix = "mmg"
 def cdflow_commit_sha
 
 // pipeline definition
 try {
-    unitTest(slavePrefix)
+    unitTest()
     acceptanceTest(slavePrefix)
 }
 catch (e) {
@@ -13,9 +12,9 @@ catch (e) {
     throw e
 }
 
-def unitTest(slavePrefix) {
+def unitTest() {
     stage ("Unit Test") {
-        node ("${slavePrefix}dev") {
+        node ("swarm2") {
 
             cdflow_commit_sha = checkout scm
             sh "./test.sh"
