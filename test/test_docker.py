@@ -39,6 +39,7 @@ class TestEnvironment(unittest.TestCase):
         assert 'FASTLY_API_KEY' in container_environment
         assert 'DATADOG_APP_KEY' in container_environment
         assert 'DATADOG_API_KEY' in container_environment
+        assert 'GITHUB_TOKEN' in container_environment
 
 
 class TestImage(unittest.TestCase):
@@ -125,6 +126,7 @@ class TestDockerRun(unittest.TestCase):
             'AWS_SECRET_ACCESS_KEY': text(alphabet=printable, min_size=10),
             'AWS_SESSION_TOKEN': text(alphabet=printable, min_size=10),
             'FASTLY_API_KEY': text(alphabet=printable, min_size=10),
+            'GITHUB_TOKEN': text(alphabet=printable, min_size=10),
             'CDFLOW_IMAGE_DIGEST': text(min_size=12),
         }),
         'image_id': image_id(),
@@ -192,6 +194,7 @@ class TestDockerRun(unittest.TestCase):
             'AWS_SECRET_ACCESS_KEY': text(alphabet=printable, min_size=10),
             'AWS_SESSION_TOKEN': text(alphabet=printable, min_size=10),
             'FASTLY_API_KEY': text(alphabet=printable, min_size=10),
+            'GITHUB_TOKEN': text(alphabet=printable, min_size=10),
             'CDFLOW_IMAGE_DIGEST': text(min_size=12),
         }),
         'image_id': image_id(),
@@ -248,6 +251,7 @@ class TestDockerRun(unittest.TestCase):
             'AWS_SECRET_ACCESS_KEY': text(alphabet=printable, min_size=10),
             'AWS_SESSION_TOKEN': text(alphabet=printable, min_size=10),
             'FASTLY_API_KEY': text(alphabet=printable, min_size=10),
+            'GITHUB_TOKEN': text(alphabet=printable, min_size=10),
             'CDFLOW_IMAGE_DIGEST': text(min_size=12),
         }),
         'image_id': image_id(),

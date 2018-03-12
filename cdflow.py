@@ -226,6 +226,7 @@ def get_environment():
         'AWS_SECRET_ACCESS_KEY': os.environ.get('AWS_SECRET_ACCESS_KEY'),
         'AWS_SESSION_TOKEN': os.environ.get('AWS_SESSION_TOKEN'),
         'FASTLY_API_KEY': os.environ.get('FASTLY_API_KEY'),
+        'GITHUB_TOKEN': os.environ.get('GITHUB_TOKEN'),
         'LOGENTRIES_ACCOUNT_KEY': os.environ.get('LOGENTRIES_ACCOUNT_KEY'),
         'DATADOG_APP_KEY': os.environ.get('DATADOG_APP_KEY'),
         'DATADOG_API_KEY': os.environ.get('DATADOG_API_KEY'),
