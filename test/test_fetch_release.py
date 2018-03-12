@@ -180,8 +180,7 @@ class TestGetVersion(unittest.TestCase):
 
 class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
 
-    @given(filepath())
-    @given(filepath())
+    @given(filepath(), filepath())
     def test_get_config_path_from_args(self, path_a, path_b):
         args = [
             'release',
