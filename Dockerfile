@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:7.5.1804
 
 RUN yum install -y epel-release 
 RUN yum install -y git python-pip
