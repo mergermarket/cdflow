@@ -21,7 +21,10 @@ class TestIntegration(unittest.TestCase):
         argv = ['release', '--platform-config', '../path/to/config',
                 '--release-data ami_id=ami-z9876', '42']
         with patch('cdflow.docker') as docker, \
-                patch('cdflow.os') as os:
+                patch('cdflow.os') as os, \
+                patch('cdflow.abspath') as abspath:
+            abs_path_to_config = '/root/path/to/config'
+            abspath.return_value = abs_path_to_config
 
             image = MagicMock(spec=Image)
             docker.from_env.return_value.images.pull.return_value = image
@@ -37,8 +40,6 @@ class TestIntegration(unittest.TestCase):
 
             os.getcwd.return_value = project_root
             os.getenv.return_value = False
-            abs_path_to_config = '/root/path/to/config'
-            os.path.abspath.return_value = abs_path_to_config
 
             exit_status = main(argv)
 
@@ -104,7 +105,10 @@ class TestIntegration(unittest.TestCase):
         environment['CDFLOW_IMAGE_ID'] = pinned_image_id
 
         with patch('cdflow.docker') as docker, \
-                patch('cdflow.os') as os:
+                patch('cdflow.os') as os, \
+                patch('cdflow.abspath') as abspath:
+            abs_path_to_config = '/root/path/to/config'
+            abspath.return_value = abs_path_to_config
 
             image = MagicMock(spec=Image)
             docker.from_env.return_value.images.pull.return_value = image
@@ -120,8 +124,6 @@ class TestIntegration(unittest.TestCase):
 
             os.getcwd.return_value = project_root
             os.getenv.return_value = False
-            abs_path_to_config = '/root/path/to/config'
-            os.path.abspath.return_value = abs_path_to_config
 
             os.environ = environment
 

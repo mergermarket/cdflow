@@ -7,6 +7,7 @@ from contextlib import contextmanager
 import json
 import logging
 import os
+from os.path import abspath
 import sys
 from io import BytesIO
 from subprocess import CalledProcessError, check_output
@@ -128,9 +129,9 @@ def get_platform_config_paths(argv):
     iterator = iter(argv)
     for arg in iterator:
         if arg == '--platform-config':
-            paths.append(_get_platform_config_path_arg(iterator))
+            paths.append(abspath(_get_platform_config_path_arg(iterator)))
         elif arg.startswith('--platform-config='):
-            paths.append(arg.split('=', 1)[1])
+            paths.append(abspath(arg.split('=', 1)[1]))
     if len(paths) == 0:
         raise MissingPlatformConfigError()
     return paths
@@ -281,7 +282,23 @@ def fetch_account_scheme(s3_resource, bucket, key):
         return json.loads(f.read())
 
 
+def get_deploy_image_id(argv):
+    component_name = get_component_name(argv)
+    version = get_version(argv)
+    return find_image_id_from_release(
+        component_name, version
+    )
+
+
+def handle_wrapper_install_validation(argv):
+    if len(argv) > 0 and argv[-1] == '--validate-wrapper-installation':
+        print('cdflow wrapper installation OK')
+        sys.exit(0)
+
+
 def main(argv):
+
+    handle_wrapper_install_validation(argv)
     docker_client = docker.from_env()
     environment_variables = get_environment()
     image_id = get_image_id(os.environ)
@@ -297,18 +314,11 @@ def main(argv):
 
     try:
         if command == 'release':
-            image_digest = get_image_sha(docker_client, image_id)
-            environment_variables['CDFLOW_IMAGE_DIGEST'] = image_digest
-            kwargs['platform_config_paths'] = [
-                os.path.abspath(path)
-                for path in get_platform_config_paths(argv)
-            ]
+            kwargs['platform_config_paths'] = get_platform_config_paths(argv)
+            environment_variables['CDFLOW_IMAGE_DIGEST'] = \
+                get_image_sha(docker_client, image_id)
         elif command == 'deploy':
-            component_name = get_component_name(argv)
-            version = get_version(argv)
-            kwargs['image_id'] = find_image_id_from_release(
-                component_name, version
-            )
+            kwargs['image_id'] = get_deploy_image_id(argv)
     except CDFlowWrapperException as e:
         print(str(e), file=sys.stderr)
         return 1
