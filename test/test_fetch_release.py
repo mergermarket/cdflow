@@ -182,14 +182,19 @@ class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
 
     @given(filepath(), filepath())
     def test_get_config_path_from_args(self, path_a, path_b):
-        args = [
-            'release',
-            '--platform-config', path_a,
-            '--platform-config={}'.format(path_b),
-            '42'
-        ]
+        with patch('cdflow.abspath') as abspath:
+            prefix = '/a/path'
+            abspath.side_effect = lambda path: '{}/{}'.format(prefix, path)
+            args = [
+                'release',
+                '--platform-config', path_a,
+                '--platform-config={}'.format(path_b),
+                '42'
+            ]
 
-        assert get_platform_config_paths(args) == [path_a, path_b]
+            assert get_platform_config_paths(args) == [
+                '{}/{}'.format(prefix, path_a), '{}/{}'.format(prefix, path_b)
+            ]
 
     def test_raises_exception_when_missing_flag(self):
         self.assertRaises(
