@@ -1,3 +1,5 @@
+// vim: filetype=groovy
+
 // configuration
 def cdflow_commit_sha
 
