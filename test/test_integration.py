@@ -191,7 +191,8 @@ class TestIntegration(unittest.TestCase):
 
             BytesIO.return_value.__enter__.return_value.read.return_value = '''
                 {{
-                    "release-bucket": "{}"
+                    "release-bucket": "{}",
+                    "classic-metadata-handling": true
                 }}
             '''.format(fixtures['release_bucket'])
 
@@ -272,8 +273,7 @@ class TestIntegration(unittest.TestCase):
 
             BytesIO.return_value.__enter__.return_value.read.return_value = '''
                 {{
-                    "release-bucket": "{}",
-                    "classic-metadata-handling": true
+                    "release-bucket": "{}"
                 }}
             '''.format(fixtures['release_bucket'])
 

@@ -271,7 +271,7 @@ def find_image_id_from_release(component_name, version):
     bucket, key = parse_s3_url(account_scheme_url)
     account_scheme = fetch_account_scheme(s3_resource, bucket, key)
     kwargs = {}
-    if account_scheme.get('classic-metadata-handling'):
+    if not account_scheme.get('classic-metadata-handling'):
         kwargs['team_name'] = config['team']
     release_metadata = fetch_release_metadata(
         s3_resource, account_scheme['release-bucket'], component_name, version,
