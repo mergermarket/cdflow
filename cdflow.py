@@ -45,8 +45,13 @@ class MissingPlatformConfigError(CDFlowWrapperException):
     message = 'error: --platform-config parameter is required'
 
 
-def fetch_release_metadata(s3_resource, bucket_name, component_name, version):
-    key = _get_release_storage_key(component_name, version)
+def fetch_release_metadata(
+    s3_resource, bucket_name, component_name, version, team_name=None,
+):
+    if team_name:
+        key = _get_release_storage_key(team_name, component_name, version)
+    else:
+        key = _get_release_storage_key_classic(component_name, version)
     release_object = s3_resource.Object(bucket_name, key)
     return release_object.metadata
 
@@ -137,8 +142,14 @@ def get_platform_config_paths(argv):
     return paths
 
 
-def _get_release_storage_key(component_name, version):
+def _get_release_storage_key_classic(component_name, version):
     return '{}/{}-{}.zip'.format(component_name, component_name, version)
+
+
+def _get_release_storage_key(team_name, component_name, version):
+    return '{}/{}/{}-{}.zip'.format(
+        team_name, component_name, component_name, version
+    )
 
 
 def get_image_sha(docker_client, image_id):
@@ -241,10 +252,9 @@ def _command(argv):
         pass
 
 
-def get_account_scheme_url():
+def get_manifest_data():
     with open(MANIFEST_PATH) as config_file:
-        config = yaml.load(config_file.read())
-        return config['account-scheme-url']
+        return yaml.load(config_file.read())
 
 
 def get_image_id(environment):
@@ -256,11 +266,16 @@ def get_image_id(environment):
 def find_image_id_from_release(component_name, version):
     session = Session()
     s3_resource = session.resource('s3')
-    account_scheme_url = get_account_scheme_url()
+    config = get_manifest_data()
+    account_scheme_url = config['account-scheme-url']
     bucket, key = parse_s3_url(account_scheme_url)
     account_scheme = fetch_account_scheme(s3_resource, bucket, key)
+    kwargs = {}
+    if account_scheme.get('classic-metadata-handling'):
+        kwargs['team_name'] = config['team']
     release_metadata = fetch_release_metadata(
-        s3_resource, account_scheme['release-bucket'], component_name, version
+        s3_resource, account_scheme['release-bucket'], component_name, version,
+        **kwargs
     )
     return release_metadata['cdflow_image_digest']
 

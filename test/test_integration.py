@@ -171,7 +171,7 @@ class TestIntegration(unittest.TestCase):
         's3_bucket_and_key': s3_bucket_and_key(),
         'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
     }))
-    def test_deploy(self, fixtures):
+    def test_deploy_classic(self, fixtures):
         argv = ['deploy', 'aslive', '42']
 
         with patch('cdflow.Session') as Session, \
@@ -221,6 +221,99 @@ class TestIntegration(unittest.TestCase):
             s3_resource.Object.assert_any_call(
                 fixtures['s3_bucket_and_key'][0],
                 fixtures['s3_bucket_and_key'][1],
+            )
+
+            docker_client.containers.run.assert_called_once_with(
+                image_digest,
+                command=argv,
+                environment=ANY,
+                detach=True,
+                volumes={
+                    project_root: ANY,
+                    '/var/run/docker.sock': ANY
+                },
+                working_dir=project_root,
+            )
+
+            docker.from_env.return_value.containers.run.return_value.logs.\
+                assert_called_once_with(
+                    stream=True,
+                    follow=True,
+                    stdout=True,
+                    stderr=True,
+                )
+
+    @given(fixed_dictionaries({
+        'project_root': filepath(),
+        's3_bucket_and_key': s3_bucket_and_key(),
+        'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
+        'team_name': text(alphabet=VALID_ALPHABET, min_size=3),
+        'component_name': text(alphabet=VALID_ALPHABET, min_size=3),
+    }))
+    def test_deploy(self, fixtures):
+        version = '42'
+        component_name = fixtures['component_name']
+        argv = ['deploy', 'aslive', version, '--component', component_name]
+
+        with patch('cdflow.Session') as Session, \
+                patch('cdflow.BytesIO') as BytesIO, \
+                patch('cdflow.docker') as docker, \
+                patch('cdflow.os') as os, \
+                patch('cdflow.open') as open_:
+
+            s3_resource = Mock()
+
+            image_digest = 'sha:12345asdfg'
+            s3_resource.Object.return_value.metadata = {
+                'cdflow_image_digest': image_digest
+            }
+
+            Session.return_value.resource.return_value = s3_resource
+
+            BytesIO.return_value.__enter__.return_value.read.return_value = '''
+                {{
+                    "release-bucket": "{}",
+                    "classic-metadata-handling": true
+                }}
+            '''.format(fixtures['release_bucket'])
+
+            config_file = MagicMock(spec=file)
+            config_file.read.return_value = yaml.dump({
+                'account-scheme-url': 's3://{}/{}'.format(
+                    *fixtures['s3_bucket_and_key']
+                ),
+                'team': fixtures['team_name'],
+            })
+            open_.return_value.__enter__.return_value = config_file
+
+            docker_client = MagicMock(spec=DockerClient)
+            docker.from_env.return_value = docker_client
+            docker.from_env.return_value.containers.run.return_value.attrs = {
+                'State': {
+                    'ExitCode': 0,
+                }
+            }
+
+            project_root = fixtures['project_root']
+            os.getcwd.return_value = project_root
+
+            exit_status = main(argv)
+
+            assert exit_status == 0
+
+            s3_resource.Object.assert_any_call(
+                fixtures['s3_bucket_and_key'][0],
+                fixtures['s3_bucket_and_key'][1],
+            )
+
+            s3_resource.Object.assert_any_call(
+                fixtures['release_bucket'],
+                '{}/{}/{}-{}.zip'.format(
+                    fixtures['team_name'],
+                    component_name,
+                    component_name,
+                    version,
+                ),
             )
 
             docker_client.containers.run.assert_called_once_with(
