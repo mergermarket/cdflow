@@ -239,3 +239,35 @@ class TestFetchReleaseMetadata(unittest.TestCase):
                 component_name, component_name, version,
             )
         )
+
+    @given(fixed_dictionaries({
+        'component_name': text(alphabet=VALID_ALPHABET, min_size=1),
+        'version': text(alphabet=VALID_ALPHABET, min_size=1),
+        'bucket_name': text(alphabet=VALID_ALPHABET, min_size=1),
+        'team_name': text(alphabet=VALID_ALPHABET, min_size=1),
+    }))
+    def test_get_metadata_from_release_key_in_release_account(self, fixtures):
+        component_name = fixtures['component_name']
+        version = fixtures['version']
+        bucket_name = fixtures['bucket_name']
+        team_name = fixtures['team_name']
+        expected_metadata = {
+            'cdflow_image_digest': 'sha:12345asdfg'
+        }
+
+        s3_resource = Mock()
+        key = Mock()
+        key.metadata = expected_metadata
+        s3_resource.Object.return_value = key
+
+        metadata = fetch_release_metadata(
+            s3_resource, bucket_name, component_name, version, team_name,
+        )
+
+        assert metadata == expected_metadata
+
+        s3_resource.Object.assert_called_once_with(
+            bucket_name, '{}/{}/{}-{}.zip'.format(
+                team_name, component_name, component_name, version,
+            )
+        )
