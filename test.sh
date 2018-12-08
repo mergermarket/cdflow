@@ -2,11 +2,11 @@
 
 set -euo pipefail
 
-image_id="$(basename $(pwd))"
+image_id="$(basename $(pwd))-test"
 
-docker build -t "${image_id}" .
+docker image build -t "${image_id}" --target=base .
 
-docker run --rm --name "${image_id}" \
+docker container run --rm --name "${image_id}" \
     -i $(tty -s && echo -t) \
     "${image_id}" \
     py.test \
