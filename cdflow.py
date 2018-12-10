@@ -218,7 +218,7 @@ def _print_logs(container):
     for message in container.logs(
         stream=True, follow=True, stdout=True, stderr=True
     ):
-        print(message, end='')
+        print(message.decode('utf-8'), end='')
 
 
 def _remove_container(container):
