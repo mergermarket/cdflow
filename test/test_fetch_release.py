@@ -44,7 +44,7 @@ class TestGetComponentName(unittest.TestCase):
         with patch('cdflow.check_output') as check_output:
             check_output.return_value = 'git@github.com:org/{}.git\n'.format(
                 component_name
-            )
+            ).encode('utf-8')
             extraced_component_name = get_component_name(self.argv)
 
             assert extraced_component_name == component_name
@@ -58,7 +58,7 @@ class TestGetComponentName(unittest.TestCase):
         with patch('cdflow.check_output') as check_output:
             check_output.return_value = 'git@github.com:org/{}\n'.format(
                 component_name
-            )
+            ).encode('utf-8')
             extraced_component_name = get_component_name(self.argv)
 
             assert extraced_component_name == component_name
@@ -72,7 +72,7 @@ class TestGetComponentName(unittest.TestCase):
         with patch('cdflow.check_output') as check_output:
             check_output.return_value = 'git@github.com:org/{}/\n'.format(
                 component_name
-            )
+            ).encode('utf-8')
             extraced_component_name = get_component_name(self.argv)
 
             assert extraced_component_name == component_name
@@ -87,7 +87,7 @@ class TestGetComponentName(unittest.TestCase):
             repo_template = 'https://github.com/org/{}.git\n'
             check_output.return_value = repo_template.format(
                 component_name
-            )
+            ).encode('utf-8')
             extraced_component_name = get_component_name(self.argv)
 
             assert extraced_component_name == component_name
@@ -101,7 +101,7 @@ class TestGetComponentName(unittest.TestCase):
         with patch('cdflow.check_output') as check_output:
             check_output.return_value = 'https://github.com/org/{}\n'.format(
                 component_name
-            )
+            ).encode('utf-8')
             extraced_component_name = get_component_name(self.argv)
 
             assert extraced_component_name == component_name

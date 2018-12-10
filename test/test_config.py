@@ -111,7 +111,7 @@ class TestFetchAccountScheme(unittest.TestCase):
             'default-region', 'ecr-registry', 'lambda-bucket'
         ])
 
-        assert map(str, sorted(account_scheme.keys())) == expected_keys
+        assert list(sorted(account_scheme.keys())) == expected_keys
 
         release_bucket = '{}-account-resources'.format(account_prefix)
 
