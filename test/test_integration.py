@@ -1,6 +1,8 @@
 import json
 import unittest
+from unittest.mock import ANY, MagicMock, Mock, patch
 from string import printable
+from _io import TextIOWrapper
 
 import yaml
 from docker.client import DockerClient
@@ -10,7 +12,6 @@ from docker.models.images import Image
 from cdflow import CDFLOW_IMAGE_ID, main
 from hypothesis import given
 from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
-from mock import ANY, MagicMock, Mock, patch
 from strategies import VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
 
 
@@ -196,7 +197,7 @@ class TestIntegration(unittest.TestCase):
                 }}
             '''.format(fixtures['release_bucket'])
 
-            config_file = MagicMock(spec=file)
+            config_file = MagicMock(spec=TextIOWrapper)
             config_file.read.return_value = yaml.dump({
                 'account-scheme-url': 's3://{}/{}'.format(
                     *fixtures['s3_bucket_and_key']
@@ -277,7 +278,7 @@ class TestIntegration(unittest.TestCase):
                 }}
             '''.format(fixtures['release_bucket'])
 
-            config_file = MagicMock(spec=file)
+            config_file = MagicMock(spec=TextIOWrapper)
             config_file.read.return_value = yaml.dump({
                 'account-scheme-url': 's3://{}/{}'.format(
                     *fixtures['s3_bucket_and_key']
@@ -343,7 +344,7 @@ class TestIntegration(unittest.TestCase):
                 patch('cdflow.open') as open_:
 
             account_id = '1234567890'
-            config_file = MagicMock(spec=file)
+            config_file = MagicMock(spec=TextIOWrapper)
             config_file.read.return_value = json.dumps({
                 'platform_config': {'account_id': account_id}
             })
