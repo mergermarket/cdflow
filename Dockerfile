@@ -1,8 +1,4 @@
-FROM centos:7.5.1804
-
-RUN yum install -y epel-release 
-RUN yum install -y git python-pip
-RUN pip install -U pip
+FROM python:3.7.1 AS base
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
@@ -13,3 +9,10 @@ ENV PYTHONPATH /cdflow/
 WORKDIR /cdflow/
 
 COPY . .
+
+FROM base AS build
+
+RUN pip install pyinstaller
+
+RUN pyinstaller --onefile cdflow.py && \
+    pyinstaller cdflow.spec

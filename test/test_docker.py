@@ -297,7 +297,7 @@ class TestDockerRun(unittest.TestCase):
 
         container = MagicMock(spec=Container)
         logs = MagicMock()
-        messages = ['Running', 'the', 'command']
+        messages = [m.encode('utf-8') for m in ('Running', 'the', 'command')]
         logs.__iter__.return_value = iter(messages)
         container.logs.return_value = logs
 
@@ -321,9 +321,12 @@ class TestDockerRun(unittest.TestCase):
             )
 
             assert print_.call_args_list[0][1]['end'] == ''
-            assert print_.call_args_list[0][0][0] == messages[0]
-            assert print_.call_args_list[1][0][0] == messages[1]
-            assert print_.call_args_list[2][0][0] == messages[2]
+            assert print_.call_args_list[0][0][0] == messages[0]\
+                .decode('utf-8')
+            assert print_.call_args_list[1][0][0] == messages[1]\
+                .decode('utf-8')
+            assert print_.call_args_list[2][0][0] == messages[2]\
+                .decode('utf-8')
 
     @given(fixed_dictionaries({
         'image_id': image_id(),
