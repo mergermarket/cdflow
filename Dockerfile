@@ -1,4 +1,4 @@
-FROM python:3.7.1 AS base
+FROM python:3.7.2 AS base
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
