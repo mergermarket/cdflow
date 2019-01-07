@@ -1,0 +1,4 @@
+build/
+cdflow
+cdflow.spec
+dist/
