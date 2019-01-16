@@ -6,7 +6,7 @@ from cdflow import (
     fetch_release_metadata, get_component_name, get_version,
     get_platform_config_paths, MissingPlatformConfigError,
 )
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import fixed_dictionaries, lists, sampled_from, text
 from mock import Mock, patch
 from strategies import VALID_ALPHABET, filepath
@@ -17,6 +17,7 @@ class TestGetComponentName(unittest.TestCase):
     def setUp(self):
         self.argv = ['deploy', '42']
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -26,6 +27,7 @@ class TestGetComponentName(unittest.TestCase):
 
         assert actual_component_name == expected_component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -37,6 +39,7 @@ class TestGetComponentName(unittest.TestCase):
 
         assert actual_component_name == expected_component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -49,6 +52,7 @@ class TestGetComponentName(unittest.TestCase):
 
             assert extraced_component_name == component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -63,6 +67,7 @@ class TestGetComponentName(unittest.TestCase):
 
             assert extraced_component_name == component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -77,6 +82,7 @@ class TestGetComponentName(unittest.TestCase):
 
             assert extraced_component_name == component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -92,6 +98,7 @@ class TestGetComponentName(unittest.TestCase):
 
             assert extraced_component_name == component_name
 
+    @settings(deadline=None)
     @given(text(
         alphabet=VALID_ALPHABET, min_size=1, max_size=100
     ))
@@ -109,6 +116,7 @@ class TestGetComponentName(unittest.TestCase):
 
 class TestGetVersion(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(
         text(alphabet=VALID_ALPHABET, min_size=1)
         .filter(lambda v: not v == '-v')
@@ -119,6 +127,7 @@ class TestGetVersion(unittest.TestCase):
 
         assert found_version == version
 
+    @settings(deadline=None)
     @given(
         text(alphabet=VALID_ALPHABET, min_size=1)
         .filter(lambda v: not v == '-v')
@@ -129,6 +138,7 @@ class TestGetVersion(unittest.TestCase):
 
         assert found_version == version
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'version': (
             text(alphabet=VALID_ALPHABET, min_size=1)
@@ -161,6 +171,7 @@ class TestGetVersion(unittest.TestCase):
 
         assert found_version is None
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'version': (
             text(alphabet=VALID_ALPHABET, min_size=1)
@@ -180,6 +191,7 @@ class TestGetVersion(unittest.TestCase):
 
 class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(filepath(), filepath())
     def test_get_config_path_from_args(self, path_a, path_b):
         with patch('cdflow.abspath') as abspath:
@@ -210,6 +222,7 @@ class TestGetPlatformConfigPathFromArgs(unittest.TestCase):
 
 class TestFetchReleaseMetadata(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'component_name': text(alphabet=VALID_ALPHABET, min_size=1),
         'version': text(alphabet=VALID_ALPHABET, min_size=1),
@@ -240,6 +253,7 @@ class TestFetchReleaseMetadata(unittest.TestCase):
             )
         )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'component_name': text(alphabet=VALID_ALPHABET, min_size=1),
         'version': text(alphabet=VALID_ALPHABET, min_size=1),
