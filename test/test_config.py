@@ -5,7 +5,7 @@ from cdflow import (
     CDFLOW_IMAGE_ID, InvalidURLError, fetch_account_scheme, get_image_id,
     parse_s3_url
 )
-from hypothesis import assume, given
+from hypothesis import assume, given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, text
 from mock import Mock, patch
 from strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
@@ -13,6 +13,7 @@ from strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
 
 class TestGetReleaseCommandsImage(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(dictionaries(
         keys=text(alphabet=printable), values=text(alphabet=printable)
     ))
@@ -23,6 +24,7 @@ class TestGetReleaseCommandsImage(unittest.TestCase):
 
         assert image_id == CDFLOW_IMAGE_ID
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'environment': dictionaries(
             keys=text(alphabet=printable), values=text(alphabet=printable)
@@ -40,6 +42,7 @@ class TestGetReleaseCommandsImage(unittest.TestCase):
 
 class TestParseS3Url(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(s3_bucket_and_key())
     def test_gets_bucket_name_and_key(self, s3_bucket_and_key):
         expected_bucket = s3_bucket_and_key[0]
@@ -51,12 +54,14 @@ class TestParseS3Url(unittest.TestCase):
         assert bucket == expected_bucket
         assert key == expected_key
 
+    @settings(deadline=None)
     @given(text())
     def test_invalid_url_protocol_throws_exception(self, invalid_url):
         assume(not invalid_url.startswith('s3://'))
 
         self.assertRaises(InvalidURLError, parse_s3_url, invalid_url)
 
+    @settings(deadline=None)
     @given(text(alphabet=VALID_ALPHABET))
     def test_invalid_url_format_throws_exception(self, invalid_url):
         assume('/' not in invalid_url)
@@ -68,6 +73,7 @@ class TestParseS3Url(unittest.TestCase):
 
 class TestFetchAccountScheme(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         's3_bucket_and_key': s3_bucket_and_key(),
         'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
