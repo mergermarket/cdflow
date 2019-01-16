@@ -10,13 +10,15 @@ from docker.errors import ContainerError
 from docker.models.images import Image
 
 from cdflow import CDFLOW_IMAGE_ID, main
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
+
 from strategies import VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
 
 
 class TestIntegration(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(filepath())
     def test_release(self, project_root):
         argv = ['release', '--platform-config', '../path/to/config',
@@ -90,11 +92,13 @@ class TestIntegration(unittest.TestCase):
                 stderr=True,
             )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         'environment': dictionaries(
-            keys=text(alphabet=printable, min_size=1),
-            values=text(alphabet=printable, min_size=1),
+            keys=text(alphabet=printable, min_size=1, max_size=3),
+            values=text(alphabet=printable, min_size=1, max_size=3),
+            max_size=3,
         ),
         'image_id': image_id(),
     }))
@@ -167,12 +171,17 @@ class TestIntegration(unittest.TestCase):
             working_dir=project_root
         )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         's3_bucket_and_key': s3_bucket_and_key(),
-        'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
+        'release_bucket': text(
+            alphabet=VALID_ALPHABET,
+            min_size=3,
+            max_size=5,
+        ),
     }))
-    def test_deploy_classic(self, fixtures):
+    def test_classic_deploy(self, fixtures):
         argv = ['deploy', 'aslive', '42']
 
         with patch('cdflow.Session') as Session, \
@@ -245,12 +254,25 @@ class TestIntegration(unittest.TestCase):
                     stderr=True,
                 )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         's3_bucket_and_key': s3_bucket_and_key(),
-        'release_bucket': text(alphabet=VALID_ALPHABET, min_size=3),
-        'team_name': text(alphabet=VALID_ALPHABET, min_size=3),
-        'component_name': text(alphabet=VALID_ALPHABET, min_size=3),
+        'release_bucket': text(
+            alphabet=VALID_ALPHABET,
+            min_size=3,
+            max_size=5,
+        ),
+        'team_name': text(
+            alphabet=VALID_ALPHABET,
+            min_size=3,
+            max_size=5,
+        ),
+        'component_name': text(
+            alphabet=VALID_ALPHABET,
+            min_size=3,
+            max_size=5,
+        ),
     }))
     def test_deploy(self, fixtures):
         version = '42'
@@ -337,7 +359,8 @@ class TestIntegration(unittest.TestCase):
                     stderr=True,
                 )
 
-    @given(lists(elements=text(alphabet=printable)))
+    @settings(deadline=None)
+    @given(lists(elements=text(alphabet=printable, max_size=3), max_size=3))
     def test_invalid_arguments_passed_to_container_to_handle(self, argv):
         with patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os, \

@@ -12,7 +12,7 @@ from cdflow import (
     _remove_container, docker_run, get_environment, get_image_sha,
     CDFLOW_IMAGE_ID,
 )
-from hypothesis import assume, given
+from hypothesis import assume, given, settings
 from hypothesis.strategies import (
     dictionaries, fixed_dictionaries, integers, lists, text
 )
@@ -22,6 +22,7 @@ from strategies import VALID_ALPHABET, filepath, image_id
 
 class TestEnvironment(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(dictionaries(
         keys=text(alphabet=VALID_ALPHABET),
         values=text(alphabet=VALID_ALPHABET),
@@ -44,6 +45,7 @@ class TestEnvironment(unittest.TestCase):
 
 class TestImage(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(image_id())
     def test_get_latest_sha(self, image_id):
         assume(image_id != CDFLOW_IMAGE_ID)
@@ -65,6 +67,7 @@ class TestImage(unittest.TestCase):
 
         assert fetched_image_sha == image_sha
 
+    @settings(deadline=None)
     @given(image_id())
     def test_get_local_image_id(self, image_id):
         docker_client = MagicMock(spec=DockerClient)
@@ -81,6 +84,7 @@ class TestImage(unittest.TestCase):
 
         assert fetched_image_sha == image_id
 
+    @settings(deadline=None)
     @given(image_id())
     def test_do_not_pull_for_local_image(self, image_id):
         with patch('cdflow.os') as os:
@@ -99,6 +103,7 @@ class TestImage(unittest.TestCase):
             assert docker_client.images.pull.call_count == 0
             assert fetched_image_sha == image_id
 
+    @settings(deadline=None)
     @given(image_id())
     def test_do_not_pull_for_empty_var(self, image_id):
         with patch('cdflow.os') as os:
@@ -120,6 +125,7 @@ class TestImage(unittest.TestCase):
 
 class TestDockerRun(unittest.TestCase):
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'environment_variables': fixed_dictionaries({
             'AWS_ACCESS_KEY_ID': text(alphabet=printable, min_size=10),
@@ -188,6 +194,7 @@ class TestDockerRun(unittest.TestCase):
             working_dir=project_root,
         )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'environment_variables': fixed_dictionaries({
             'AWS_ACCESS_KEY_ID': text(alphabet=printable, min_size=10),
@@ -245,6 +252,7 @@ class TestDockerRun(unittest.TestCase):
             working_dir=project_root,
         )
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'environment_variables': fixed_dictionaries({
             'AWS_ACCESS_KEY_ID': text(alphabet=printable, min_size=10),
@@ -281,6 +289,7 @@ class TestDockerRun(unittest.TestCase):
         assert exit_status == 1
         assert output == str(DockerException())
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
@@ -328,6 +337,7 @@ class TestDockerRun(unittest.TestCase):
             assert print_.call_args_list[2][0][0] == messages[2]\
                 .decode('utf-8')
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
@@ -382,6 +392,7 @@ class TestDockerRun(unittest.TestCase):
         container.stop.assert_called_once_with()
         container.remove.assert_called_once_with()
 
+    @settings(deadline=None)
     @given(fixed_dictionaries({
         'image_id': image_id(),
         'command': lists(text(alphabet=printable)),
