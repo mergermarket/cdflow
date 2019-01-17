@@ -4,9 +4,18 @@ import argparse
 import github
 
 
+def build_github_client(env):
+    token = env.get('GITHUB_TOKEN')
+    if token:
+        return github.Github(token)
+    username = env['GITHUB_USERNAME']
+    password = env['GITHUB_PASSWORD']
+    return github.Github(username, password)
+
+
 def main(repo_name, version, asset_path):
     print(f'Releasing {repo_name} at version {version} with {asset_path}')
-    g = github.Github(os.environ['GITHUB_TOKEN'])
+    g = build_github_client(os.environ)
 
     repo = g.get_repo(repo_name)
 
