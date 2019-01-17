@@ -57,7 +57,7 @@ def publish(githubCredentialsId) {
                     git config user.name '${author}'
                     git config user.email '${email}'
                     git tag -a '${nextVersion}' -m 'Version ${nextVersion}'
-                    git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mergermarket/cdflow-commands' --tags
+                    git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mergermarket/cdflow' --tags
                 """
             }
 
