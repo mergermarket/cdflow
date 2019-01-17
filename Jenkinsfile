@@ -7,7 +7,7 @@ def githubCredentialsId = "github-credentials"
 // pipeline definition
 try {
     unitTest()
-    //acceptanceTest()
+    acceptanceTest()
     publish(githubCredentialsId)
 }
 catch (e) {
