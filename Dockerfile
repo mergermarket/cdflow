@@ -20,4 +20,4 @@ RUN pyinstaller \
     --onefile \
     --name "cdflow-$(uname -s)-$(uname -m)" \
     cdflow.py && \
-    pyinstaller cdflow.spec
+    pyinstaller "cdflow-$(uname -s)-$(uname -m).spec"
