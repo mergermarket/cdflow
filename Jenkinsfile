@@ -7,7 +7,7 @@ def githubCredentialsId = "github-credentials"
 // pipeline definition
 try {
     unitTest()
-    acceptanceTest()
+    //acceptanceTest()
     publish(githubCredentialsId)
 }
 catch (e) {
@@ -49,7 +49,12 @@ def acceptanceTest() {
 def publish(githubCredentialsId) {
     stage("Publish Release") {
         node ("swarm2") {
-            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: githubCredentialsId, usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
+            withCredentials([[
+                $class: 'UsernamePasswordMultiBinding',
+                credentialsId: githubCredentialsId,
+                usernameVariable: 'GITHUB_USERNAME',
+                passwordVariable: 'GITHUB_PASSWORD',
+            ]]) {
                 git url: remote, commitId: commit, credentialsId: githubCredentialsId
                 def author = sh(returnStdout: true, script: "git --no-pager show -s --format='%an' ${commit}").trim()
                 def email = sh(returnStdout: true, script: "git --no-pager show -s --format='%ae' ${commit}").trim()
@@ -57,7 +62,7 @@ def publish(githubCredentialsId) {
                     git config user.name '${author}'
                     git config user.email '${email}'
                     git tag -a '${nextVersion}' -m 'Version ${nextVersion}'
-                    git push 'https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/mergermarket/cdflow' --tags
+                    git push 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/mergermarket/cdflow' --tags
                 """
             }
 
