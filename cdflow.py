@@ -58,6 +58,9 @@ def fetch_release_metadata(
         key = _get_release_storage_key(team_name, component_name, version)
     else:
         key = _get_release_storage_key_classic(component_name, version)
+    logger.debug(
+        'Getting metadata on {} from {} bucket'.format(key, bucket_name)
+    )
     release_object = s3_resource.Object(bucket_name, key)
     return release_object.metadata
 
@@ -347,6 +350,7 @@ def main(argv):
         print(str(e), file=sys.stderr)
         return 1
 
+    logger.debug('Running docker with arguments: {}'.format(kwargs))
     exit_status, output = docker_run(**kwargs)
 
     print(output, file=sys.stderr if exit_status else sys.stdout)
