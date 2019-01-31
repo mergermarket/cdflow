@@ -350,7 +350,6 @@ def main(argv):
         print(str(e), file=sys.stderr)
         return 1
 
-    logger.debug('Running docker with arguments: {}'.format(kwargs))
     exit_status, output = docker_run(**kwargs)
 
     print(output, file=sys.stderr if exit_status else sys.stdout)
