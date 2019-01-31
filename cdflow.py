@@ -28,6 +28,12 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+def toggle_verbose_logging(argv):
+    if {'-v', '--verbose'} & set(argv):
+        logger.setLevel(logging.DEBUG)
+        logger.debug('Debug logging enabled')
+
+
 class CDFlowWrapperException(Exception):
     def __str__(self):
         return self.message or self.__class__.message
@@ -314,6 +320,7 @@ def handle_wrapper_install_validation(argv):
 
 
 def main(argv):
+    toggle_verbose_logging(argv)
 
     handle_wrapper_install_validation(argv)
     docker_client = docker.from_env()
