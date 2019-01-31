@@ -316,16 +316,8 @@ def get_deploy_image_id(argv):
     )
 
 
-def handle_wrapper_install_validation(argv):
-    if len(argv) > 0 and argv[-1] == '--validate-wrapper-installation':
-        print('cdflow wrapper installation OK')
-        sys.exit(0)
-
-
 def main(argv):
     toggle_verbose_logging(argv)
-
-    handle_wrapper_install_validation(argv)
     docker_client = docker.from_env()
     environment_variables = get_environment()
     image_id = get_image_id(os.environ)
