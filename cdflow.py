@@ -153,15 +153,17 @@ def _get_release_storage_key(team_name, component_name, version):
 
 
 def get_image_sha(docker_client, image_id):
-    if os.getenv('CDFLOW_NO_IMAGE_PULL', False):
+    logger.info('Pulling image {}'.format(image_id))
+    try:
+        image = docker_client.images.pull(image_id)
+    except ImageNotFound as e:
+        logger.debug(e)
+        logger.info(
+            'Could not pull image {}, trying to get it locally'.format(
+                image_id,
+            )
+        )
         image = docker_client.images.get(image_id)
-    else:
-        logger.info('Pulling image {}'.format(image_id))
-        try:
-            image = docker_client.images.pull(image_id)
-        except ImageNotFound as e:
-            logger.exception(e)
-            image = docker_client.images.get(image_id)
     digests = image.attrs['RepoDigests']
     return digests[0] if len(digests) else image_id
 
