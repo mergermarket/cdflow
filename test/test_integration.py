@@ -3,13 +3,14 @@ import unittest
 from unittest.mock import ANY, MagicMock, Mock, patch
 from string import printable
 from _io import TextIOWrapper
+import logging
 
 import yaml
 from docker.client import DockerClient
 from docker.errors import ContainerError
 from docker.models.images import Image
 
-from cdflow import CDFLOW_IMAGE_ID, main
+from cdflow import CDFLOW_IMAGE_ID, main, logger
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
 
@@ -394,3 +395,69 @@ class TestIntegration(unittest.TestCase):
             volumes=ANY,
             working_dir=ANY
         )
+
+
+@patch('cdflow.docker')
+@patch('cdflow.os')
+@patch('cdflow.abspath')
+class TestVerboseLogging(unittest.TestCase):
+
+    def setup_mocks(self, abspath, os, docker):
+        abs_path_to_config = '/root/path/to/config'
+        abspath.return_value = abs_path_to_config
+
+        image = MagicMock(spec=Image)
+        docker.from_env.return_value.images.pull.return_value = image
+        image.attrs = {
+            'RepoDigests': ['hash']
+        }
+
+        docker.from_env.return_value.containers.run.return_value.attrs = {
+            'State': {
+                'ExitCode': 0,
+            }
+        }
+
+        os.getcwd.return_value = '/tmp/project'
+        os.getenv.return_value = False
+
+    def test_short_flag(self, abspath, os, docker):
+        self.setup_mocks(abspath, os, docker)
+
+        argv = [
+            'release', '--platform-config', '../path/to/config',
+            '-v',
+            '--release-data ami_id=ami-z9876', '42',
+        ]
+
+        with self.assertLogs(logger, logging.DEBUG) as logs:
+            main(argv)
+
+        assert 'DEBUG:cdflow:Debug logging enabled' in logs.output
+
+    def test_long_flag(self, abspath, os, docker):
+        self.setup_mocks(abspath, os, docker)
+
+        argv = [
+            'release', '--platform-config', '../path/to/config',
+            '--verbose',
+            '--release-data ami_id=ami-z9876', '42',
+        ]
+
+        with self.assertLogs(logger, logging.DEBUG) as logs:
+            main(argv)
+
+        assert 'DEBUG:cdflow:Debug logging enabled' in logs.output
+
+    def test_no_flag(self, abspath, os, docker):
+        self.setup_mocks(abspath, os, docker)
+
+        argv = [
+            'release', '--platform-config', '../path/to/config',
+            '--release-data ami_id=ami-z9876', '42',
+        ]
+
+        with self.assertLogs(logger, logging.DEBUG) as logs:
+            main(argv)
+
+        assert 'DEBUG:cdflow:Debug logging enabled' not in logs.output
