@@ -13,7 +13,7 @@ COPY . .
 
 FROM base AS build
 
-RUN pip install pyinstaller
+RUN pip install pip==18.1 && pip install pyinstaller
 
 RUN pyinstaller \
     --hidden-import configparser \
