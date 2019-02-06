@@ -65,7 +65,7 @@ def publish(githubCredentialsId) {
                     git push 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/mergermarket/cdflow' --tags
                 """
 
-                sh "./release.sh --repo_name mergermarket/cdflow --version ${nextVersion} --asset_path ./dist/cdflow-Linux-x86_64"
+                sh "./release.sh --repo_name mergermarket/cdflow --version ${nextVersion} --asset_path ./cdflow-Linux-x86_64"
             }
         }
     }
