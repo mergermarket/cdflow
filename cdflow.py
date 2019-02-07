@@ -300,12 +300,32 @@ def parse_s3_url(s3_url):
     return bucket_and_key
 
 
-def fetch_account_scheme(s3_resource, bucket, key):
+def download_json_from_s3(s3_resource, bucket, key):
     s3_object = s3_resource.Object(bucket, key)
     with BytesIO() as f:
         s3_object.download_fileobj(f)
         f.seek(0)
         return json.loads(f.read())
+
+
+def fetch_account_scheme(s3_resource, bucket, key, team, component):
+    account_scheme = download_json_from_s3(s3_resource, bucket, key)
+    upgrade = account_scheme.get('upgrade-account-scheme')
+
+    def whitelisted(team, component):
+        team_whitelist = upgrade.get('team-whitelist', [])
+        component_whitelist = upgrade.get('component-whitelist', [])
+        logger.debug(
+            f'Checking whitelists: {team_whitelist}, {component_whitelist}',
+        )
+        return team in team_whitelist or component in component_whitelist
+
+    if upgrade and whitelisted(team, component):
+        bucket, key = parse_s3_url(upgrade['new-url'])
+        logger.debug(f'Account scheme forwarded, fetching from {bucket}/{key}')
+        account_scheme = download_json_from_s3(s3_resource, bucket, key)
+
+    return account_scheme
 
 
 def get_deploy_image_id(argv):
