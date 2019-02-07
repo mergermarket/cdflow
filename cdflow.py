@@ -280,10 +280,13 @@ def find_image_id_from_release(component_name, version):
     config = get_manifest_data()
     account_scheme_url = config['account-scheme-url']
     bucket, key = parse_s3_url(account_scheme_url)
-    account_scheme = fetch_account_scheme(s3_resource, bucket, key)
+    team = config['team']
+    account_scheme = fetch_account_scheme(
+        s3_resource, bucket, key, team, component_name,
+    )
     kwargs = {}
     if not account_scheme.get('classic-metadata-handling'):
-        kwargs['team_name'] = config['team']
+        kwargs['team_name'] = team
     release_metadata = fetch_release_metadata(
         s3_resource, account_scheme['release-bucket'], component_name, version,
         **kwargs
