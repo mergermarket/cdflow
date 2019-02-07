@@ -12,6 +12,7 @@ mock = "*"
 flake8 = "*"
 mccabe = "*"
 pygithub = "*"
+moto = "*"
 
 [packages]
 boto3 = "*"
