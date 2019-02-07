@@ -1,8 +1,0 @@
-pytest
-pytest-cov
-pytest-randomly
-hypothesis
-mock
-flake8
-mccabe
-pygithub

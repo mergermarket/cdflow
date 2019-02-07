@@ -1,10 +1,7 @@
 FROM python:3.7.2 AS base
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY test_requirements.txt .
-RUN pip install -r test_requirements.txt
+COPY Pipfile Pipfile.lock ./
+RUN pip install pipenv && pipenv install --system --deploy --dev
 
 ENV PYTHONPATH /cdflow/
 WORKDIR /cdflow/
