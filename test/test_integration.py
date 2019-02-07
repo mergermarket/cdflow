@@ -212,6 +212,7 @@ class TestIntegration(unittest.TestCase):
                 'account-scheme-url': 's3://{}/{}'.format(
                     *fixtures['s3_bucket_and_key']
                 ),
+                'team': 'a-team',
             })
             open_.return_value.__enter__.return_value = config_file
 
