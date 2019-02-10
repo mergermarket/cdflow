@@ -1,13 +1,15 @@
 import unittest
 from string import printable
+import json
 
 from cdflow import (
     CDFLOW_IMAGE_ID, InvalidURLError, fetch_account_scheme, get_image_id,
     parse_s3_url
 )
+import boto3
+from moto import mock_s3
 from hypothesis import assume, given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, text
-from mock import Mock, patch
 from strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
 
 
@@ -73,54 +75,245 @@ class TestParseS3Url(unittest.TestCase):
 
 class TestFetchAccountScheme(unittest.TestCase):
 
+    def setUp(self):
+        self.mock_s3 = mock_s3()
+        self.mock_s3.start()
+
+    def tearDown(self):
+        self.mock_s3.stop()
+
     @settings(deadline=None)
     @given(fixed_dictionaries({
         's3_bucket_and_key': s3_bucket_and_key(),
         'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
     }))
-    def test_fetch_account_scheme(self, fixtures):
-        s3_resource = Mock()
+    def test_fetches_without_forwarding_account_scheme(self, fixtures):
+        s3_client = boto3.client('s3')
+        s3_resource = boto3.resource('s3')
 
         account_prefix = fixtures['account_prefix']
         bucket = fixtures['s3_bucket_and_key'][0]
         key = fixtures['s3_bucket_and_key'][1]
 
-        with patch('cdflow.BytesIO') as BytesIO:
-            BytesIO.return_value.__enter__.return_value.read.return_value = '''
-                {{
-                  "accounts": {{
-                    "{0}dev": {{
-                      "id": "222222222222",
-                      "role": "admin"
-                    }},
-                    "{0}prod": {{
-                      "id": "111111111111",
-                      "role": "admin"
-                    }}
-                  }},
-                  "release-account": "{0}dev",
-                  "release-bucket": "{0}-account-resources",
-                  "environments": {{
-                    "live": "{0}prod",
-                    "*": "{0}dev"
-                  }},
-                  "default-region": "eu-west-12",
-                  "ecr-registry": "1234567.dkr.ecr.eu-west-1.amazonaws.com",
-                  "lambda-bucket": "cdflow-lambda-releases"
-                }}
-            '''.format(account_prefix)
+        s3_client.create_bucket(Bucket=bucket)
 
-            account_scheme = fetch_account_scheme(s3_resource, bucket, key)
+        account_scheme_content = {
+          'accounts': {
+            f'{account_prefix}dev': {
+              'id': '222222222222',
+              'role': 'admin'
+            },
+            f'{account_prefix}prod': {
+              'id': '111111111111',
+              'role': 'admin'
+            }
+          },
+          'release-account': f'{account_prefix}dev',
+          'release-bucket': f'{account_prefix}-account-resources',
+          'environments': {
+            'live': f'{account_prefix}prod',
+            '*': f'{account_prefix}dev'
+          },
+          'default-region': 'eu-west-12',
+          'ecr-registry': '1234567.dkr.ecr.eu-west-1.amazonaws.com',
+          'lambda-bucket': 'cdflow-lambda-releases',
+          'upgrade-account-scheme': {
+              'team-whitelist': [],
+              'component-whitelist': [],
+              'new-url': 's3://new_bucket/new_key',
+          }
+        }
 
-        expected_keys = sorted([
-            'accounts', 'release-account', 'release-bucket', 'environments',
-            'default-region', 'ecr-registry', 'lambda-bucket'
-        ])
+        account_scheme_object = s3_resource.Object(bucket, key)
+        account_scheme_object.put(
+            Body=json.dumps(account_scheme_content).encode('utf-8'),
+        )
+
+        team = 'a-team'
+        component = 'a-component'
+
+        account_scheme = fetch_account_scheme(
+            s3_resource, bucket, key, team, component,
+        )
+
+        expected_keys = sorted(account_scheme_content.keys())
 
         assert list(sorted(account_scheme.keys())) == expected_keys
 
-        release_bucket = '{}-account-resources'.format(account_prefix)
+        release_bucket = account_scheme_content['release-bucket']
 
         assert account_scheme['release-bucket'] == release_bucket
 
-        s3_resource.Object.assert_called_once_with(bucket, key)
+    def test_fetches_forwarded_account_scheme_if_component_whitelisted(self):
+        s3_client = boto3.client('s3')
+        s3_resource = boto3.resource('s3')
+
+        team = 'a-team'
+        component = 'a-component'
+
+        old_bucket = 'releases'
+        old_key = 'account-scheme.json'
+
+        new_bucket = 'new-releases'
+        new_key = 'upgraded-account-scheme.json'
+
+        s3_client.create_bucket(Bucket=old_bucket)
+        s3_client.create_bucket(Bucket=new_bucket)
+
+        old_account_scheme_content = json.dumps({
+          'accounts': {
+            'orgdev': {
+              'id': '222222222222',
+              'role': 'admin'
+            },
+            'orgprod': {
+              'id': '111111111111',
+              'role': 'admin'
+            }
+          },
+          'release-account': 'orgdev',
+          'release-bucket': 'org-account-resources',
+          'environments': {
+            'live': 'orgprod',
+            '*': 'orgdev'
+          },
+          'default-region': 'eu-west-12',
+          'ecr-registry': '1234567.dkr.ecr.eu-west-1.amazonaws.com',
+          'lambda-bucket': 'cdflow-lambda-releases',
+          'upgrade-account-scheme': {
+              'team-whitelist': [],
+              'component-whitelist': [component],
+              'new-url': f's3://{new_bucket}/{new_key}',
+          }
+        })
+
+        new_account_scheme_content = {
+            'accounts': {
+                'orgprod': {
+                    'id': '0987654321',
+                    'role': 'admin-role',
+                },
+                'orgrelease': {
+                    'id': '1234567890',
+                    'role': 'test-role',
+                    'region': 'region-override',
+                },
+            },
+            'environments': {},
+            'release-account': 'orgrelease',
+            'release-bucket': new_bucket,
+            'default-region': 'test-region-1',
+            'terraform-backend-s3-bucket': 'backend-bucket',
+            'terraform-backend-s3-dynamodb-table': 'backend-table',
+            'lambda-buckets': {
+                'test-region-1': 'test-bucket-1',
+                'test-region-2': 'test-bucket-2'
+            },
+        }
+
+        old_account_scheme_object = s3_resource.Object(old_bucket, old_key)
+        old_account_scheme_object.put(
+            Body=old_account_scheme_content.encode('utf-8'),
+        )
+
+        new_account_scheme_object = s3_resource.Object(new_bucket, new_key)
+        new_account_scheme_object.put(
+            Body=json.dumps(new_account_scheme_content).encode('utf-8'),
+        )
+
+        account_scheme = fetch_account_scheme(
+            s3_resource, old_bucket, old_key, team, component,
+        )
+
+        expected_keys = sorted(new_account_scheme_content.keys())
+
+        assert list(sorted(account_scheme.keys())) == expected_keys
+
+        assert account_scheme['release-bucket'] == new_bucket
+
+    def test_fetches_forwarded_account_scheme_if_team_whitelisted(self):
+        s3_client = boto3.client('s3')
+        s3_resource = boto3.resource('s3')
+
+        team = 'a-team'
+        component = 'a-component'
+
+        old_bucket = 'releases'
+        old_key = 'account-scheme.json'
+
+        new_bucket = 'new-releases'
+        new_key = 'upgraded-account-scheme.json'
+
+        s3_client.create_bucket(Bucket=old_bucket)
+        s3_client.create_bucket(Bucket=new_bucket)
+
+        old_account_scheme_content = json.dumps({
+          'accounts': {
+            'orgdev': {
+              'id': '222222222222',
+              'role': 'admin'
+            },
+            'orgprod': {
+              'id': '111111111111',
+              'role': 'admin'
+            }
+          },
+          'release-account': 'orgdev',
+          'release-bucket': 'org-account-resources',
+          'environments': {
+            'live': 'orgprod',
+            '*': 'orgdev'
+          },
+          'default-region': 'eu-west-12',
+          'ecr-registry': '1234567.dkr.ecr.eu-west-1.amazonaws.com',
+          'lambda-bucket': 'cdflow-lambda-releases',
+          'upgrade-account-scheme': {
+              'team-whitelist': [team],
+              'component-whitelist': [],
+              'new-url': f's3://{new_bucket}/{new_key}',
+          }
+        })
+
+        new_account_scheme_content = {
+            'accounts': {
+                'orgprod': {
+                    'id': '0987654321',
+                    'role': 'admin-role',
+                },
+                'orgrelease': {
+                    'id': '1234567890',
+                    'role': 'test-role',
+                    'region': 'region-override',
+                },
+            },
+            'environments': {},
+            'release-account': 'orgrelease',
+            'release-bucket': new_bucket,
+            'default-region': 'test-region-1',
+            'terraform-backend-s3-bucket': 'backend-bucket',
+            'terraform-backend-s3-dynamodb-table': 'backend-table',
+            'lambda-buckets': {
+                'test-region-1': 'test-bucket-1',
+                'test-region-2': 'test-bucket-2'
+            },
+        }
+
+        old_account_scheme_object = s3_resource.Object(old_bucket, old_key)
+        old_account_scheme_object.put(
+            Body=old_account_scheme_content.encode('utf-8'),
+        )
+
+        new_account_scheme_object = s3_resource.Object(new_bucket, new_key)
+        new_account_scheme_object.put(
+            Body=json.dumps(new_account_scheme_content).encode('utf-8'),
+        )
+
+        account_scheme = fetch_account_scheme(
+            s3_resource, old_bucket, old_key, team, component,
+        )
+
+        expected_keys = sorted(new_account_scheme_content.keys())
+
+        assert list(sorted(account_scheme.keys())) == expected_keys
+
+        assert account_scheme['release-bucket'] == new_bucket
