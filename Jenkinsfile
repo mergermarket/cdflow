@@ -8,7 +8,7 @@ def githubCredentialsId = "github-credentials"
 try {
     unitTest()
     acceptanceTest()
-    //publish(githubCredentialsId)
+    publish(githubCredentialsId)
 }
 catch (e) {
     currentBuild.result = 'FAILURE'
@@ -47,7 +47,7 @@ def acceptanceTest() {
 }
 
 def publish(githubCredentialsId) {
-    stage("Publish Release") {
+    stage("Tag Release") {
         node ("swarm2") {
             withCredentials([[
                 $class: 'UsernamePasswordMultiBinding',
@@ -65,7 +65,7 @@ def publish(githubCredentialsId) {
                     git push 'https://${GITHUB_USERNAME}:${GITHUB_PASSWORD}@github.com/mergermarket/cdflow' --tags
                 """
 
-                sh "./release.sh --repo_name mergermarket/cdflow --version ${nextVersion} --asset_path ./cdflow-Linux-x86_64"
+                //sh "./release.sh --repo_name mergermarket/cdflow --version ${nextVersion} --asset_path ./cdflow-Linux-x86_64"
             }
         }
     }
