@@ -8,7 +8,7 @@ def githubCredentialsId = "github-credentials"
 try {
     unitTest()
     acceptanceTest()
-    publish(githubCredentialsId)
+    //publish(githubCredentialsId)
 }
 catch (e) {
     currentBuild.result = 'FAILURE'
