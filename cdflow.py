@@ -319,13 +319,19 @@ def fetch_account_scheme(s3_resource, bucket, key, team, component):
         team_whitelist = upgrade.get('team-whitelist', [])
         component_whitelist = upgrade.get('component-whitelist', [])
         logger.debug(
-            f'Checking whitelists: {team_whitelist}, {component_whitelist}',
+            'Checking whitelists: {}, {}'.format(
+                team_whitelist, component_whitelist,
+            )
         )
         return team in team_whitelist or component in component_whitelist
 
     if upgrade and whitelisted(team, component):
         bucket, key = parse_s3_url(upgrade['new-url'])
-        logger.debug(f'Account scheme forwarded, fetching from {bucket}/{key}')
+        logger.debug(
+            'Account scheme forwarded, fetching from {}/{}'.format(
+                bucket, key,
+            )
+        )
         account_scheme = download_json_from_s3(s3_resource, bucket, key)
 
     return account_scheme
