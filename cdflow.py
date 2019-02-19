@@ -325,7 +325,9 @@ def fetch_account_scheme(s3_resource, bucket, key, team, component):
         )
         return team in team_whitelist or component in component_whitelist
 
-    if upgrade and whitelisted(team, component):
+    component_flag_passed = _get_component_name_from_cli_args(sys.argv)
+
+    if not component_flag_passed and upgrade and whitelisted(team, component):
         bucket, key = parse_s3_url(upgrade['new-url'])
         logger.debug(
             'Account scheme forwarded, fetching from {}/{}'.format(
