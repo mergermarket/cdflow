@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from string import printable
 import json
 
@@ -317,3 +318,65 @@ class TestFetchAccountScheme(unittest.TestCase):
         assert list(sorted(account_scheme.keys())) == expected_keys
 
         assert account_scheme['release-bucket'] == new_bucket
+
+    @patch('cdflow.sys')
+    def test_does_not_forward_account_scheme_if_component_flag_passed(
+        self, mock_sys,
+    ):
+        s3_client = boto3.client('s3')
+        s3_resource = boto3.resource('s3')
+
+        team = 'a-team'
+        component = 'a-component'
+
+        mock_sys.argv = ['--component', component]
+
+        old_bucket = 'releases'
+        old_key = 'account-scheme.json'
+
+        new_bucket = 'new-releases'
+        new_key = 'upgraded-account-scheme.json'
+
+        s3_client.create_bucket(Bucket=old_bucket)
+
+        old_account_scheme_content = {
+          'accounts': {
+            'orgdev': {
+              'id': '222222222222',
+              'role': 'admin'
+            },
+            'orgprod': {
+              'id': '111111111111',
+              'role': 'admin'
+            }
+          },
+          'release-account': 'orgdev',
+          'release-bucket': old_bucket,
+          'environments': {
+            'live': 'orgprod',
+            '*': 'orgdev'
+          },
+          'default-region': 'eu-west-12',
+          'ecr-registry': '1234567.dkr.ecr.eu-west-1.amazonaws.com',
+          'lambda-bucket': 'cdflow-lambda-releases',
+          'upgrade-account-scheme': {
+              'team-whitelist': [team],
+              'component-whitelist': [],
+              'new-url': f's3://{new_bucket}/{new_key}',
+          }
+        }
+
+        old_account_scheme_object = s3_resource.Object(old_bucket, old_key)
+        old_account_scheme_object.put(
+            Body=json.dumps(old_account_scheme_content).encode('utf-8'),
+        )
+
+        account_scheme = fetch_account_scheme(
+            s3_resource, old_bucket, old_key, team, component,
+        )
+
+        expected_keys = sorted(old_account_scheme_content.keys())
+
+        assert list(sorted(account_scheme.keys())) == expected_keys
+
+        assert account_scheme['release-bucket'] == old_bucket
