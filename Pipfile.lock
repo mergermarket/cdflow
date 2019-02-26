@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:1b226b3fa08e57d126cfa23ddbc02b4253adbecca510a3534bd71c56a3fcb0ec",
-                "sha256:46e4daaa7c8cb29237802b63699c16a116f96f301ad2fcfef800574333b58b98"
+                "sha256:00d64c0ce9d85a86dfda51999194621fbc9e50e20b56e857ef00dce8a30dac6a",
+                "sha256:d2e338c2f065b897ae856938af5090c3430ce0f53eddab8f87dad5972c38f975"
             ],
-            "version": "==1.12.101"
+            "version": "==1.12.102"
         },
         "certifi": {
             "hashes": [
@@ -190,10 +190,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:1b226b3fa08e57d126cfa23ddbc02b4253adbecca510a3534bd71c56a3fcb0ec",
-                "sha256:46e4daaa7c8cb29237802b63699c16a116f96f301ad2fcfef800574333b58b98"
+                "sha256:00d64c0ce9d85a86dfda51999194621fbc9e50e20b56e857ef00dce8a30dac6a",
+                "sha256:d2e338c2f065b897ae856938af5090c3430ce0f53eddab8f87dad5972c38f975"
             ],
-            "version": "==1.12.101"
+            "version": "==1.12.102"
         },
         "certifi": {
             "hashes": [
@@ -348,11 +348,11 @@
         },
         "flake8": {
             "hashes": [
-                "sha256:6d8c66a65635d46d54de59b027a1dda40abbe2275b3164b634835ac9c13fd048",
-                "sha256:6eab21c6e34df2c05416faa40d0c59963008fff29b6f0ccfe8fa28152ab3e383"
+                "sha256:859996073f341f2670741b51ec1e67a01da142831aa1fdc6242dbf88dffbe661",
+                "sha256:a796a115208f5c03b18f332f7c11729812c8c3ded6c46319c59b53efd3819da8"
             ],
             "index": "pypi",
-            "version": "==3.7.6"
+            "version": "==3.7.7"
         },
         "future": {
             "hashes": [
