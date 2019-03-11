@@ -41,7 +41,10 @@ def acceptanceTest() {
           },
           cdflow_test_infrastructure: {
             build job: 'platform/cdflow-test-infrastructure', parameters: [string(name: 'CDFLOW_COMMIT_SHA', value: "${cdflow_commit_sha.GIT_COMMIT}")]
-          }
+          },
+          cdflow_test_lambda: {
+            build job: 'platform/cdflow-test-lambda', parameters: [string(name: 'CDFLOW_COMMIT_SHA', value: "${cdflow_commit_sha.GIT_COMMIT}")]
+          },
         )
     }
 }
