@@ -13,6 +13,7 @@ flake8 = "*"
 mccabe = "*"
 pygithub = "*"
 moto = "*"
+dockerpty = "*"
 
 [packages]
 boto3 = "*"
