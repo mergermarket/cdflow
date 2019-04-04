@@ -13,6 +13,7 @@ from io import BytesIO
 from subprocess import CalledProcessError, check_output
 
 import docker
+import dockerpty
 import yaml
 from boto3.session import Session
 from docker.errors import DockerException, ImageNotFound
@@ -199,17 +200,29 @@ def docker_run(
                 'bind': platform_config_path,
                 'mode': 'ro',
             }
-        container = docker_client.containers.run(
-            image_id,
-            command=command,
-            environment=environment_variables,
-            detach=True,
-            volumes=volumes,
-            working_dir=project_root,
-        )
-        atexit.register(_remove_container, container)
-        _print_logs(container)
-        return handle_finished_container(container)
+        if _command(command) == 'shell':
+            container = docker_client.containers.create(
+                image_id,
+                command=command,
+                environment=environment_variables,
+                volumes=volumes,
+                working_dir=project_root,
+                tty=True,
+                stdin_open=True,
+            )
+            dockerpty.start(docker_client.api, container.id)
+            output = 'Shell end'
+        else:
+            container = docker_client.containers.run(
+                image_id,
+                command=command,
+                environment=environment_variables,
+                detach=True,
+                volumes=volumes,
+                working_dir=project_root,
+            )
+            _print_logs(container)
+            return handle_finished_container(container)
     except DockerException as error:
         exit_status = 1
         output = str(error)
@@ -217,6 +230,7 @@ def docker_run(
 
 
 def handle_finished_container(container):
+    atexit.register(_remove_container, container)
     container.reload()
     exit_status = container.attrs['State']['ExitCode']
     output = ''
@@ -265,7 +279,7 @@ def _command(argv):
 
 def get_manifest_data():
     with open(MANIFEST_PATH) as config_file:
-        return yaml.load(config_file.read())
+        return yaml.safe_load(config_file.read())
 
 
 def get_image_id(environment):

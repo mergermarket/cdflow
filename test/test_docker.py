@@ -2,6 +2,7 @@ import unittest
 from hashlib import sha256
 from string import printable
 
+import docker
 from docker.client import DockerClient
 from docker.errors import DockerException, ImageNotFound
 from docker.models.containers import Container
@@ -212,6 +213,70 @@ class TestDockerRun(unittest.TestCase):
                 },
             },
             working_dir=project_root,
+        )
+
+    @settings(deadline=None)
+    @given(fixed_dictionaries({
+        'environment_variables': fixed_dictionaries({
+            'AWS_ACCESS_KEY_ID': text(alphabet=printable, min_size=10),
+            'AWS_SECRET_ACCESS_KEY': text(alphabet=printable, min_size=10),
+            'AWS_SESSION_TOKEN': text(alphabet=printable, min_size=10),
+            'FASTLY_API_KEY': text(alphabet=printable, min_size=10),
+            'GITHUB_TOKEN': text(alphabet=printable, min_size=10),
+            'CDFLOW_IMAGE_DIGEST': text(min_size=12),
+        }),
+        'image_id': image_id(),
+        'project_root': filepath(),
+        'command': lists(text(alphabet=printable)),
+    }))
+    def test_run_shell_command(self, fixtures):
+        docker_client = MagicMock(spec=docker.from_env())
+        image_id = fixtures['image_id']
+        command = ['shell'] + fixtures['command']
+        project_root = fixtures['project_root']
+        environment_variables = fixtures['environment_variables']
+
+        container = MagicMock(spec=Container)
+        container.attrs = {
+            'State': {
+                'ExitCode': 0
+            }
+        }
+        docker_client.containers.create.return_value = container
+
+        with patch('cdflow.dockerpty') as dockerpty:
+            exit_status, output = docker_run(
+                docker_client,
+                image_id,
+                command,
+                project_root,
+                environment_variables
+            )
+
+            dockerpty.start.assert_called_once_with(
+                docker_client.api, container.id,
+            )
+
+        assert exit_status == 0
+        assert output == 'Shell end'
+
+        docker_client.containers.create.assert_called_once_with(
+            image_id,
+            command=command,
+            environment=environment_variables,
+            volumes={
+                project_root: {
+                    'bind': project_root,
+                    'mode': 'rw',
+                },
+                '/var/run/docker.sock': {
+                    'bind': '/var/run/docker.sock',
+                    'mode': 'ro',
+                },
+            },
+            working_dir=project_root,
+            tty=True,
+            stdin_open=True,
         )
 
     @settings(deadline=None)
