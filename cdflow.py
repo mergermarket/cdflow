@@ -201,6 +201,10 @@ def docker_run(
                 'mode': 'ro',
             }
         if _command(command) == 'shell':
+            columns = int(check_output(['tput', 'cols']))
+            lines = int(check_output(['tput', 'lines']))
+            environment_variables['COLUMNS'] = columns
+            environment_variables['LINES'] = lines
             container = docker_client.containers.create(
                 image_id,
                 command=command,

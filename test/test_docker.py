@@ -1,6 +1,7 @@
 import unittest
 from hashlib import sha256
 from string import printable
+from copy import deepcopy
 
 import docker
 from docker.client import DockerClient
@@ -244,7 +245,10 @@ class TestDockerRun(unittest.TestCase):
         }
         docker_client.containers.create.return_value = container
 
-        with patch('cdflow.dockerpty') as dockerpty:
+        with patch('cdflow.dockerpty') as dockerpty, patch(
+            'cdflow.check_output',
+        ) as check_output:
+            check_output.return_value = '42\n'
             exit_status, output = docker_run(
                 docker_client,
                 image_id,
@@ -260,10 +264,14 @@ class TestDockerRun(unittest.TestCase):
         assert exit_status == 0
         assert output == 'Shell end'
 
+        expected_environment_variable = deepcopy(environment_variables)
+        expected_environment_variable['COLUMNS'] = 42
+        expected_environment_variable['LINES'] = 42
+
         docker_client.containers.create.assert_called_once_with(
             image_id,
             command=command,
-            environment=environment_variables,
+            environment=expected_environment_variable,
             volumes={
                 project_root: {
                     'bind': project_root,
