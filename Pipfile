@@ -13,12 +13,12 @@ flake8 = "*"
 mccabe = "*"
 pygithub = "*"
 moto = "*"
-dockerpty = "*"
 
 [packages]
 boto3 = "*"
 docker = "*"
 pyyaml = ">=4.2b1"
+dockerpty = "*"
 
 [requires]
 python_version = "3.7"
