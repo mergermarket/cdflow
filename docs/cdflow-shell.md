@@ -15,7 +15,7 @@ It is recommended to use the command with the optional release version argument,
 
 ## plan.sh
 
-The `plan.sh` script simply contains a `terraform plan` command but passes all the required `-var-file` and `-var` flags which are handled by `cdflow` during a `deploy` command.
+The `plan.sh` script contains a `terraform plan` command and passes all the required `-var-file` and `-var` flags which are handled by `cdflow` during a `deploy` command. It will generate a plan file named `plan-<timestamp>` which can then be applied with `terraform apply plan-<timestamp>`.
 
 ## Environment
 
