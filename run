@@ -2,6 +2,20 @@
 
 set -euo pipefail
 
-docker build -t cdflow-docs.local .
-docker run --rm -v $(pwd):/usr/local/app cdflow-docs.local bundle exec jekyll build
-docker run --rm -v $(pwd):/usr/local/app -p 4000:4000 cdflow-docs.local bundle exec jekyll serve --incremental -w --force_polling --host 0.0.0.0
+IMAGE=cdflow-docs.local
+
+docker image build -t "${IMAGE}" .
+
+docker container run --rm \
+    -v $(pwd):/usr/local/app \
+    "${IMAGE}" \
+    bundle exec jekyll build
+docker container run --rm \
+    -v $(pwd):/usr/local/app \
+    -p 4000:4000 \
+    "${IMAGE}" \
+    bundle exec jekyll serve \
+        -w \
+        --incremental \
+        --force_polling \
+        --host 0.0.0.0

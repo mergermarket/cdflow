@@ -1,7 +1,7 @@
 FROM ruby
 
-RUN mkdir /usr/local/app/
+RUN mkdir -p /usr/local/app/
 WORKDIR /usr/local/app/
 
 COPY Gemfile Gemfile.lock /usr/local/app/
-RUN gem install bundler && bundle
+RUN bundle install
