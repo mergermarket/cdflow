@@ -1,5 +1,5 @@
 ---
-menu: guides
+menu: docs
 weight: 10
 ---
 
@@ -21,7 +21,7 @@ To use the `cdflow` tool you'll need:
 
  - Docker (https://docs.docker.com/engine/installation/)
  - Python
- - Python packages (`pip install -U docker boto3 PyYAML`)
+ - Python packages (`pip install -U docker boto3 PyYAML dockerpty`)
 
 ## Verifying Installation
 
@@ -35,9 +35,11 @@ cdflow
 Create and manage software services using continuous delivery.
 
 Usage:
-    cdflow release (--platform-config <platform_config>)... <version> [options]
+    cdflow release (--platform-config <platform_config>)...
+                   [--release-data=key=value]... <version> [options]
     cdflow deploy <environment> <version> [options]
     cdflow destroy <environment> [options]
+    cdflow shell <environment> [<version>] [options]
 
 Options:
     -c <component_name>, --component <component_name>
