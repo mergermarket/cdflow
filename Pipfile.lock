@@ -317,10 +317,10 @@
         },
         "deprecated": {
             "hashes": [
-                "sha256:2f293eb0eee34b1fcf3da530fe8fc4b0d71d43ddc2dc78e2ffb444b6c0868557",
-                "sha256:749f6cdcfbdc3f79258f8154bad43fced95adc632c337675d0385959895894bc"
+                "sha256:a515c4cf75061552e0284d123c3066fbbe398952c87333a92b8fc3dd8e4f9cc1",
+                "sha256:b07b414c8aac88f60c1d837d21def7e83ba711052e03b3cbaff27972567a8f8d"
             ],
-            "version": "==1.2.5"
+            "version": "==1.2.6"
         },
         "docker": {
             "hashes": [
@@ -368,11 +368,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:15e9d9064e826d6f693a3633a3fae116832159aba0951b8eb65a47082feda4c9",
-                "sha256:223b7eb23f06ed00ad5227e7e5add7fecf6a8f35f36636463a9c7ad422829f3f"
+                "sha256:936cdfd8c4db60c0d86bd57c9381e59c3c2b73bc00796f13d2e29af71513d77c",
+                "sha256:ad2797130be83ff374c1ed2781fb591b4152ae28abda28dd57b2a84a3fc1f5d4"
             ],
             "index": "pypi",
-            "version": "==4.24.6"
+            "version": "==4.26.4"
         },
         "idna": {
             "hashes": [
@@ -571,9 +571,9 @@
         },
         "pyrsistent": {
             "hashes": [
-                "sha256:16692ee739d42cf5e39cef8d27649a8c1fdb7aa99887098f1460057c5eb75c3a"
+                "sha256:50cffebc87ca91b9d4be2dcc2e479272bcb466b5a0487b6c271f7ddea6917e14"
             ],
-            "version": "==0.15.2"
+            "version": "==0.15.3"
         },
         "pytest": {
             "hashes": [
@@ -724,10 +724,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:8c1019c6aad13642199fbe458275ad6a84907634cc9f0989877ccc4a2840139d",
-                "sha256:ca943a7e809cc12257001ccfb99e3563da9af99d52f261725e96dfe0f9275bc3"
+                "sha256:4970c3758f4e89a7857a973b1e2a5d75bcdc47794442f2e2dd4fe8e0466e809a",
+                "sha256:8a5712cfd3bb4248015eb3b0b3c54a5f6ee3f2425963ef2a0125b8bc40aafaec"
             ],
-            "version": "==0.5.1"
+            "version": "==0.5.2"
         },
         "zope.interface": {
             "hashes": [
