@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:47ffea20fd516605d3c03bedfbf01d3e6ed30d1be21520f21d0cba4fc0da426e",
-                "sha256:af49d272018442dd544160ee97fbaa6cfbf36b8a74e9eb41e6eed9f390133b56"
+                "sha256:90b183cc625cd4b9e2b0a08caecd1c8eb2bd4d61ba9fe6960c4d19cdd973733a",
+                "sha256:fd3dae94aa4a55aefe96964d51f96ed51c4863d77d215907df9dc1f7590de033"
             ],
-            "version": "==1.12.193"
+            "version": "==1.12.194"
         },
         "certifi": {
             "hashes": [
@@ -196,10 +196,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:47ffea20fd516605d3c03bedfbf01d3e6ed30d1be21520f21d0cba4fc0da426e",
-                "sha256:af49d272018442dd544160ee97fbaa6cfbf36b8a74e9eb41e6eed9f390133b56"
+                "sha256:90b183cc625cd4b9e2b0a08caecd1c8eb2bd4d61ba9fe6960c4d19cdd973733a",
+                "sha256:fd3dae94aa4a55aefe96964d51f96ed51c4863d77d215907df9dc1f7590de033"
             ],
-            "version": "==1.12.193"
+            "version": "==1.12.194"
         },
         "certifi": {
             "hashes": [
@@ -487,11 +487,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:30ecff935299853fc4791b32621f41eed6ed612b55a70678663817b95dc73cf9",
-                "sha256:4245436809d0fd641873d726ad76190792159128fd42ab699432a473a56bb8a9"
+                "sha256:b01f383479b3d5110926b0725b47b9349c5b5004452fdc3ae86d369965daf512",
+                "sha256:f51e6596eedec226f4f412fe830ff80aa94ad93a9c24f624abbd52b71c8a6559"
             ],
             "index": "pypi",
-            "version": "==1.3.14.dev61"
+            "version": "==1.3.14.dev72"
         },
         "packaging": {
             "hashes": [
@@ -557,10 +557,10 @@
         },
         "pyparsing": {
             "hashes": [
-                "sha256:530d8bf8cc93a34019d08142593cf4d78a05c890da8cf87ffa3120af53772238",
-                "sha256:f78e99616b6f1a4745c0580e170251ef1bbafc0d0513e270c4bd281bf29d2800"
+                "sha256:09b60ec311af02f93c66ab2cb65e3ca92c5cb5de5445894982ce9f0928b116f5",
+                "sha256:38181feb3a1278f464b7e1d0d647760f7ab08d93f654f886ff528946450adbab"
             ],
-            "version": "==2.4.1"
+            "version": "==2.4.2a1"
         },
         "pyrsistent": {
             "hashes": [
