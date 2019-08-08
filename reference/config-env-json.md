@@ -5,25 +5,29 @@ weight: 50
 
 # \<environment\>.json
 
-{% include notice.html %}
+This is a file containing variables passed to `terraform`, when `cdflow deploy` is called, as a `-var-file`. The name of the file will be determined by the name of the environment being deployed to. For example, calling `cdflow deploy live <version>` will pass the `./config/live.json` file to Terraform, e.g. `terraform plan -var-file config/live.json ...`. Each of the top level keys in the file must be defined in a `variable` block in the `./infra/*.tf` files.
 
-These are the list of properties you can have in an environment config file like `aslive.json` or `live.json` which should exist in the `config/` directory of your project.
+## Example
 
-
-| Key | Default | Required | Description | Example |
-| --- | ------- | -------- | ----------- | ------- |
-| `alb_dns_name` | - | no | The dns name for the application load balancer that your service will belong to| `internal-aslive-platform-mergermarket-it-1234.eu-west-1.elb.amazonaws.com` |
-| `alb_listener_arn` | - | no | The arn of the application load balancer that your service will belong to| `arn:aws:elasticloadbalancing:eu-west-1:123456:listener/app/aslive-platform-mergermarket-it/123abc/123abc` |
-| `application_environment` | - | no (can be empty) | Environment variables you want exposed to your service for that particular environment | `{ "VERSION" : "123" }` |
-
-## Quick Example
-
+`./config/live.json`:
 ```json
     {
+        "static_assets_url": "https://cdn.example.com/",
         "application_environment": {
-            "ANOTHER_ENV_VAR": "value"
-        },
-        "alb_listener_arn": "arn:aws:...",
-        "alb_dns_name": "...elb.amazonaws.com"
+            "ENV_VAR": "value"
+        }
     }
+```
+
+`./infra/variables.tf`:
+```hcl
+variable "static_assets_url" {
+  type        = "string"
+  description = "The base url to serve static files from"
+}
+
+variable "application_environment" {
+  type        = "map"
+  description = "A map of environment variables to be passed to the service"
+}
 ```

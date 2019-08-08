@@ -5,7 +5,7 @@ weight: 40
 
 # common.json
 
-This is a file containing variables passed to `terraform` as a `-var-file` i.e. `terraform plan -var-file config/common.json ...`. Each of the top level keys in the file must be defined in a `variable` block in the `./infra/*.tf` files.
+This is a file containing variables passed to `terraform`, when `cdflow deploy` is called, as a `-var-file` i.e. `terraform plan -var-file config/common.json ...`. Each of the top level keys in the file must be defined in a `variable` block in the `./infra/*.tf` files.
 
 ## Example
 
