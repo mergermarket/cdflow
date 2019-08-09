@@ -11,6 +11,12 @@ To install the `cdflow` tool, put the `cdflow.py` script somewhere on your `PATH
 curl -o /usr/local/bin/cdflow https://raw.githubusercontent.com/mergermarket/cdflow/master/cdflow.py
 ```
 
+A `man` page is also available
+
+```bash
+curl -o /usr/local/share/man/man1/cdflow.1 https://raw.githubusercontent.com/mergermarket/cdflow/master/docs/cdflow.1
+```
+
 ## Prerequisites
 
 To use the `cdflow` tool you'll need:
