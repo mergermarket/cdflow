@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Graham Lyons" />
+  <meta name="author" content="Arthur Gassner" />
+  <meta name="author" content="Keir Badger" />
+  <meta name="author" content="Tom Yandell" />
+  <title>cdflow(1)</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">cdflow(1)</h1>
+<p class="author">Graham Lyons</p>
+<p class="author">Arthur Gassner</p>
+<p class="author">Keir Badger</p>
+<p class="author">Tom Yandell</p>
+<p class="date">July 2019</p>
+</header>
+<h1 id="name">NAME</h1>
+<p><strong>cdflow</strong> - create and manage software services using continuous delivery</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<div class="line-block"><strong>cdflow release</strong> <strong>--platform-config</strong> <em>platform_config</em>… [<em>version</em>] [<em>options</em>]<br />
+<strong>cdflow deploy</strong> <em>environment</em> [<em>version</em>] [<em>options</em>]<br />
+<strong>cdflow destroy</strong> <em>environment</em> [<em>options</em>]<br />
+<strong>cdflow shell</strong> <em>environment</em></div>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>cdflow</strong> is a program to create and manage services in a continuous delivery pipeline using <strong>terraform</strong>. The intended workflow is to generate an artifact using <strong>cdflow release</strong>, which is then deployed to one or more envinronments using <strong>cdflow deploy</strong>.</p>
+<h2 id="environment">Environment</h2>
+<p><strong>cdflow</strong> expects to be run from the root of a project. It assumes that there to be the following files in its environment:</p>
+<ul>
+<li><p><em>cdflow.yml</em>, a yaml file with the following fields:</p>
+<ul>
+<li><em>team</em>: the name of your team.</li>
+<li><em>account_scheme</em>: provided by your platform team.</li>
+<li><em>type</em>: one of either <em>docker</em>, <em>lambda</em>, or <em>infra</em>.</li>
+</ul></li>
+<li><p>an <em>/infra</em> folder containing valid <strong>terraform</strong> config files.</p></li>
+<li><p>an optional <em>config</em> folder, containing JSON <strong>terraform</strong> variable files.</p></li>
+</ul>
+<h2 id="cdflow-release">cdflow release</h2>
+<p>Builds and publishes a release. The information in the release allows <strong>cdflow deploy</strong> to run <strong>terraform</strong> in a repeatable way, in an attempt to produce identical deployments each time. This information is stored in an AWS S3 bucket.</p>
+<p>Always included are</p>
+<ul>
+<li>platform configuration</li>
+<li>component configuration (the <em>/config</em> folder, see above)</li>
+<li><strong>cdflow</strong> version</li>
+<li><strong>terraform</strong> version</li>
+<li><strong>terraform</strong> providers and modules (from the <em>/infra</em> folder, see above).</li>
+</ul>
+<p>An additional artefact will be produced, based upon the based upon the <em>type</em> field in the <em>cdflow.yml</em> file (see above):</p>
+<ul>
+<li><p><em>docker</em></p>
+<p>A Docker image created from a <em>Dockerfile</em> in the root of the project. This image is also published to an AWS <a href="#see-also">Elastic Container Registry</a></p></li>
+<li><p><em>lambda</em></p>
+<p>A zip file of the project’s <em>/src</em> folder, suitable for deployment as an AWS lambda.</p></li>
+<li><p><em>infra</em></p>
+<p>No extra artefacts will be produced.</p></li>
+</ul>
+<p>The <em>version</em> parameter is the user-defined identfier for the release. It must be unique. Conventionally this will be the build number, a hyphen, and then the short <strong>git</strong> commit identifier. If no <em>version</em> is supplied, the release is built but not</p>
+<h2 id="cdflow-deploy">cdflow deploy</h2>
+<p>Deploys the artefact created with <strong>cdflow release</strong> to</p>
+<h2 id="cdflow-destroy">cdflow destroy</h2>
+<p>describe destroy command and what it does</p>
+<h2 id="cdflow-shell">cdflow shell</h2>
+<p>describe shell command and what it does</p>
+<h1 id="options">OPTIONS</h1>
+<dl>
+<dt><strong>-c</strong> <em>component_name</em>, <strong>–component</strong> <em>component_name</em></dt>
+<dd>something to do with a component name
+</dd>
+<dt><strong>-v</strong>, <strong>–verbose</strong></dt>
+<dd>Give verbose logging output
+</dd>
+<dt><strong>-p</strong>, <strong>–plan-only</strong></dt>
+<dd>Generate and show terraform execution plan. Only for <strong>cdflow deploy</strong>.
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<ul>
+<li><a href="https://www.terraform.io">terraform</a></li>
+</ul>
+</body>
+</html>
