@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:4ef7ab3e5632d55ae91be8a0d404cf586f955c2dca972a6f761de793ddc14ea1",
-                "sha256:d90d0299dde2b7514586f01f11954c4c6acca58f1508827408690b201ccce8ac"
+                "sha256:1a9b246b40a7694c6c1707c386e6dc00cd473647efd92aa8b5b812c8a223ff4d",
+                "sha256:7fa1ea16e11d8537dab675577e609b95d3cea6f5db005f3adc934afdae6b72bc"
             ],
-            "version": "==1.12.207"
+            "version": "==1.12.208"
         },
         "certifi": {
             "hashes": [
@@ -170,9 +170,9 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:9b7b40ba50a2befe255e48549d8a4bb6c63490cf4c0b1f3f2e6a6f25b5723483"
+                "sha256:b38639c2b7527f664da4e18e09d67a691e8e3877ae0ca1196a0d129a020a3676"
             ],
-            "version": "==1.13.1"
+            "version": "==1.13.2"
         },
         "aws-xray-sdk": {
             "hashes": [
@@ -198,10 +198,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:4ef7ab3e5632d55ae91be8a0d404cf586f955c2dca972a6f761de793ddc14ea1",
-                "sha256:d90d0299dde2b7514586f01f11954c4c6acca58f1508827408690b201ccce8ac"
+                "sha256:1a9b246b40a7694c6c1707c386e6dc00cd473647efd92aa8b5b812c8a223ff4d",
+                "sha256:7fa1ea16e11d8537dab675577e609b95d3cea6f5db005f3adc934afdae6b72bc"
             ],
-            "version": "==1.12.207"
+            "version": "==1.12.208"
         },
         "certifi": {
             "hashes": [
@@ -489,11 +489,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:2fa6fd6d44acd2065e7cb1e3b719588ce8130e4489ad9d42588b61745817258f",
-                "sha256:c7b65f4f54df98d10e84fbe50f5e1e936a1b8df5c031d38db3e39694a0bd3c32"
+                "sha256:01e7b72b0dbb3ac8686be6741649e12cc046f5b66a8a2d91588d9f5b23c7cf63",
+                "sha256:3399c329b09550f50657064180efe8768cfb4e5f4591eb3a1fc3e3e42784a85d"
             ],
             "index": "pypi",
-            "version": "==1.3.14.dev147"
+            "version": "==1.3.14.dev150"
         },
         "packaging": {
             "hashes": [
