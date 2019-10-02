@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 
-with open(os.path.join(os.getcwd(), 'README.md'), encoding='utf-8') as f:
+with open(os.path.join(os.getcwd(), 'README.md')) as f:
     long_description = f.read()
 
 
