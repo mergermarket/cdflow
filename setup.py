@@ -1,4 +1,9 @@
 from setuptools import setup
+import os
+
+
+with open(os.path.join(os.getcwd(), 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 
 setup(
@@ -19,6 +24,7 @@ setup(
     author='Acuris',
     author_email='platform@acuris.com',
     description='Deployment tooling for continuous delivery',
+    long_description=long_description,
     keywords='continuous delivery terraform',
     url='https://mergermarket.github.io/cdflow',
     classifiers=[
