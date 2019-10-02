@@ -3,27 +3,26 @@ menu: docs
 weight: 5
 ---
 
-# Installation
-
-To install the `cdflow` tool, put the `cdflow.py` script somewhere on your `PATH` and make it executable e.g.
-
-```bash
-curl -o /usr/local/bin/cdflow https://raw.githubusercontent.com/mergermarket/cdflow/master/cdflow.py
-```
-
-A `man` page is also available
-
-```bash
-curl -o /usr/local/share/man/man1/cdflow.1 https://raw.githubusercontent.com/mergermarket/cdflow/master/docs/cdflow.1
-```
-
 ## Prerequisites
 
 To use the `cdflow` tool you'll need:
 
  - Docker (https://docs.docker.com/engine/installation/)
- - Python
- - Python packages (`pip install -U docker boto3 PyYAML dockerpty`)
+ - Python and `pip`
+
+# Installation
+
+Use the `pip` command to install CDFlow:
+
+```bash
+pip install cdflow
+```
+
+You may need to prefix the command with `sudo`, or install it in your user directory:
+
+```shell
+pip install --user cdflow
+```
 
 ## Verifying Installation
 
