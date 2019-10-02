@@ -10,7 +10,7 @@ Full documentation is here: https://mergermarket.github.io/cdflow/
 ## Install
 
 ```
-cp cdflow.py /usr/local/bin/cdflow
+pip install cdflow
 ```
 
 ## Running
