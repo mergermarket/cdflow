@@ -397,5 +397,9 @@ def main(argv):
     return exit_status
 
 
-if __name__ == '__main__':
+def run():
     sys.exit(main(sys.argv[1:]))
+
+
+if __name__ == '__main__':
+    run()
