@@ -25,6 +25,7 @@ setup(
     author_email='platform@acuris.com',
     description='Deployment tooling for continuous delivery',
     long_description=long_description,
+    data_files = [('man/man1', ['cdflow.1'])],
     keywords='continuous delivery terraform',
     url='https://mergermarket.github.io/cdflow',
     classifiers=[
