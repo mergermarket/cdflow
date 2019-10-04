@@ -3,14 +3,12 @@ menu: docs
 weight: 5
 ---
 
-## Prerequisites
+# Installation
 
-To use the `cdflow` tool you'll need:
+The `cdflow` tool is written in Python and runs the main part of its logic inside a Docker container so to use the `cdflow` tool you'll need:
 
  - Docker (https://docs.docker.com/engine/installation/)
  - Python and `pip`
-
-# Installation
 
 Use the `pip` command to install CDFlow:
 
