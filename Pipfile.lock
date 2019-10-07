@@ -495,11 +495,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:31522da7d92f95da53821fa6f205a8fb76b1d20b1300b8813bcf9caa46be111e",
-                "sha256:abdd2521a2259deec20730d9688ea6fe97153ce085951b796bcf5fcb935ca6a2"
+                "sha256:3d316712438d8de7a3353977ba1a4341fe79af65994106512b116c582d414fff",
+                "sha256:85ffdf0450c9c03e861d4f2fc93702c4984826f129034dbadc6647645cb6daff"
             ],
             "index": "pypi",
-            "version": "==1.3.14.dev312"
+            "version": "==1.3.14.dev326"
         },
         "packaging": {
             "hashes": [
