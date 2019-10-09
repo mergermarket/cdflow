@@ -7,12 +7,13 @@ weight: 5
 
 The `cdflow` tool is written in Python and runs the main part of its logic inside a Docker container so to use the `cdflow` tool you'll need:
 
- - Docker (https://docs.docker.com/engine/installation/)
- - Python and `pip`
+- [Docker](https://docs.docker.com/engine/installation/)
+- Python and `pip`
+- `git` command line tool
 
 Use the `pip` command to install CDFlow:
 
-```bash
+```shell
 pip install cdflow
 ```
 
@@ -26,7 +27,7 @@ pip install --user cdflow
 
 You can verify cdflow is installed correctly by opening a new terminal session and trying `cdflow`. By executing 'help' you should see helpful output like below
 
-```
+```shell
 $ cdflow --help
 
 cdflow
