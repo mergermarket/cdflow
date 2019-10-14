@@ -20,5 +20,5 @@ These are the list of properties you can have in the cdflow manifest file. This 
 ```yaml
     account-scheme-url: s3://mmg-account-resources/account-scheme.json
     type: docker
-    team: DevTeam-Platform
+    team: platform
 ```
