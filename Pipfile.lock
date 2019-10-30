@@ -370,11 +370,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:966580e397c9f35810f5d8ee129f34709691f0ac348f70c10c6599401971ba39",
-                "sha256:a0fb2b63f3244e220917d5864c9963253ac22c2e273030b8fff7c0fefa79afb3"
+                "sha256:7385185ceeada55746a406a90fc84bfc22481fd570cc4bbcf8401ea93ce574e3",
+                "sha256:c32f79ba3b587a210de4f17e88d704b712c4301a554d4f5d7a67d01076dce1d0"
             ],
             "index": "pypi",
-            "version": "==4.38.3"
+            "version": "==4.42.3"
         },
         "idna": {
             "hashes": [
