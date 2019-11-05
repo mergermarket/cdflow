@@ -19,7 +19,7 @@ from hypothesis.strategies import (
     dictionaries, fixed_dictionaries, integers, lists, text
 )
 from mock import MagicMock, patch
-from strategies import VALID_ALPHABET, filepath, image_id
+from test.strategies import VALID_ALPHABET, filepath, image_id
 
 
 class TestEnvironment(unittest.TestCase):

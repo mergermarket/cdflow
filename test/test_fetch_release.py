@@ -9,7 +9,7 @@ from cdflow import (
 from hypothesis import given, settings
 from hypothesis.strategies import fixed_dictionaries, lists, sampled_from, text
 from mock import Mock, patch
-from strategies import VALID_ALPHABET, filepath
+from test.strategies import VALID_ALPHABET, filepath
 
 
 class TestGetComponentName(unittest.TestCase):

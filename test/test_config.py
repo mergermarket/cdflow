@@ -11,7 +11,7 @@ import boto3
 from moto import mock_s3
 from hypothesis import assume, given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, text
-from strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
+from test.strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
 
 
 class TestGetReleaseCommandsImage(unittest.TestCase):
