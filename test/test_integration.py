@@ -14,7 +14,9 @@ from cdflow import CDFLOW_IMAGE_ID, main, logger
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
 
-from test.strategies import VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
+from test.strategies import (
+    VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
+)
 
 
 class TestIntegration(unittest.TestCase):
