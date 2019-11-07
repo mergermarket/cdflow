@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:b5f2af77f5bdc563ed164b85f5a0e2df0bb1a3d95c8063701cbd03e6c0a73d47",
-                "sha256:dbd699d6b7fe1637256f16c008425f5b84784f40e66179afa455a29bacbf781c"
+                "sha256:0095818b1f1e2698c3fe0ccc6bd4ed8c735fce37d9a99d7f304047bfd8272ec8",
+                "sha256:9303675e019b4a7389bfbec264068435d2111739b46baa7ebd08391e64dddfb4"
             ],
-            "version": "==1.13.10"
+            "version": "==1.13.12"
         },
         "certifi": {
             "hashes": [
@@ -198,10 +198,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:b5f2af77f5bdc563ed164b85f5a0e2df0bb1a3d95c8063701cbd03e6c0a73d47",
-                "sha256:dbd699d6b7fe1637256f16c008425f5b84784f40e66179afa455a29bacbf781c"
+                "sha256:0095818b1f1e2698c3fe0ccc6bd4ed8c735fce37d9a99d7f304047bfd8272ec8",
+                "sha256:9303675e019b4a7389bfbec264068435d2111739b46baa7ebd08391e64dddfb4"
             ],
-            "version": "==1.13.10"
+            "version": "==1.13.12"
         },
         "certifi": {
             "hashes": [
@@ -342,10 +342,10 @@
         },
         "ecdsa": {
             "hashes": [
-                "sha256:163c80b064a763ea733870feb96f9dd9b92216cfcacd374837af18e4e8ec3d4d",
-                "sha256:9814e700890991abeceeb2242586024d4758c8fc18445b194a49bd62d85861db"
+                "sha256:64c613005f13efec6541bb0a33290d0d03c27abab5f15fbab20fb0ee162bdd8e",
+                "sha256:e108a5fe92c67639abae3260e43561af914e7fd0d27bae6d2ec1312ae7934dfe"
             ],
-            "version": "==0.13.3"
+            "version": "==0.14.1"
         },
         "entrypoints": {
             "hashes": [
@@ -560,10 +560,10 @@
         },
         "pygithub": {
             "hashes": [
-                "sha256:fd10fc9006fd54080b190c5c863384381905160c8ea8e830c4a3d8219f23193d"
+                "sha256:453896a1c3d46eb6724598daa21cf7ae9a83c6012126e840e3f7c665142fb04f"
             ],
             "index": "pypi",
-            "version": "==1.44"
+            "version": "==1.44.1"
         },
         "pygments": {
             "hashes": [
