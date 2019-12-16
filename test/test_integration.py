@@ -11,7 +11,7 @@ from docker.errors import ContainerError
 from docker.models.images import Image
 
 from cdflow import CDFLOW_IMAGE_ID, main, logger
-from hypothesis import given, settings
+from hypothesis import given
 from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
 
 from test.strategies import (
@@ -21,14 +21,14 @@ from test.strategies import (
 
 class TestIntegration(unittest.TestCase):
 
-    @settings(deadline=None)
     @given(filepath())
     def test_release(self, project_root):
         argv = ['release', '--platform-config', '../path/to/config',
                 '--release-data ami_id=ami-z9876', '42']
         with patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os, \
-                patch('cdflow.abspath') as abspath:
+                patch('cdflow.abspath') as abspath, \
+                patch('cdflow.open') as open_:
             abs_path_to_config = '/root/path/to/config'
             abspath.return_value = abs_path_to_config
 
@@ -46,6 +46,12 @@ class TestIntegration(unittest.TestCase):
 
             os.getcwd.return_value = project_root
             os.getenv.return_value = False
+
+            config_file = MagicMock(spec=TextIOWrapper)
+            config_file.read.return_value = yaml.dump({
+                'team': 'a-team'
+            })
+            open_.return_value.__enter__.return_value = config_file
 
             exit_status = main(argv)
 
@@ -95,7 +101,6 @@ class TestIntegration(unittest.TestCase):
                 stderr=True,
             )
 
-    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         'environment': dictionaries(
@@ -114,7 +119,8 @@ class TestIntegration(unittest.TestCase):
 
         with patch('cdflow.docker') as docker, \
                 patch('cdflow.os') as os, \
-                patch('cdflow.abspath') as abspath:
+                patch('cdflow.abspath') as abspath, \
+                patch('cdflow.open') as open_:
             abs_path_to_config = '/root/path/to/config'
             abspath.return_value = abs_path_to_config
 
@@ -134,6 +140,12 @@ class TestIntegration(unittest.TestCase):
             os.getenv.return_value = False
 
             os.environ = environment
+
+            config_file = MagicMock(spec=TextIOWrapper)
+            config_file.read.return_value = yaml.dump({
+                'team': 'a-team'
+            })
+            open_.return_value.__enter__.return_value = config_file
 
             exit_status = main(argv)
 
@@ -174,7 +186,6 @@ class TestIntegration(unittest.TestCase):
             working_dir=project_root
         )
 
-    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         's3_bucket_and_key': s3_bucket_and_key(),
@@ -258,7 +269,6 @@ class TestIntegration(unittest.TestCase):
                     stderr=True,
                 )
 
-    @settings(deadline=None)
     @given(fixed_dictionaries({
         'project_root': filepath(),
         's3_bucket_and_key': s3_bucket_and_key(),
@@ -363,7 +373,6 @@ class TestIntegration(unittest.TestCase):
                     stderr=True,
                 )
 
-    @settings(deadline=None)
     @given(lists(elements=text(alphabet=printable, max_size=3), max_size=3))
     def test_invalid_arguments_passed_to_container_to_handle(self, argv):
         with patch('cdflow.docker') as docker, \
@@ -403,9 +412,16 @@ class TestIntegration(unittest.TestCase):
 @patch('cdflow.docker')
 @patch('cdflow.os')
 @patch('cdflow.abspath')
+@patch('cdflow.open')
 class TestVerboseLogging(unittest.TestCase):
 
-    def setup_mocks(self, abspath, os, docker):
+    def setup_mocks(self, open_, abspath, os, docker):
+        config_file = MagicMock(spec=TextIOWrapper)
+        config_file.read.return_value = yaml.dump({
+            'team': 'a-team'
+        })
+        open_.return_value.__enter__.return_value = config_file
+
         abs_path_to_config = '/root/path/to/config'
         abspath.return_value = abs_path_to_config
 
@@ -424,8 +440,8 @@ class TestVerboseLogging(unittest.TestCase):
         os.getcwd.return_value = '/tmp/project'
         os.getenv.return_value = False
 
-    def test_short_flag(self, abspath, os, docker):
-        self.setup_mocks(abspath, os, docker)
+    def test_short_flag(self, open_, abspath, os, docker):
+        self.setup_mocks(open_, abspath, os, docker)
 
         argv = [
             'release', '--platform-config', '../path/to/config',
@@ -438,8 +454,8 @@ class TestVerboseLogging(unittest.TestCase):
 
         assert 'DEBUG:cdflow:Debug logging enabled' in logs.output
 
-    def test_long_flag(self, abspath, os, docker):
-        self.setup_mocks(abspath, os, docker)
+    def test_long_flag(self, open_, abspath, os, docker):
+        self.setup_mocks(open_, abspath, os, docker)
 
         argv = [
             'release', '--platform-config', '../path/to/config',
@@ -452,8 +468,8 @@ class TestVerboseLogging(unittest.TestCase):
 
         assert 'DEBUG:cdflow:Debug logging enabled' in logs.output
 
-    def test_no_flag(self, abspath, os, docker):
-        self.setup_mocks(abspath, os, docker)
+    def test_no_flag(self, open_, abspath, os, docker):
+        self.setup_mocks(open_, abspath, os, docker)
 
         argv = [
             'release', '--platform-config', '../path/to/config',

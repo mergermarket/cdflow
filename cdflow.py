@@ -19,9 +19,11 @@ from boto3.session import Session
 from docker.errors import DockerException, ImageNotFound
 from requests.exceptions import ReadTimeout
 
-CDFLOW_IMAGE_ID = 'mergermarket/cdflow-commands:latest'
-MANIFEST_PATH = 'cdflow.yml'
+CDFLOW_IMAGE_NAME = 'mergermarket/cdflow-commands'
+CDFLOW_IMAGE_TAG = 'latest'
+CDFLOW_IMAGE_ID = f'{CDFLOW_IMAGE_NAME}:{CDFLOW_IMAGE_TAG}'
 
+MANIFEST_PATH = 'cdflow.yml'
 
 logging.basicConfig(format='[%(asctime)s] %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S')
@@ -286,16 +288,19 @@ def get_manifest_data():
         return yaml.safe_load(config_file.read())
 
 
-def get_image_id(environment):
+def get_image_id(environment, config):
     if 'CDFLOW_IMAGE_ID' in environment:
         return environment['CDFLOW_IMAGE_ID']
+
+    if 'terraform-version' in config:
+        return f"{CDFLOW_IMAGE_NAME}:terraform{config['terraform-version']}"
+
     return CDFLOW_IMAGE_ID
 
 
-def find_image_id_from_release(component_name, version):
+def find_image_id_from_release(component_name, version, config):
     session = Session()
     s3_resource = session.resource('s3')
-    config = get_manifest_data()
     account_scheme_url = config['account-scheme-url']
     bucket, key = parse_s3_url(account_scheme_url)
     team = config['team']
@@ -357,11 +362,11 @@ def fetch_account_scheme(s3_resource, bucket, key, team, component):
     return account_scheme
 
 
-def get_deploy_image_id(argv):
+def get_deploy_image_id(argv, config):
     component_name = get_component_name(argv)
     version = get_version(argv)
     return find_image_id_from_release(
-        component_name, version
+        component_name, version, config
     )
 
 
@@ -369,7 +374,8 @@ def main(argv):
     toggle_verbose_logging(argv)
     docker_client = docker.from_env()
     environment_variables = get_environment()
-    image_id = get_image_id(os.environ)
+    config = get_manifest_data()
+    image_id = get_image_id(os.environ, config)
     command = _command(argv)
 
     kwargs = {
@@ -386,7 +392,7 @@ def main(argv):
             environment_variables['CDFLOW_IMAGE_DIGEST'] = \
                 get_image_sha(docker_client, image_id)
         elif command == 'deploy':
-            kwargs['image_id'] = get_deploy_image_id(argv)
+            kwargs['image_id'] = get_deploy_image_id(argv, config)
     except CDFlowWrapperException as e:
         print(str(e), file=sys.stderr)
         return 1
