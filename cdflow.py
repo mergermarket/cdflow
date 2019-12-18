@@ -284,6 +284,9 @@ def _command(argv):
 
 
 def get_manifest_data():
+    if not os.path.exists(MANIFEST_PATH):
+        return {}
+
     with open(MANIFEST_PATH) as config_file:
         return yaml.safe_load(config_file.read())
 
