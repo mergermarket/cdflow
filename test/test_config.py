@@ -9,25 +9,23 @@ from cdflow import (
 )
 import boto3
 from moto import mock_s3
-from hypothesis import assume, given, settings
+from hypothesis import assume, given
 from hypothesis.strategies import dictionaries, fixed_dictionaries, text
 from test.strategies import VALID_ALPHABET, image_id, s3_bucket_and_key
 
 
 class TestGetReleaseCommandsImage(unittest.TestCase):
 
-    @settings(deadline=None)
     @given(dictionaries(
         keys=text(alphabet=printable), values=text(alphabet=printable)
     ))
     def test_get_default_image_id(self, environment):
         assume('CDFLOW_IMAGE_ID' not in environment)
 
-        image_id = get_image_id(environment)
+        image_id = get_image_id(environment, {})
 
         assert image_id == CDFLOW_IMAGE_ID
 
-    @settings(deadline=None)
     @given(fixed_dictionaries({
         'environment': dictionaries(
             keys=text(alphabet=printable), values=text(alphabet=printable)
@@ -38,14 +36,23 @@ class TestGetReleaseCommandsImage(unittest.TestCase):
         environment = fixtures['environment']
         environment['CDFLOW_IMAGE_ID'] = fixtures['image_id']
 
-        image_id = get_image_id(environment)
+        image_id = get_image_id(environment, {})
 
         assert image_id == fixtures['image_id']
+
+    def test_get_image_id_from_config_file(self):
+        terraform_version = '0.12.18'
+        config = {
+            'terraform-version': terraform_version
+        }
+        image_id = get_image_id({}, config)
+
+        assert image_id == \
+            f'mergermarket/cdflow-commands:terraform{terraform_version}'
 
 
 class TestParseS3Url(unittest.TestCase):
 
-    @settings(deadline=None)
     @given(s3_bucket_and_key())
     def test_gets_bucket_name_and_key(self, s3_bucket_and_key):
         expected_bucket = s3_bucket_and_key[0]
@@ -57,14 +64,12 @@ class TestParseS3Url(unittest.TestCase):
         assert bucket == expected_bucket
         assert key == expected_key
 
-    @settings(deadline=None)
     @given(text())
     def test_invalid_url_protocol_throws_exception(self, invalid_url):
         assume(not invalid_url.startswith('s3://'))
 
         self.assertRaises(InvalidURLError, parse_s3_url, invalid_url)
 
-    @settings(deadline=None)
     @given(text(alphabet=VALID_ALPHABET))
     def test_invalid_url_format_throws_exception(self, invalid_url):
         assume('/' not in invalid_url)
@@ -83,7 +88,6 @@ class TestFetchAccountScheme(unittest.TestCase):
     def tearDown(self):
         self.mock_s3.stop()
 
-    @settings(deadline=None)
     @given(fixed_dictionaries({
         's3_bucket_and_key': s3_bucket_and_key(),
         'account_prefix': text(alphabet=VALID_ALPHABET, min_size=1),
