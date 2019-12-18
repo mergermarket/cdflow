@@ -14,7 +14,7 @@ root=$(git rev-parse --show-toplevel)
 docker container run \
     --name "${IMAGE_ID}" \
     --rm \
-    -e CDFLOW_IMAGE_ID=${CDFLOW_IMAGE_ID:-mergermarket/cdflow-commands:snapshot} \
+    -e CDFLOW_IMAGE_ID=${CDFLOW_IMAGE_ID:-mergermarket/cdflow-commands:latest} \
     -w $AC_FOLDER \
     -v ${root}:${root} \
     -v /var/run/docker.sock:/var/run/docker.sock \
