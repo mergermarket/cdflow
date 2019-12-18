@@ -14,6 +14,5 @@ docker container run --rm --name "${image_id}" \
     --cov-report term-missing \
     "$@"
 
-
 docker run --rm --name "${image_id}" "${image_id}" \
     flake8 --max-complexity=5
