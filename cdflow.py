@@ -21,7 +21,7 @@ from requests.exceptions import ReadTimeout
 
 CDFLOW_IMAGE_NAME = 'mergermarket/cdflow-commands'
 CDFLOW_IMAGE_TAG = 'latest'
-CDFLOW_IMAGE_ID = f'{CDFLOW_IMAGE_NAME}:{CDFLOW_IMAGE_TAG}'
+CDFLOW_IMAGE_ID = '{}:{}'.format(CDFLOW_IMAGE_NAME, CDFLOW_IMAGE_TAG)
 
 MANIFEST_PATH = 'cdflow.yml'
 
