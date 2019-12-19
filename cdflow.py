@@ -296,7 +296,7 @@ def get_image_id(environment, config):
         return environment['CDFLOW_IMAGE_ID']
 
     if 'terraform-version' in config:
-        return f"{CDFLOW_IMAGE_NAME}:terraform{config['terraform-version']}"
+        return "{}:terraform{}".format(CDFLOW_IMAGE_NAME, config['terraform-version'])
 
     return CDFLOW_IMAGE_ID
 
