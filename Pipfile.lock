@@ -377,11 +377,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:29e68b60299bcd33012ce378318322b8f4aa473bd802310fc9d29e81b7211ebc",
-                "sha256:a722636b0b40101c7eabba0cc8f49294d3298429be019fc622b6518be23ab6af"
+                "sha256:2a3f9fd72995707f5eb7ffe5de1d32abb8cc289011e286dd6e2a3eb805c0b546",
+                "sha256:3b0d766b8b81b55413fec7bcd3ca78517c4551e116511f57a14ba1bb40c9c0fd"
             ],
             "index": "pypi",
-            "version": "==4.43.8"
+            "version": "==5.1.1"
         },
         "idna": {
             "hashes": [
@@ -712,6 +712,13 @@
                 "sha256:30f610279e8b2578cab6db20741130331735c781b56053c59c4076da27f06b66"
             ],
             "version": "==1.13.0"
+        },
+        "sortedcontainers": {
+            "hashes": [
+                "sha256:974e9a32f56b17c1bac2aebd9dcf197f3eb9cd30553c5852a3187ad162e1a03a",
+                "sha256:d9e96492dd51fae31e60837736b38fe42a187b5404c16606ff7ee7cd582d4c60"
+            ],
+            "version": "==2.1.0"
         },
         "sshpubkeys": {
             "hashes": [
