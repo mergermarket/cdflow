@@ -567,10 +567,10 @@
         },
         "pygithub": {
             "hashes": [
-                "sha256:453896a1c3d46eb6724598daa21cf7ae9a83c6012126e840e3f7c665142fb04f"
+                "sha256:980ac6288f3b38332ae988b7d7374e2b71e21d4e3332413c079fd92dda040126"
             ],
             "index": "pypi",
-            "version": "==1.44.1"
+            "version": "==1.45"
         },
         "pygments": {
             "hashes": [
