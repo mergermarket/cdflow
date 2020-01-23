@@ -508,11 +508,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:1e4c45743234d0e33d8b7b7a2878ab86fde720395645b906bf30ef09dea71444",
-                "sha256:20210875d688d0880c83cdd006fef97aff2fe02addf28b9c2c9d7a08568a68bb"
+                "sha256:979cb0592fb3ba12150283ba1d33c8cf4ee72a25cefb13046cbcd60e07360aec",
+                "sha256:bd97e5fa3b086676a9c51fc8fa0425ad15903c6c37e5fb4390b497c673da774b"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev237"
+            "version": "==1.3.15.dev252"
         },
         "packaging": {
             "hashes": [
@@ -801,10 +801,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:57147f6b0403b59f33fd357f169f860e031303415aeb7d04ede4839d23905ab8",
-                "sha256:7ae5ccaca427bafa9760ac3cd8f8c244bfc259794b5b6bb9db4dda2241575d09"
+                "sha256:b338014b9bc7102ca69e0fb96ed07215a8954d2989bc5d83658494ab2ba634af",
+                "sha256:e013e7800f60ec4dde789ebf4e9f7a54236e4bbf5df2a1a4e20ce9e1d9609d67"
             ],
-            "version": "==2.0.0"
+            "version": "==2.0.1"
         }
     }
 }
