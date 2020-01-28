@@ -397,10 +397,10 @@
         },
         "jinja2": {
             "hashes": [
-                "sha256:74320bb91f31270f9551d46522e33af46a80c3d619f4a4bf42b3164d30b5911f",
-                "sha256:9fe95f19286cfefaa917656583d020be14e7859c6b0252588391e47db34527de"
+                "sha256:6e7a3c2934694d59ad334c93dd1b6c96699cf24c53fdb8ec848ac6b23e685734",
+                "sha256:d6609ae5ec3d56212ca7d802eda654eaf2310000816ce815361041465b108be4"
             ],
-            "version": "==2.10.3"
+            "version": "==2.11.0"
         },
         "jmespath": {
             "hashes": [
@@ -513,11 +513,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:0865a22d321dd0f93c8999222144a7dbad681df250a6ce38a4d3441d7f921301",
-                "sha256:10d544630315b1cbf66fb6cdf70ad2f2f0a45f5cd1a3fc7606e3d6a941693443"
+                "sha256:2f59d53160fc0b5d95d8a30563c2bcdd7fcd6281aa7e1c8c252d437cf5a1cf55",
+                "sha256:fdfcc15aa358367c71df27c6968db3300825e5e25330e9e61bc56ffcbde7c083"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev258"
+            "version": "==1.3.15.dev260"
         },
         "packaging": {
             "hashes": [
