@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:cf3144994191847e30ef76781af867009bdc233b3f1f4736615e5330687a891e",
-                "sha256:f11ff8616f46ca04697df031e622c9ed50931b9d649d4e719f961e9d80771e8d"
+                "sha256:5ad6f4b80f3151fc5aa940f89fb6bf2db3064bf8d3f8919f5b60f5c741054ba5",
+                "sha256:ac783a87bd90be8a4d08101bfc0d29a4b35fe0ced387f5c8bc91d01cdaa7a168"
             ],
-            "version": "==1.14.10"
+            "version": "==1.14.11"
         },
         "certifi": {
             "hashes": [
@@ -187,10 +187,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:cf3144994191847e30ef76781af867009bdc233b3f1f4736615e5330687a891e",
-                "sha256:f11ff8616f46ca04697df031e622c9ed50931b9d649d4e719f961e9d80771e8d"
+                "sha256:5ad6f4b80f3151fc5aa940f89fb6bf2db3064bf8d3f8919f5b60f5c741054ba5",
+                "sha256:ac783a87bd90be8a4d08101bfc0d29a4b35fe0ced387f5c8bc91d01cdaa7a168"
             ],
-            "version": "==1.14.10"
+            "version": "==1.14.11"
         },
         "certifi": {
             "hashes": [
@@ -397,10 +397,10 @@
         },
         "jinja2": {
             "hashes": [
-                "sha256:93187ffbc7808079673ef52771baa950426fd664d3aad1d0fa3e95644360e250",
-                "sha256:b0eaf100007721b5c16c1fc1eecb87409464edc10469ddc9a22a27a99123be49"
+                "sha256:c10142f819c2d22bdcd17548c46fa9b77cf4fda45097854c689666bf425e7484",
+                "sha256:c922560ac46888d47384de1dbdc3daaa2ea993af4b26a436dec31fa2c19ec668"
             ],
-            "version": "==2.11.1"
+            "version": "==3.0.0a1"
         },
         "jmespath": {
             "hashes": [
@@ -514,11 +514,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:78a1be283674ac83bd9aafc23f9a4691573381557fd72d4e9c63c5b8154d1f82",
-                "sha256:911b74a932bfa97a268ba3936057ff121aa7574ccdca8c27411c63512f90a4cb"
+                "sha256:0af56e528c746340de3dbdee3fbe16cf9e23a3a8204f5badb1f82ec20a6340bc",
+                "sha256:2c9b15c0bfae126892f65f90ed9221aa7a8531aa9d69fb186d17f64a7e4df445"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev293"
+            "version": "==1.3.15.dev300"
         },
         "packaging": {
             "hashes": [
