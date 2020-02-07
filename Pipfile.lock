@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:5ad6f4b80f3151fc5aa940f89fb6bf2db3064bf8d3f8919f5b60f5c741054ba5",
-                "sha256:ac783a87bd90be8a4d08101bfc0d29a4b35fe0ced387f5c8bc91d01cdaa7a168"
+                "sha256:054b195d7afee491a472e1462826042c805b4ab60c2ffd7137b90f41d52fd127",
+                "sha256:e20a7fa4bc3803b64bc59f9af1c86d13c825f209bed0edbf1b6da06bcf213212"
             ],
-            "version": "==1.14.11"
+            "version": "==1.14.12"
         },
         "certifi": {
             "hashes": [
@@ -115,10 +115,10 @@
         },
         "s3transfer": {
             "hashes": [
-                "sha256:2525bae2a530195576da53671bae8ca8c55ee8e33bc2225a65e804476611ea5a",
-                "sha256:4924e10451cc37901945806423d16c2c2040a6530645a614ed87e995ccec764c"
+                "sha256:2482b4259524933a022d59da830f51bd746db62f047d6eb213f2f8855dcb8a13",
+                "sha256:921a37e2aefc64145e7b73d50c71bb4f26f46e4c9f414dc648c6245ff92cf7db"
             ],
-            "version": "==0.3.2"
+            "version": "==0.3.3"
         },
         "six": {
             "hashes": [
@@ -132,6 +132,7 @@
                 "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc",
                 "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"
             ],
+            "markers": "python_version != '3.4'",
             "version": "==1.25.8"
         },
         "websocket-client": {
@@ -187,10 +188,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:5ad6f4b80f3151fc5aa940f89fb6bf2db3064bf8d3f8919f5b60f5c741054ba5",
-                "sha256:ac783a87bd90be8a4d08101bfc0d29a4b35fe0ced387f5c8bc91d01cdaa7a168"
+                "sha256:054b195d7afee491a472e1462826042c805b4ab60c2ffd7137b90f41d52fd127",
+                "sha256:e20a7fa4bc3803b64bc59f9af1c86d13c825f209bed0edbf1b6da06bcf213212"
             ],
-            "version": "==1.14.11"
+            "version": "==1.14.12"
         },
         "certifi": {
             "hashes": [
@@ -514,11 +515,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:0af56e528c746340de3dbdee3fbe16cf9e23a3a8204f5badb1f82ec20a6340bc",
-                "sha256:2c9b15c0bfae126892f65f90ed9221aa7a8531aa9d69fb186d17f64a7e4df445"
+                "sha256:f6fb197c20dd0c73c00df0c64fe6052cce4b7fb3efaba9cfe73287235e8f8ce3",
+                "sha256:fdfbf839ebc1a32caba5b2b2d71fe21282c0ba8c8cfe20c4a47eaeab38105eeb"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev300"
+            "version": "==1.3.15.dev307"
         },
         "packaging": {
             "hashes": [
@@ -708,10 +709,10 @@
         },
         "s3transfer": {
             "hashes": [
-                "sha256:2525bae2a530195576da53671bae8ca8c55ee8e33bc2225a65e804476611ea5a",
-                "sha256:4924e10451cc37901945806423d16c2c2040a6530645a614ed87e995ccec764c"
+                "sha256:2482b4259524933a022d59da830f51bd746db62f047d6eb213f2f8855dcb8a13",
+                "sha256:921a37e2aefc64145e7b73d50c71bb4f26f46e4c9f414dc648c6245ff92cf7db"
             ],
-            "version": "==0.3.2"
+            "version": "==0.3.3"
         },
         "secretstorage": {
             "hashes": [
@@ -762,6 +763,7 @@
                 "sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc",
                 "sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc"
             ],
+            "markers": "python_version != '3.4'",
             "version": "==1.25.8"
         },
         "wcwidth": {
@@ -787,10 +789,10 @@
         },
         "werkzeug": {
             "hashes": [
-                "sha256:7f91416b2e6902e39190552d5e05bc94c0d5034688753fceb28eaa9d16795027",
-                "sha256:834e6f4828864350b7c173a2be027f0a692512bbe9d7ddd52da8e29ff991a726"
+                "sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096",
+                "sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16"
             ],
-            "version": "==1.0.0rc1"
+            "version": "==1.0.0"
         },
         "wrapt": {
             "hashes": [
