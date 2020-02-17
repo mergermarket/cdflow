@@ -510,11 +510,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:8a21427aed48654014b25b2317114dad41e8c8ff9f4cece8a73b7eb39cbada17",
-                "sha256:f4db1bb3215240bee0e49c9555b112900feacf5663b2009ae62a35abeafe2c23"
+                "sha256:708810e82f91589743aeb12c50ea051b3956b3aa4db8a4a3d9f4a30d226a47cf",
+                "sha256:fa116f50802860c7c6205a29d808696c6e86c48148947c80cd01707221b40843"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev320"
+            "version": "==1.3.15.dev341"
         },
         "packaging": {
             "hashes": [
@@ -791,9 +791,9 @@
         },
         "wrapt": {
             "hashes": [
-                "sha256:565a021fd19419476b9362b05eeaa094178de64f8361e44468f9e9d7843901e1"
+                "sha256:0ec40d9fd4ec9f9e3ff9bdd12dbd3535f4085949f4db93025089d7a673ea94e8"
             ],
-            "version": "==1.11.2"
+            "version": "==1.12.0"
         },
         "xmltodict": {
             "hashes": [
