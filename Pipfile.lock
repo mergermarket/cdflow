@@ -235,10 +235,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:685af38cc0d4f2db1f4efedda56df5bb04fdcf47fdae99a34a481c379cca2082",
-                "sha256:f16cdcbd7603fc81b55b4ad341f3456ec4d9ed05efb5952e243c609a0d5e2f39"
+                "sha256:017cfbe7f78a534114ed1bf45b438bdfd2eb735c4d428e35f478a1ca46953773",
+                "sha256:1eaac38d8d48014ade3dc33824eab756d24f51f222157f30e76ccffe35824dcb"
             ],
-            "version": "==0.27.5"
+            "version": "==0.28.1"
         },
         "chardet": {
             "hashes": [
@@ -510,11 +510,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:708810e82f91589743aeb12c50ea051b3956b3aa4db8a4a3d9f4a30d226a47cf",
-                "sha256:fa116f50802860c7c6205a29d808696c6e86c48148947c80cd01707221b40843"
+                "sha256:5e83f963c0dd705c67a7f526082384b6ca7b06e6ca7229b8b2a3f86ead077c7f",
+                "sha256:a061cf031d2ea5438e991d12fe1985bf24be2fd7347805335bc0fdfbdb919eb6"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev341"
+            "version": "==1.3.15.dev400"
         },
         "packaging": {
             "hashes": [
@@ -804,10 +804,10 @@
         },
         "zipp": {
             "hashes": [
-                "sha256:5c56e330306215cd3553342cfafc73dda2c60792384117893f3a83f8a1209f50",
-                "sha256:d65287feb793213ffe11c0f31b81602be31448f38aeb8ffc2eb286c4f6f6657e"
+                "sha256:12248a63bbdf7548f89cb4c7cda4681e537031eda29c02ea29674bc6854460c2",
+                "sha256:7c0f8e91abc0dc07a5068f315c52cb30c66bfbc581e5b50704c8a2f6ebae794a"
             ],
-            "version": "==2.2.0"
+            "version": "==3.0.0"
         }
     }
 }
