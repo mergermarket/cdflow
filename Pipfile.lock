@@ -77,10 +77,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6",
-                "sha256:bde2aef6f44302dfb30320115b17d030798de8c4110e28d5cf6cf91a7a31074c"
+                "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec",
+                "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"
             ],
-            "version": "==0.9.4"
+            "version": "==0.9.5"
         },
         "python-dateutil": {
             "hashes": [
@@ -400,10 +400,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6",
-                "sha256:bde2aef6f44302dfb30320115b17d030798de8c4110e28d5cf6cf91a7a31074c"
+                "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec",
+                "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"
             ],
-            "version": "==0.9.4"
+            "version": "==0.9.5"
         },
         "jsondiff": {
             "hashes": [
@@ -510,11 +510,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:f13247028bc84d6561070ed2369c11e912b265d29f2f17ebd63d829ffa086732",
-                "sha256:f6fcad0c4eca1b5061912a31344230dbfb0c284d87848b14d56a4b3fed1afe63"
+                "sha256:2f562bef0ecacb6a17295e512994995672873aa3cb8e16671694c170a96ff5a1",
+                "sha256:30dde0486ce39bfec7139a509e5d190bcf5192dabc198313082e8afd49979946"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev427"
+            "version": "==1.3.15.dev432"
         },
         "packaging": {
             "hashes": [
@@ -690,10 +690,10 @@
         },
         "responses": {
             "hashes": [
-                "sha256:515fd7c024097e5da76e9c4cf719083d181f1c3ddc09c2e0e49284ce863dd263",
-                "sha256:8ce8cb4e7e1ad89336f8865af152e0563d2e7f0e0b86d2cf75f015f819409243"
+                "sha256:33d8994990de31a9fbb8c889c3a378dac296b821f37330c845608ae565e7fca3",
+                "sha256:859a7f8495a069ce835620bb4bb111688f593a6f8873a3335a99c31a5aef9a9a"
             ],
-            "version": "==0.10.9"
+            "version": "==0.10.11"
         },
         "rsa": {
             "hashes": [
