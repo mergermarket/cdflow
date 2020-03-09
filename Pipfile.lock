@@ -235,10 +235,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:0e40e56c2b5b06d248f8ae6464ec55d671cbcd9bc8fb68694dbd42a29cb07fc7",
-                "sha256:e7d93eac5dd20eb9012bf33eef8d2ac6124dab3dfd408b46ffe7d6c9b0f8426f"
+                "sha256:d6664c0acff6ebaf26d4df79f7fc7453b8c7c58edc761f55a0eac31641400c67",
+                "sha256:e57de8fab2e83640868c24ad40f71930d187a0bb5525efce7e3cab6c3c3e383d"
             ],
-            "version": "==0.28.3"
+            "version": "==0.28.4"
         },
         "chardet": {
             "hashes": [
@@ -511,11 +511,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:179ff016b64ff4ee7ef6ecbe43b76a9a46c70fec2e1bbf7ad8e94b87c6c0cca9",
-                "sha256:f389878cf3635f942f30fdbb78d0e5a8a284e7a4e712f208bc6178569ebb726b"
+                "sha256:553fb0cba53c7fab5e2978315fa8cef76222313eeff7655973998012b111afb0",
+                "sha256:eaa03364207c8761d3d42ad29e17a3c9c219799b5ed1ee1aaac7b5a2c33f684a"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev451"
+            "version": "==1.3.15.dev479"
         },
         "packaging": {
             "hashes": [
@@ -582,10 +582,10 @@
         },
         "pygments": {
             "hashes": [
-                "sha256:2a3fe295e54a20164a9df49c75fa58526d3be48e14aceba6d6b1e8ac0bfd6f1b",
-                "sha256:98c8aa5a9f778fcd1026a17361ddaf7330d1b7c62ae97c3bb0ae73e0b9b6b0fe"
+                "sha256:647344a061c249a3b74e230c739f434d7ea4d8b1d5f3721bc0f3558049b38f44",
+                "sha256:ff7a40b4860b727ab48fad6360eb351cc1b33cbf9b15a0f689ca5353e9463324"
             ],
-            "version": "==2.5.2"
+            "version": "==2.6.1"
         },
         "pyjwt": {
             "hashes": [
@@ -793,9 +793,9 @@
         },
         "wrapt": {
             "hashes": [
-                "sha256:0ec40d9fd4ec9f9e3ff9bdd12dbd3535f4085949f4db93025089d7a673ea94e8"
+                "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"
             ],
-            "version": "==1.12.0"
+            "version": "==1.12.1"
         },
         "xmltodict": {
             "hashes": [
