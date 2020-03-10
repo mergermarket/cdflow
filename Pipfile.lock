@@ -511,11 +511,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:553fb0cba53c7fab5e2978315fa8cef76222313eeff7655973998012b111afb0",
-                "sha256:eaa03364207c8761d3d42ad29e17a3c9c219799b5ed1ee1aaac7b5a2c33f684a"
+                "sha256:124e51248bc2e351b14160111b24de1f6afea8c69022098b7ed5a745224c61e4",
+                "sha256:9ad2b8e1367dd73a35f3305604b2d7f8af1724b4b209eb5c7967bea136ab2e89"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev479"
+            "version": "==1.3.15.dev482"
         },
         "packaging": {
             "hashes": [
