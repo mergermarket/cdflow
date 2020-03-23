@@ -518,11 +518,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:e20a66adc95c86c62e9b4266ebcbe712c98f704b706436ad8490b34e65449649",
-                "sha256:f445df8a106178cae904b645c454b08c1d5f4ccd12b649bfa489de1ec3c20a20"
+                "sha256:3ba0873fde6ccdc29ac45f0bb90edb4755f7c6db7dafd562645dcd41a4efd288",
+                "sha256:b5824ac403fae591c0e07d839c61afc972989d3997dbe8d944aa51c5fa8a5d0c"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev532"
+            "version": "==1.3.15.dev552"
         },
         "networkx": {
             "hashes": [
@@ -780,10 +780,10 @@
         },
         "wcwidth": {
             "hashes": [
-                "sha256:8fd29383f539be45b20bd4df0dc29c20ba48654a41e661925e612311e9f3c603",
-                "sha256:f28b3e8a6483e5d49e7f8949ac1a78314e740333ae305b4ba5defd3e74fb37a8"
+                "sha256:cafe2186b3c009a04067022ce1dcd79cb38d8d65ee4f4791b8888d6599d1bbe1",
+                "sha256:ee73862862a156bf77ff92b09034fc4825dd3af9cf81bc5b360668d425f3c5f1"
             ],
-            "version": "==0.1.8"
+            "version": "==0.1.9"
         },
         "webencodings": {
             "hashes": [
