@@ -367,11 +367,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:768da57c005b686111c4a69def6938c7f51c26e7998c39fbd979156279f3a106",
-                "sha256:f1f97f157368e2b8b1745536fa0aaceaca8bc4915802c4980b042d8f31056573"
+                "sha256:2c33b1f50bbe6eaa2d4b45f125c40957fbc479d20b631f9717963eb589974a7a",
+                "sha256:790acebcd8445fbc897b0f1a8e1e29ec4f476e6fdb64692c13c14b1e4f3c178d"
             ],
             "index": "pypi",
-            "version": "==5.2.0"
+            "version": "==5.10.1"
         },
         "idna": {
             "hashes": [
@@ -694,10 +694,10 @@
         },
         "responses": {
             "hashes": [
-                "sha256:0474ce3c897fbcc1aef286117c93499882d5c440f06a805947e4b1cb5ab3d474",
-                "sha256:f83613479a021e233e82d52ffb3e2e0e2836d24b0cc88a0fa31978789f78d0e5"
+                "sha256:1a78bc010b20a5022a2c0cb76b8ee6dc1e34d887972615ebd725ab9a166a4960",
+                "sha256:3d596d0be06151330cb230a2d630717ab20f7a81f205019481e206eb5db79915"
             ],
-            "version": "==0.10.12"
+            "version": "==0.10.14"
         },
         "rsa": {
             "hashes": [
