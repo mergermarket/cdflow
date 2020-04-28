@@ -505,11 +505,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:06eb667944aaaab64db5f12f4b974f5baa602416b8a7467b78c1bddf7186ab37",
-                "sha256:b08f1d4e77b4ad03bbe7ca192f63648edcb16c78b06ff9b88fcc3cb8fa8ed5d6"
+                "sha256:3d7aa7363fb0c680d0ba87e41de6551ba8c7a46233add26f3fb8152b0e5a254b",
+                "sha256:ce44daa5fd1bd51085dc015aeddb498814e8da41f888f00b624a51092408d4a1"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev746"
+            "version": "==1.3.15.dev765"
         },
         "networkx": {
             "hashes": [
@@ -649,10 +649,10 @@
         },
         "pytz": {
             "hashes": [
-                "sha256:1c557d7d0e871de1f5ccd5833f60fb2550652da6be2693c1e02300743d21500d",
-                "sha256:b02c06db6cf09c12dd25137e563b31700d3b80fcc4ad23abb7a315f2789819be"
+                "sha256:a494d53b6d39c3c6e44c3bec237336e14305e4f29bbf800b599253057fbb79ed",
+                "sha256:c35965d010ce31b23eeb663ed3cc8c906275d6be1a34393a1d73a41febf4a048"
             ],
-            "version": "==2019.3"
+            "version": "==2020.1"
         },
         "pyyaml": {
             "hashes": [
