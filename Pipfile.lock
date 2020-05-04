@@ -447,10 +447,10 @@
         },
         "keyring": {
             "hashes": [
-                "sha256:197fd5903901030ef7b82fe247f43cfed2c157a28e7747d1cfcf4bc5e699dd03",
-                "sha256:8179b1cdcdcbc221456b5b74e6b7cfa06f8dd9f239eb81892166d9223d82c5ba"
+                "sha256:3401234209015144a5d75701e71cb47239e552b0882313e9f51e8976f9e27843",
+                "sha256:c53e0e5ccde3ad34284a40ce7976b5b3a3d6de70344c3f8ee44364cc340976ec"
             ],
-            "version": "==21.2.0"
+            "version": "==21.2.1"
         },
         "markupsafe": {
             "hashes": [
@@ -515,11 +515,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:aab530057044d9c14bacf2b7090d6de7e2ec3e5a8b1f4c2f678a71e12a972eda",
-                "sha256:c27dfce3cc5a35bfec39286fb4d25c39fecda930ec169e24fd29c5fb7291260b"
+                "sha256:a85819b2e04b0cb8f944db14ae55b5521881e58fc2ea0825bc22dd3ad2b2544c",
+                "sha256:fb4480d3ad74d9d1c144b23b58f55615fe86bfefff4be58a6b23283c5bf58920"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev797"
+            "version": "==1.3.15.dev815"
         },
         "networkx": {
             "hashes": [
@@ -754,10 +754,10 @@
         },
         "tqdm": {
             "hashes": [
-                "sha256:00339634a22c10a7a22476ee946bbde2dbe48d042ded784e4d88e0236eca5d81",
-                "sha256:ea9e3fd6bd9a37e8783d75bfc4c1faf3c6813da6bd1c3e776488b41ec683af94"
+                "sha256:4733c4a10d0f2a4d098d801464bdaf5240c7dadd2a7fde4ee93b0a0efd9fb25e",
+                "sha256:acdafb20f51637ca3954150d0405ff1a7edde0ff19e38fb99a80a66210d2a28f"
             ],
-            "version": "==4.45.0"
+            "version": "==4.46.0"
         },
         "twine": {
             "hashes": [
