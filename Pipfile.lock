@@ -153,9 +153,11 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:3ba6a821eda29ca8ea1306e27a8135256d6136f1b0b29c6cbf9a107dfd1c2dd9"
+                "sha256:0dabd2fd57e63fca1cdd511fa73e9fe4f9ca869f5cbcd5749a0c0c9c532a0b2a",
+                "sha256:6e847b02661247e5d9b99b3bd22351fc6ed614e0f12e0598c0181cb796b3967e",
+                "sha256:75dc45e4d8609696f847369a7497774f04ec992f58c9bc4aae4ead77a46e7991"
             ],
-            "version": "==1.22.0"
+            "version": "==1.23.0"
         },
         "aws-xray-sdk": {
             "hashes": [
@@ -515,11 +517,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:a85819b2e04b0cb8f944db14ae55b5521881e58fc2ea0825bc22dd3ad2b2544c",
-                "sha256:fb4480d3ad74d9d1c144b23b58f55615fe86bfefff4be58a6b23283c5bf58920"
+                "sha256:0d1aa8847f0c2f2b01e59b731363b5816f712ab362de51efff102c6a38ab75c2",
+                "sha256:42678f18e064f41e3660efb1a3df8899aa2f3792c2d4f09e7d94c001a5123df8"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev815"
+            "version": "==1.3.15.dev836"
         },
         "networkx": {
             "hashes": [
