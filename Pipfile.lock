@@ -77,10 +77,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec",
-                "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"
+                "sha256:b85d0567b8666149a93172712e68920734333c0ce7e89b78b3e987f71e5ed4f9",
+                "sha256:cdf6525904cc597730141d61b36f2e4b8ecc257c420fa2f4549bac2c2d0cb72f"
             ],
-            "version": "==0.9.5"
+            "version": "==0.10.0"
         },
         "python-dateutil": {
             "hashes": [
@@ -237,10 +237,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:5001d5fa0e1b255d546fe966c0111a6aeaf26dc583249df626488622929e419b",
-                "sha256:6a1506d2b5859a8bbfa33864e96cd2599dc918038660000241087f22db29b0d0"
+                "sha256:53739f68246d7ce94d6feb6bfd42ac03609208b5a62c8d2778498a370d970d53",
+                "sha256:be9d527f81b449b246f8b573ecd42e2f4a3b394f47d1b3343d19ef5d422296da"
             ],
-            "version": "==0.30.1"
+            "version": "==0.31.0"
         },
         "chardet": {
             "hashes": [
@@ -407,10 +407,10 @@
         },
         "jmespath": {
             "hashes": [
-                "sha256:695cb76fa78a10663425d5b73ddc5714eb711157e52704d69be03b1a02ba4fec",
-                "sha256:cca55c8d153173e21baa59983015ad0daf603f9cb799904ff057bfb8ff8dc2d9"
+                "sha256:b85d0567b8666149a93172712e68920734333c0ce7e89b78b3e987f71e5ed4f9",
+                "sha256:cdf6525904cc597730141d61b36f2e4b8ecc257c420fa2f4549bac2c2d0cb72f"
             ],
-            "version": "==0.9.5"
+            "version": "==0.10.0"
         },
         "jsondiff": {
             "hashes": [
@@ -446,6 +446,12 @@
                 "sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a"
             ],
             "version": "==3.2.0"
+        },
+        "junit-xml": {
+            "hashes": [
+                "sha256:ec5ca1a55aefdd76d28fcc0b135251d156c7106fa979686a4b48d62b761b4732"
+            ],
+            "version": "==1.9"
         },
         "keyring": {
             "hashes": [
@@ -517,11 +523,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:16f5132cdec8d4c8d53b937c30daf3e6534b142e0b7cdc709e11d4cd6b9cf02c",
-                "sha256:c7c8598605c3d3d892676897210c58c7f63e067666f4f48c9b6f79783b8aa1e1"
+                "sha256:3bf09b8e9d80cf86890f561b8cc3f9c3021eb5943d543dc015b2c23dcdd66495",
+                "sha256:a4e71586a8c04ad27f94adc9fd98c2b4891f51925e918b129652c5591e523089"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev843"
+            "version": "==1.3.15.dev845"
         },
         "networkx": {
             "hashes": [
