@@ -237,10 +237,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:53739f68246d7ce94d6feb6bfd42ac03609208b5a62c8d2778498a370d970d53",
-                "sha256:be9d527f81b449b246f8b573ecd42e2f4a3b394f47d1b3343d19ef5d422296da"
+                "sha256:b9947cc903da0fb977fac7ce803bcd3a5f4ac19f9dc9199b72b41eb89b2a00b6",
+                "sha256:ef3a33a4df06b4955c938274e816a6ad16da5bf36abc9c80821b06d0ec9a340c"
             ],
-            "version": "==0.31.0"
+            "version": "==0.31.1"
         },
         "chardet": {
             "hashes": [
@@ -318,10 +318,10 @@
         },
         "deprecated": {
             "hashes": [
-                "sha256:0cf37d293a96805c6afd8b5fc525cb40f23a2cac9b2d066ac3bd4b04e72ceccc",
-                "sha256:55b41a15bda04c6a2c0d27dd4c2b7b81ffa6348c9cad8f077ac1978c59927ab9"
+                "sha256:525ba66fb5f90b07169fdd48b6373c18f1ee12728ca277ca44567a367d9d7f74",
+                "sha256:a766c1dccb30c5f6eb2b203f87edd1d8588847709c78589e1521d769addc8218"
             ],
-            "version": "==1.2.9"
+            "version": "==1.2.10"
         },
         "docker": {
             "hashes": [
@@ -369,11 +369,11 @@
         },
         "hypothesis": {
             "hashes": [
-                "sha256:768da57c005b686111c4a69def6938c7f51c26e7998c39fbd979156279f3a106",
-                "sha256:f1f97f157368e2b8b1745536fa0aaceaca8bc4915802c4980b042d8f31056573"
+                "sha256:0c00645c63341f035951cade156112d7c4d3c650c5a54671d104dc8acd41a350",
+                "sha256:ca58d0d6b37b10c9ae5cfaa97fb9cb8b033f0cbacb19dfea3fed79a7d57cfcfd"
             ],
             "index": "pypi",
-            "version": "==5.2.0"
+            "version": "==5.14.0"
         },
         "idna": {
             "hashes": [
