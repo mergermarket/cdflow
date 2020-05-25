@@ -122,10 +122,10 @@
         },
         "six": {
             "hashes": [
-                "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
-                "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"
+                "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
+                "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "version": "==1.14.0"
+            "version": "==1.15.0"
         },
         "urllib3": {
             "hashes": [
@@ -237,10 +237,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:b9947cc903da0fb977fac7ce803bcd3a5f4ac19f9dc9199b72b41eb89b2a00b6",
-                "sha256:ef3a33a4df06b4955c938274e816a6ad16da5bf36abc9c80821b06d0ec9a340c"
+                "sha256:96dedfaa72b84aed2c93c82f0ad68e0d0385cb986a3cc3fa8b7491cc5f565292",
+                "sha256:da8adba55060cb95118b15142fefb49b760ff0b4e83c4cff10151408a90c9a21"
             ],
-            "version": "==0.31.1"
+            "version": "==0.32.1"
         },
         "chardet": {
             "hashes": [
@@ -523,11 +523,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:4a714e60665235bc08164d9f178af4dd82ad851865cea2876bdf3da1c1ad5ff1",
-                "sha256:f05ebd8ac03f880494fed6ceeda16cb74d5b9c70d9e7e362b5a403dbd0702870"
+                "sha256:913fc838aa33c09bee6765405f1a2c144d911997e4570446d4236c3c62bb743e",
+                "sha256:b37ba58cbd8bebc0275796fa9424c1ec33a774e93b12fd164ca2e0163f2aee5a"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev866"
+            "version": "==1.3.15.dev874"
         },
         "networkx": {
             "hashes": [
@@ -539,10 +539,10 @@
         },
         "packaging": {
             "hashes": [
-                "sha256:3c292b474fda1671ec57d46d739d072bfd495a4f51ad01a055121d81e952b7a3",
-                "sha256:82f77b9bee21c1bafbf35a84905d604d5d1223801d639cf3ed140bd651c08752"
+                "sha256:4357f74f47b9c12db93624a82154e9b120fa8293699949152b22065d556079f8",
+                "sha256:998416ba6962ae7fbd6596850b80e17859a5753ba17c32284f67bfff33784181"
             ],
-            "version": "==20.3"
+            "version": "==20.4"
         },
         "pkginfo": {
             "hashes": [
@@ -741,10 +741,10 @@
         },
         "six": {
             "hashes": [
-                "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
-                "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"
+                "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
+                "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "version": "==1.14.0"
+            "version": "==1.15.0"
         },
         "sortedcontainers": {
             "hashes": [
