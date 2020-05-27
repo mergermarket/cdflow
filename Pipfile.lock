@@ -645,11 +645,11 @@
         },
         "pytest-randomly": {
             "hashes": [
-                "sha256:8282a5a2066ed93d8d3eca6290538f34d09be05b7256ba94dba6fe3d2b1c514f",
-                "sha256:d9273db715bc7f8945cdb3efb994a9d15596a6087fb71a2e87030c5f2677317e"
+                "sha256:4e02887ba52f021cc8d5429e91e93be2b5df4adf38bf1715c7c153968b260b59",
+                "sha256:e44a69623237e47cc4ee77da9c04c6b505ed1a7b00656dc1409f8344c707b87b"
             ],
             "index": "pypi",
-            "version": "==3.2.1"
+            "version": "==3.4.0"
         },
         "python-dateutil": {
             "hashes": [
