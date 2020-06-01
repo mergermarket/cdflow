@@ -153,11 +153,11 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:0dabd2fd57e63fca1cdd511fa73e9fe4f9ca869f5cbcd5749a0c0c9c532a0b2a",
-                "sha256:6e847b02661247e5d9b99b3bd22351fc6ed614e0f12e0598c0181cb796b3967e",
-                "sha256:75dc45e4d8609696f847369a7497774f04ec992f58c9bc4aae4ead77a46e7991"
+                "sha256:9259944109f3a99c1bb6b2f0bbf486b31c0ce1618b67e4b29e17c16f3d2f0c71",
+                "sha256:a8df6a828c3b27c4c81cfe66dc08e14333a7d06f7a82ae502a72892e1f32edac",
+                "sha256:f6b67545a87ec1e276bd5bf06abcc84332c4eb9dfa2fd415113e07a908fe55bb"
             ],
-            "version": "==1.23.0"
+            "version": "==1.24.0"
         },
         "aws-xray-sdk": {
             "hashes": [
@@ -523,11 +523,11 @@
         },
         "moto": {
             "hashes": [
-                "sha256:8863229e4836081b7355f70bfc8f34cee2c1d770587563de6b0c25f1aac20062",
-                "sha256:96abb07153aaa993ddeb802aaca29bed83a19dc3f550c1ef923a12408dfbcc4f"
+                "sha256:29eb900ed22c466f579f02fd209938e739472fec0d34c582773cc47d42d96e1f",
+                "sha256:fdb194278204501b932a0084848bf4343d4fd3f70e11ab0de81ff98e8b323bc7"
             ],
             "index": "pypi",
-            "version": "==1.3.15.dev875"
+            "version": "==1.3.15.dev882"
         },
         "networkx": {
             "hashes": [
