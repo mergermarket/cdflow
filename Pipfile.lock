@@ -153,11 +153,11 @@
         },
         "aws-sam-translator": {
             "hashes": [
-                "sha256:9259944109f3a99c1bb6b2f0bbf486b31c0ce1618b67e4b29e17c16f3d2f0c71",
-                "sha256:a8df6a828c3b27c4c81cfe66dc08e14333a7d06f7a82ae502a72892e1f32edac",
-                "sha256:f6b67545a87ec1e276bd5bf06abcc84332c4eb9dfa2fd415113e07a908fe55bb"
+                "sha256:33c5e9a04584a88b2dc730991f7aea52acc4a077a194444e16728dd2be997dc0",
+                "sha256:5b31769d271fa6c7e87cde076ce819f9f9c7da324b3880f2cd0f5f5aa837e520",
+                "sha256:f2d0585fc7dd071f136b543e9a614945cb80bbd3113a25f260797c126456dd25"
             ],
-            "version": "==1.24.0"
+            "version": "==1.25.0"
         },
         "aws-xray-sdk": {
             "hashes": [
@@ -237,10 +237,10 @@
         },
         "cfn-lint": {
             "hashes": [
-                "sha256:62e42ee7c0a16b1fa1a784e99f1e79c711ebe3a8636fb4d6601d804becd7f819",
-                "sha256:b74bb89a3d0da4a744179b07bc186b9fbc4800f929bf635bb6246e80fb91a953"
+                "sha256:49d60257e0e46ff16ccdbe7c276ba46ed604fcf23907e78116e0b032e686255a",
+                "sha256:e13c4a60b2483d90a21e76bf2b14b0ebbe69137b2f4a4d7792c0f7ab5e531b6f"
             ],
-            "version": "==0.33.0"
+            "version": "==0.33.1"
         },
         "chardet": {
             "hashes": [
@@ -637,11 +637,11 @@
         },
         "pytest-cov": {
             "hashes": [
-                "sha256:cc6742d8bac45070217169f5f72ceee1e0e55b0221f54bcf24845972d3a47f2b",
-                "sha256:cdbdef4f870408ebdbfeb44e63e07eb18bb4619fae852f6e760645fa36172626"
+                "sha256:1a629dc9f48e53512fcbfda6b07de490c374b0c83c55ff7a1720b3fccff0ac87",
+                "sha256:6e6d18092dce6fad667cd7020deed816f858ad3b49d5b5e2b1cc1c97a4dba65c"
             ],
             "index": "pypi",
-            "version": "==2.8.1"
+            "version": "==2.10.0"
         },
         "pytest-randomly": {
             "hashes": [
