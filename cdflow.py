@@ -8,9 +8,12 @@ import json
 import logging
 import os
 from os.path import abspath
+from os.path import expanduser
+from os.path import isfile
 import sys
 from io import BytesIO
 from subprocess import CalledProcessError, check_output
+import tarfile
 
 import docker
 import dockerpty
@@ -216,10 +219,11 @@ def docker_run(
                 tty=True,
                 stdin_open=True,
             )
+            _put_users_docker_config_into_container(container)
             dockerpty.start(docker_client.api, container.id)
             output = 'Shell end'
         else:
-            container = docker_client.containers.run(
+            container = docker_client.containers.create(
                 image_id,
                 command=command,
                 environment=environment_variables,
@@ -227,12 +231,36 @@ def docker_run(
                 volumes=volumes,
                 working_dir=project_root,
             )
+            _put_users_docker_config_into_container(container)
+            container.start()
             _print_logs(container)
             return handle_finished_container(container)
     except DockerException as error:
         exit_status = 1
         output = str(error)
     return exit_status, output
+
+
+def _put_users_docker_config_into_container(container):
+    users_docker_config = expanduser("~") + "/.docker/config.json"
+    if isfile(users_docker_config):
+        tarstream = BytesIO()
+        tar = tarfile.TarFile(fileobj=tarstream, mode='w')
+        tar.add(users_docker_config,
+                arcname='.docker/config.json', filter=_reset_tar_perms)
+        tar.close()
+        tarstream.seek(0)
+
+        return container.put_archive(
+            '/root',
+            tarstream
+        )
+
+
+def _reset_tar_perms(tarinfo):
+    tarinfo.uid = tarinfo.gid = 0
+    tarinfo.uname = tarinfo.gname = "root"
+    return tarinfo
 
 
 def handle_finished_container(container):

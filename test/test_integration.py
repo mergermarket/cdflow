@@ -7,7 +7,7 @@ import logging
 
 import yaml
 from docker.client import DockerClient
-from docker.errors import ContainerError
+from docker.models.containers import Container
 from docker.models.images import Image
 
 from cdflow import CDFLOW_IMAGE_ID, main, logger
@@ -38,9 +38,12 @@ class TestIntegration(unittest.TestCase):
                 'RepoDigests': ['hash']
             }
 
-            docker.from_env.return_value.containers.run.return_value.attrs = {
+            container = MagicMock(spec=Container)
+            docker.from_env.return_value.containers.create.return_value \
+                = container
+            container.attrs = {
                 'State': {
-                    'ExitCode': 0,
+                    'ExitCode': 0
                 }
             }
 
@@ -54,14 +57,13 @@ class TestIntegration(unittest.TestCase):
             open_.return_value.__enter__.return_value = config_file
 
             exit_status = main(argv)
-
         assert exit_status == 0
 
         docker.from_env.assert_called_once()
         docker.from_env.return_value.images.pull.assert_called_once_with(
             'mergermarket/cdflow-commands:latest'
         )
-        docker.from_env.return_value.containers.run.assert_called_once_with(
+        docker.from_env.return_value.containers.create.assert_called_once_with(
             'mergermarket/cdflow-commands:latest',
             command=argv,
             environment={
@@ -70,10 +72,10 @@ class TestIntegration(unittest.TestCase):
                 'AWS_SESSION_TOKEN': ANY,
                 'FASTLY_API_KEY': ANY,
                 'GITHUB_TOKEN': ANY,
-                'CDFLOW_IMAGE_DIGEST': 'hash',
                 'LOGENTRIES_ACCOUNT_KEY': ANY,
                 'DATADOG_APP_KEY': ANY,
                 'DATADOG_API_KEY': ANY,
+                'CDFLOW_IMAGE_DIGEST': 'hash',
             },
             detach=True,
             volumes={
@@ -81,19 +83,22 @@ class TestIntegration(unittest.TestCase):
                     'bind': project_root,
                     'mode': 'rw',
                 },
-                abs_path_to_config: {
-                    'bind': abs_path_to_config,
-                    'mode': 'ro',
-                },
                 '/var/run/docker.sock': {
                     'bind': '/var/run/docker.sock',
+                    'mode': 'ro',
+                },
+                abs_path_to_config: {
+                    'bind': abs_path_to_config,
                     'mode': 'ro',
                 },
             },
             working_dir=project_root
         )
 
-        docker.from_env.return_value.containers.run.return_value.logs.\
+        docker.from_env.return_value.containers.create.return_value.start.\
+            assert_called_once()
+
+        docker.from_env.return_value.containers.create.return_value.logs.\
             assert_called_once_with(
                 stream=True,
                 follow=True,
@@ -129,10 +134,12 @@ class TestIntegration(unittest.TestCase):
             image.attrs = {
                 'RepoDigests': ['hash']
             }
-
-            docker.from_env.return_value.containers.run.return_value.attrs = {
+            container = MagicMock(spec=Container)
+            docker.from_env.return_value.containers.create.return_value \
+                = container
+            container.attrs = {
                 'State': {
-                    'ExitCode': 0,
+                    'ExitCode': 0
                 }
             }
 
@@ -154,7 +161,7 @@ class TestIntegration(unittest.TestCase):
         docker.from_env.return_value.images.pull.assert_called_once_with(
             pinned_image_id
         )
-        docker.from_env.return_value.containers.run.assert_called_once_with(
+        docker.from_env.return_value.containers.create.assert_called_once_with(
             pinned_image_id,
             command=argv,
             environment={
@@ -185,6 +192,9 @@ class TestIntegration(unittest.TestCase):
             },
             working_dir=project_root
         )
+
+        docker.from_env.return_value.containers.create.return_value.start.\
+            assert_called_once()
 
     @given(fixed_dictionaries({
         'project_root': filepath(),
@@ -231,9 +241,12 @@ class TestIntegration(unittest.TestCase):
 
             docker_client = MagicMock(spec=DockerClient)
             docker.from_env.return_value = docker_client
-            docker.from_env.return_value.containers.run.return_value.attrs = {
+            container = MagicMock(spec=Container)
+            docker.from_env.return_value.containers.create.return_value \
+                = container
+            container.attrs = {
                 'State': {
-                    'ExitCode': 0,
+                    'ExitCode': 0
                 }
             }
 
@@ -249,7 +262,7 @@ class TestIntegration(unittest.TestCase):
                 fixtures['s3_bucket_and_key'][1],
             )
 
-            docker_client.containers.run.assert_called_once_with(
+            docker_client.containers.create.assert_called_once_with(
                 image_digest,
                 command=argv,
                 environment=ANY,
@@ -261,7 +274,10 @@ class TestIntegration(unittest.TestCase):
                 working_dir=project_root,
             )
 
-            docker.from_env.return_value.containers.run.return_value.logs.\
+            docker.from_env.return_value.containers.create.return_value.start.\
+                assert_called_once()
+
+            docker.from_env.return_value.containers.create.return_value.logs.\
                 assert_called_once_with(
                     stream=True,
                     follow=True,
@@ -325,9 +341,12 @@ class TestIntegration(unittest.TestCase):
 
             docker_client = MagicMock(spec=DockerClient)
             docker.from_env.return_value = docker_client
-            docker.from_env.return_value.containers.run.return_value.attrs = {
+            container = MagicMock(spec=Container)
+            docker.from_env.return_value.containers.create.return_value \
+                = container
+            container.attrs = {
                 'State': {
-                    'ExitCode': 0,
+                    'ExitCode': 0
                 }
             }
 
@@ -353,7 +372,7 @@ class TestIntegration(unittest.TestCase):
                 ),
             )
 
-            docker_client.containers.run.assert_called_once_with(
+            docker_client.containers.create.assert_called_once_with(
                 image_digest,
                 command=argv,
                 environment=ANY,
@@ -365,48 +384,16 @@ class TestIntegration(unittest.TestCase):
                 working_dir=project_root,
             )
 
-            docker.from_env.return_value.containers.run.return_value.logs.\
+            docker.from_env.return_value.containers.create.return_value.start.\
+                assert_called_once()
+
+            docker.from_env.return_value.containers.create.return_value.logs.\
                 assert_called_once_with(
                     stream=True,
                     follow=True,
                     stdout=True,
                     stderr=True,
                 )
-
-    @given(lists(elements=text(alphabet=printable, max_size=3), max_size=3))
-    def test_invalid_arguments_passed_to_container_to_handle(self, argv):
-        with patch('cdflow.docker') as docker, \
-                patch('cdflow.os') as os, \
-                patch('cdflow.open') as open_:
-
-            account_id = '1234567890'
-            config_file = MagicMock(spec=TextIOWrapper)
-            config_file.read.return_value = json.dumps({
-                'platform_config': {'account_id': account_id}
-            })
-            open_.return_value.__enter__.return_value = config_file
-
-            error = ContainerError(
-                container=CDFLOW_IMAGE_ID,
-                exit_status=1,
-                command=argv,
-                image=CDFLOW_IMAGE_ID,
-                stderr='help text'
-            )
-            docker.from_env.return_value.containers.run.side_effect = error
-            os.path.abspath.return_value = '/'
-            exit_status = main(argv)
-
-        assert exit_status == 1
-
-        docker.from_env.return_value.containers.run.assert_called_once_with(
-            CDFLOW_IMAGE_ID,
-            command=argv,
-            environment=ANY,
-            detach=True,
-            volumes=ANY,
-            working_dir=ANY
-        )
 
 
 @patch('cdflow.docker')
