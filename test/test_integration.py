@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import ANY, MagicMock, Mock, patch
 from string import printable
@@ -10,9 +9,9 @@ from docker.client import DockerClient
 from docker.models.containers import Container
 from docker.models.images import Image
 
-from cdflow import CDFLOW_IMAGE_ID, main, logger
+from cdflow import main, logger
 from hypothesis import given
-from hypothesis.strategies import dictionaries, fixed_dictionaries, lists, text
+from hypothesis.strategies import dictionaries, fixed_dictionaries, text
 
 from test.strategies import (
     VALID_ALPHABET, filepath, image_id, s3_bucket_and_key
