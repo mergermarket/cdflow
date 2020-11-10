@@ -114,7 +114,7 @@ class TestDockerRun(unittest.TestCase):
                 'ExitCode': 0
             }
         }
-        docker_client.containers.run.return_value = container
+        docker_client.containers.create.return_value = container
 
         exit_status, output = docker_run(
             docker_client,
@@ -145,7 +145,7 @@ class TestDockerRun(unittest.TestCase):
                 'mode': 'ro',
             }
 
-        docker_client.containers.run.assert_called_once_with(
+        docker_client.containers.create.assert_called_once_with(
             image_id,
             command=command,
             environment=environment_variables,
@@ -153,6 +153,8 @@ class TestDockerRun(unittest.TestCase):
             volumes=expected_volumes,
             working_dir=project_root,
         )
+
+        container.start.assert_called_once()
 
     @given(fixed_dictionaries({
         'environment_variables': fixed_dictionaries({
@@ -180,7 +182,7 @@ class TestDockerRun(unittest.TestCase):
                 'ExitCode': 0
             }
         }
-        docker_client.containers.run.return_value = container
+        docker_client.containers.create.return_value = container
 
         exit_status, output = docker_run(
             docker_client,
@@ -193,7 +195,7 @@ class TestDockerRun(unittest.TestCase):
         assert exit_status == 0
         assert output == ''
 
-        docker_client.containers.run.assert_called_once_with(
+        docker_client.containers.create.assert_called_once_with(
             image_id,
             command=command,
             environment=environment_variables,
@@ -210,6 +212,7 @@ class TestDockerRun(unittest.TestCase):
             },
             working_dir=project_root,
         )
+        container.start.assert_called_once()
 
     @given(fixed_dictionaries({
         'environment_variables': fixed_dictionaries({
@@ -303,7 +306,7 @@ class TestDockerRun(unittest.TestCase):
         environment_variables = fixtures['environment_variables']
 
         docker_client = MagicMock(spec=DockerClient)
-        docker_client.containers.run.side_effect = DockerException
+        docker_client.containers.create.side_effect = DockerException
 
         exit_status, output = docker_run(
             docker_client,
@@ -343,7 +346,7 @@ class TestDockerRun(unittest.TestCase):
             }
         }
 
-        docker_client.containers.run.return_value = container
+        docker_client.containers.create.return_value = container
 
         with patch('cdflow.print') as print_:
             docker_run(
@@ -384,7 +387,7 @@ class TestDockerRun(unittest.TestCase):
             }
         }
 
-        docker_client.containers.run.return_value = container
+        docker_client.containers.create.return_value = container
 
         with patch('cdflow.atexit') as atexit:
             docker_run(
@@ -441,7 +444,7 @@ class TestDockerRun(unittest.TestCase):
             }
         }
 
-        docker_client.containers.run.return_value = container
+        docker_client.containers.create.return_value = container
 
         exit_status, output = docker_run(
             docker_client, fixtures['image_id'], fixtures['command'],
