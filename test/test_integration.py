@@ -48,6 +48,7 @@ class TestIntegration(unittest.TestCase):
 
             os.getcwd.return_value = project_root
             os.getenv.return_value = False
+            os.environ.get
 
             config_file = MagicMock(spec=TextIOWrapper)
             config_file.read.return_value = yaml.dump({
@@ -60,7 +61,7 @@ class TestIntegration(unittest.TestCase):
 
         docker.from_env.assert_called_once()
         docker.from_env.return_value.images.pull.assert_called_once_with(
-            'mergermarket/cdflow-commands:latest'
+            'mergermarket/cdflow-commands:latest',
         )
         docker.from_env.return_value.containers.create.assert_called_once_with(
             'mergermarket/cdflow-commands:latest',
@@ -251,6 +252,7 @@ class TestIntegration(unittest.TestCase):
 
             project_root = fixtures['project_root']
             os.getcwd.return_value = project_root
+            os.getenv.return_value = False
 
             exit_status = main(argv)
 
@@ -351,6 +353,7 @@ class TestIntegration(unittest.TestCase):
 
             project_root = fixtures['project_root']
             os.getcwd.return_value = project_root
+            os.getenv.return_value = False
 
             exit_status = main(argv)
 
