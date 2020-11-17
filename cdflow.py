@@ -243,7 +243,9 @@ def docker_run(
 
 def _put_users_docker_config_into_container(container):
     users_docker_config = expanduser("~") + "/.docker/config.json"
+    logger.info('Looking for a docker config at \'{}\''.format(users_docker_config))
     if isfile(users_docker_config):
+        logger.info('docker config found, copying it into the container')
         tarstream = BytesIO()
         tar = tarfile.TarFile(fileobj=tarstream, mode='w')
         tar.add(users_docker_config,
