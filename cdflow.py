@@ -196,20 +196,19 @@ def _get_auth_config_from_users_docker_config():
             data = json.load(open(users_docker_config))
             base64data = data['auths']['https://index.docker.io/v1/']['auth']
             decoded_data = base64.b64decode(
-                base64data.encode("utf-8"),
-                validate=True
+                base64data.encode("utf-8")
             ).decode('utf-8').split(':')
             return {
                 'username': decoded_data[0],
                 'password': decoded_data[1],
             }
-        except json.JSONDecodeError as e:
+        except ValueError as e:
             logger.debug(e)
             logger.info(
                 'Error decoding json from users docker config \'' +
                 format(users_docker_config) + '\'.'
             )
-        except binascii.Error as e:
+        except (TypeError, binascii.Error) as e:
             logger.debug(e)
             logger.info(
                 'Error decoding base64 username/password from users ' +
