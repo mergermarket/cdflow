@@ -12,6 +12,7 @@ docker image build -t "${IMAGE_ID}" \
 
 root=$(git rev-parse --show-toplevel)
 
+echo "Running the acceptance tests within the ${IMAGE_ID} container"
 docker container run \
     --name "${IMAGE_ID}" \
     --rm \
