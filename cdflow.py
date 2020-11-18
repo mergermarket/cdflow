@@ -382,7 +382,7 @@ def _put_docker_config_into_container(container):
     else:
         logger.info(
             'WARNING - No dockerhub credentials have been added to the ' +
-            'container. It will have no auth and could hit pull limits. '  +
+            'container. It will have no auth and could hit pull limits. ' +
             'Either: the DOCKERHUB environment vars for the credentials are '
             'not set or the user has no docker config at ' +
             '\'' + users_docker_config + '\''
