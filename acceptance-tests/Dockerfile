@@ -15,6 +15,7 @@ RUN apt-get update && \
     apt-get update && apt-get -y install docker-ce && \
     apt-get clean
 
+ARG ALWAYS_INVALIDATE_BUILD_CACHE_HERE=by_passing_anything_but_this
 RUN git clone https://github.com/mergermarket/cdflow /tmp/cdflow && \
     cd /tmp/cdflow && \
     git checkout "${CDFLOW_COMMIT_SHA}" && \
