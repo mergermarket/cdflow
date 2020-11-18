@@ -553,10 +553,10 @@ def main(argv):
     }
 
     try:
+        image_sha = get_image_sha(docker_client, image_id)
         if command == 'release':
             kwargs['platform_config_paths'] = get_platform_config_paths(argv)
-            environment_variables['CDFLOW_IMAGE_DIGEST'] = \
-                get_image_sha(docker_client, image_id)
+            environment_variables['CDFLOW_IMAGE_DIGEST'] = image_sha
         elif command == 'deploy':
             kwargs['image_id'] = get_deploy_image_id(argv, config)
     except CDFlowWrapperException as e:
