@@ -2,6 +2,8 @@
 from __future__ import print_function
 
 import atexit
+import base64
+import binascii
 from copy import copy
 from contextlib import contextmanager
 import json
@@ -11,6 +13,7 @@ from os.path import abspath
 from os.path import expanduser
 from os.path import isfile
 import sys
+import time
 from io import BytesIO
 from subprocess import CalledProcessError, check_output
 import tarfile
@@ -167,10 +170,80 @@ def _get_release_storage_key(team_name, component_name, version):
     )
 
 
+def _get_auth_config_from_env_vars():
+    if os.getenv('DOCKERHUB_USERNAME') and \
+       os.getenv('DOCKERHUB_PASSWORD'):
+        logger.info(
+           'DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD environment variables ' +
+           'are set. Using them for the auth config'
+        )
+        return {
+            'username': os.getenv('DOCKERHUB_USERNAME'),
+            'password': os.getenv('DOCKERHUB_PASSWORD'),
+        }
+    else:
+        return None
+
+
+def _get_auth_config_from_users_docker_config():
+    users_docker_config = _get_users_docker_config_location()
+    if isfile(users_docker_config):
+        logger.info(
+            'Found users docker config at \'' + users_docker_config + '\'. ' +
+            'Using that for the auth config'
+        )
+        try:
+            data = json.load(open(users_docker_config))
+            base64data = data['auths']['https://index.docker.io/v1/']['auth']
+            decoded_data = base64.b64decode(
+                base64data.encode("utf-8"),
+                validate=True
+            ).decode('utf-8').split(':')
+            return {
+                'username': decoded_data[0],
+                'password': decoded_data[1],
+            }
+        except json.JSONDecodeError as e:
+            logger.debug(e)
+            logger.info(
+                'Error decoding json from users docker config \'' +
+                format(users_docker_config) + '\'.'
+            )
+        except binascii.Error as e:
+            logger.debug(e)
+            logger.info(
+                'Error decoding base64 username/password from users ' +
+                'docker config \'' + format(users_docker_config) + '\'. ' +
+                'This may be because you use a credential store. If ' +
+                'that\'s the case, set the environment variables ' +
+                'DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD instead'
+            )
+    return None
+
+
+def _get_auth_config():
+    auth_config = _get_auth_config_from_env_vars()
+    if auth_config:
+        return auth_config
+    auth_config = _get_auth_config_from_users_docker_config()
+    if auth_config:
+        return auth_config
+    return None
+
+
 def get_image_sha(docker_client, image_id):
     logger.info('Pulling image {}'.format(image_id))
     try:
-        image = docker_client.images.pull(image_id)
+        auth_config = _get_auth_config()
+        if auth_config:
+            logger.info('Pulling with auth')
+            image = docker_client.images.pull(
+                image_id,
+                auth_config=auth_config,
+            )
+        else:
+            logger.info('Pulling without auth')
+            image = docker_client.images.pull(image_id)
     except ImageNotFound as e:
         logger.debug(e)
         logger.info(
@@ -219,7 +292,7 @@ def docker_run(
                 tty=True,
                 stdin_open=True,
             )
-            _put_users_docker_config_into_container(container)
+            _put_docker_config_into_container(container)
             dockerpty.start(docker_client.api, container.id)
             output = 'Shell end'
         else:
@@ -231,7 +304,7 @@ def docker_run(
                 volumes=volumes,
                 working_dir=project_root,
             )
-            _put_users_docker_config_into_container(container)
+            _put_docker_config_into_container(container)
             container.start()
             _print_logs(container)
             return handle_finished_container(container)
@@ -241,25 +314,79 @@ def docker_run(
     return exit_status, output
 
 
-def _put_users_docker_config_into_container(container):
-    users_docker_config = expanduser("~") + "/.docker/config.json"
-    logger.info(
-        'Looking for a docker config at \'{}\''.format(
-            users_docker_config
+def _get_users_docker_config_location():
+    overridden_docker_config = os.getenv('DOCKER_CONFIG')
+    if overridden_docker_config:
+        logger.info(
+            'Users docker config overridden by DOCKER_CONFIG environment ' +
+            'variable set to \'{}\''.format(overridden_docker_config)
         )
-    )
-    if isfile(users_docker_config):
-        logger.info('docker config found, copying it into the container')
+        return overridden_docker_config
+    else:
+        return expanduser("~") + "/.docker/config.json"
+
+
+def _put_docker_config_into_container(container):
+    tarstream = None
+    users_docker_config = _get_users_docker_config_location()
+
+    if os.getenv('DOCKERHUB_USERNAME') and \
+       os.getenv('DOCKERHUB_PASSWORD'):
+        logger.info(
+            'DOCKERHUB env vars found, using them to create a ' +
+            'docker config in the container'
+        )
+        auth_string = (
+            os.getenv('DOCKERHUB_USERNAME') + ':' +
+            os.getenv('DOCKERHUB_PASSWORD')
+        ).encode('utf-8')
+        base64data = base64.b64encode(auth_string).decode('utf-8')
+        json_data = json.dumps({
+            "auths": {
+                "https://index.docker.io/v1/": {
+                    "auth": base64data
+                }
+            }
+        }).encode('utf-8')
+
+        tarinfo = tarfile.TarInfo(name='.docker/config.json')
+        tarinfo.size = len(json_data)
+        tarinfo.mtime = time.time()
+        tarinfo.mode = int('0600', 8)
+        tarinfo.uid = tarinfo.gid = 0
+        tarinfo.uname = tarinfo.gname = "root"
         tarstream = BytesIO()
         tar = tarfile.TarFile(fileobj=tarstream, mode='w')
-        tar.add(users_docker_config,
-                arcname='.docker/config.json', filter=_reset_tar_perms)
+        tar.addfile(tarinfo, BytesIO(json_data))
         tar.close()
         tarstream.seek(0)
+    else:
+        logger.info(
+            'Looking for a docker config at \'{}\''.format(
+                users_docker_config
+            )
+        )
+        if isfile(users_docker_config):
+            logger.info('docker config found, copying it into the container')
+            tarstream = BytesIO()
+            tar = tarfile.TarFile(fileobj=tarstream, mode='w')
+            tar.add(users_docker_config,
+                    arcname='.docker/config.json', filter=_reset_tar_perms)
+            tar.close()
+            tarstream.seek(0)
 
+    if tarstream:
         return container.put_archive(
             '/root',
             tarstream
+        )
+    else:
+        logger.info(
+            'WARNING - No dockerhub credentials have been added to the ' +
+            'container. It will have no auth and could hit pull limits.' +
+            'Either: the DOCKERHUB environment vars for the credentials are '
+            'not set or the user has no docker config at ' +
+            '\'' + users_docker_config + '\''
         )
 
 
