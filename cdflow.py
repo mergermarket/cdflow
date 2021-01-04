@@ -208,14 +208,17 @@ def _get_auth_config_from_users_docker_config():
                 'Error decoding json from users docker config \'' +
                 format(users_docker_config) + '\'.'
             )
-        except (TypeError, binascii.Error) as e:
+        except (TypeError, binascii.Error, KeyError) as e:
             logger.debug(e)
             logger.info(
                 'Error decoding base64 username/password from users ' +
                 'docker config \'' + format(users_docker_config) + '\'. ' +
                 'This may be because you use a credential store. If ' +
                 'that\'s the case, set the environment variables ' +
-                'DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD instead'
+                'DOCKERHUB_USERNAME and DOCKERHUB_PASSWORD instead. ' +
+                'If you don\'t need to auth with Docker hub then set ' +
+                'the DOCKER_CONFIG environment variable to a non ' +
+                'existent file.'
             )
     return None
 
