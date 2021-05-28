@@ -15,7 +15,7 @@ pip install cdflow
 
 ## Running
 
-If you are using the [cdflow wrapper comamnd](https://github.com/mergermarket/cdflow/) mentioned above, you can get usage information by running:
+If you are using the [cdflow wrapper command](https://github.com/mergermarket/cdflow/) mentioned above, you can get usage information by running:
 
 ```
 $ cdflow --help
