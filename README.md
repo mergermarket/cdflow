@@ -1,5 +1,5 @@
 # cdflow - create and manage software services using continuous delivery
-[![Build Status](https://travis-ci.org/mergermarket/cdflow.svg?branch=master)](https://travis-ci.org/mergermarket/cdflow)
+[![Build Status](https://travis-ci.com/mergermarket/cdflow.svg?branch=master)](https://travis-ci.com/mergermarket/cdflow)
 
 This repository contains the cdflow command that you can install on your system (e.g. on your dev machine or CI server) in order to release, deploy and (eventally) decommission software services with ease.
 
