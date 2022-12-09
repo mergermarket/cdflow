@@ -1,4 +1,4 @@
-FROM python:3.7.4 AS base
+FROM python:3.11.1 AS base
 
 COPY Pipfile Pipfile.lock ./
 RUN pip install pipenv && pipenv install --system --deploy --dev
